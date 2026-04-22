@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>PDV Completo - Sistema Profissional de Vendas</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -19,46 +19,52 @@
     .table-row-hover:hover { background-color: #f9fafb; }
     .btn-primary { transition: all 0.3s; }
     .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .nav-btn-active {
+      background-color: #1e40af !important;
+      border-bottom: 3px solid #fbbf24;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 font-sans">
 
-<div class="flex h-screen overflow-hidden">
+<div class="min-h-screen">
   
-  <!-- MENU LATERAL PROFISSIONAL -->
-  <div class="w-72 bg-gradient-to-b from-blue-900 to-blue-800 text-white shadow-2xl flex flex-col">
-    <div class="p-6 border-b border-blue-700">
-      <div class="flex items-center gap-3">
-        <i class="fas fa-cash-register text-3xl text-yellow-300"></i>
-        <div>
-          <h1 class="text-2xl font-bold tracking-wide">PDV Completo</h1>
-          <p class="text-blue-200 text-xs mt-1">Sistema integrado de vendas</p>
+  <!-- MENU SUPERIOR -->
+  <div class="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-2xl sticky top-0 z-10">
+    <div class="container mx-auto px-4 py-3">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-cash-register text-3xl text-yellow-300"></i>
+          <div>
+            <h1 class="text-2xl font-bold tracking-wide">PDV Completo</h1>
+            <p class="text-blue-200 text-xs">Sistema integrado de vendas</p>
+          </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 justify-center">
+          <button onclick="show('vendas')" id="nav-vendas" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Vendas</span>
+          </button>
+          <button onclick="show('produtos')" id="nav-produtos" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+            <i class="fas fa-boxes"></i>
+            <span>Produtos</span>
+          </button>
+          <button onclick="show('relatorios')" id="nav-relatorios" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+            <i class="fas fa-chart-line"></i>
+            <span>Relatórios</span>
+          </button>
+        </div>
+        
+        <div class="text-xs text-blue-200">
+          <i class="fas fa-database mr-1"></i> Dados salvos localmente
         </div>
       </div>
-    </div>
-    
-    <nav class="flex-1 p-4 space-y-2 mt-4">
-      <button onclick="show('vendas')" class="sidebar-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-700 transition-all font-medium group">
-        <i class="fas fa-shopping-cart w-5 text-blue-200"></i>
-        <span>🛒 Vendas (PDV)</span>
-      </button>
-      <button onclick="show('produtos')" class="sidebar-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-700 transition-all font-medium group">
-        <i class="fas fa-boxes w-5 text-blue-200"></i>
-        <span>📦 Produtos & Estoque</span>
-      </button>
-      <button onclick="show('relatorios')" class="sidebar-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-700 transition-all font-medium group">
-        <i class="fas fa-chart-line w-5 text-blue-200"></i>
-        <span>📊 Relatórios & Métricas</span>
-      </button>
-    </nav>
-    
-    <div class="p-4 border-t border-blue-700 text-xs text-blue-200 text-center">
-      <i class="fas fa-database mr-1"></i> Dados salvos automaticamente
     </div>
   </div>
 
   <!-- CONTEÚDO PRINCIPAL -->
-  <div class="flex-1 overflow-y-auto p-6">
+  <div class="container mx-auto px-4 py-6 max-w-7xl">
     
     <!-- ==================== SEÇÃO VENDAS ==================== -->
     <div id="vendas" class="section">
@@ -71,32 +77,32 @@
 
       <div class="bg-white rounded-2xl shadow-xl p-6">
         <!-- Área de busca rápida -->
-        <div class="flex flex-col md:flex-row gap-4 mb-6">
-          <div class="flex-1 relative">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div class="md:col-span-2 relative">
             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
             <input type="text" id="busca" placeholder="🔍 Nome do produto (ex: Coca, Arroz)" 
                    class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition"
                    autocomplete="off" onkeypress="if(event.key==='Enter') addProduto()">
           </div>
-          <button onclick="addProduto()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+          <button onclick="addProduto()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
             <i class="fas fa-plus-circle"></i> Adicionar
           </button>
-          <button onclick="finalizarVenda()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+          <button onclick="finalizarVenda()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
             <i class="fas fa-check-double"></i> Finalizar
           </button>
-          <button onclick="limparCarrinho()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
-            <i class="fas fa-trash-alt"></i> Limpar
+          <button onclick="limparCarrinho()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary md:col-span-1">
+            <i class="fas fa-trash-alt"></i> Limpar Carrinho
           </button>
         </div>
 
         <!-- Tabela do Carrinho -->
         <div class="overflow-x-auto border rounded-xl">
-          <table class="w-full">
+          <table class="w-full min-w-[600px]">
             <thead class="bg-gray-100 text-gray-700">
               <tr>
                 <th class="py-3 px-4 text-left">Produto</th>
-                <th class="py-3 px-4 text-left">Preço Venda (R$)</th>
-                <th class="py-3 px-4 text-left">Preço Compra (R$)</th>
+                <th class="py-3 px-4 text-left">Preço Venda</th>
+                <th class="py-3 px-4 text-left">Preço Compra</th>
                 <th class="py-3 px-4 text-left">Quantidade</th>
                 <th class="py-3 px-4 text-left">Subtotal</th>
                 <th class="py-3 px-4 text-center">Ações</th>
@@ -107,13 +113,15 @@
         </div>
 
         <!-- Totalizador -->
-        <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl">
-          <div class="text-2xl font-bold text-gray-800">
-            Total da Venda: <span class="text-green-700 text-3xl" id="total">0.00</span> R$
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl">
+          <div class="text-xl md:text-2xl font-bold text-gray-800 text-center md:text-left">
+            Total: <span class="text-green-700 text-2xl md:text-3xl" id="total">0.00</span> R$
           </div>
-          <div class="flex gap-4">
-            <span class="text-sm text-gray-600"><i class="fas fa-box"></i> Itens: <span id="qtdItensCarrinho">0</span></span>
-            <span class="text-sm text-gray-600"><i class="fas fa-chart-line"></i> Lucro Estimado: R$ <span id="lucroEstimado">0.00</span></span>
+          <div class="text-center">
+            <span class="text-sm text-gray-600"><i class="fas fa-box"></i> Itens: <span id="qtdItensCarrinho" class="font-bold">0</span></span>
+          </div>
+          <div class="text-center md:text-right">
+            <span class="text-sm text-gray-600"><i class="fas fa-chart-line"></i> Lucro Estimado: R$ <span id="lucroEstimado" class="font-bold text-green-600">0.00</span></span>
           </div>
         </div>
       </div>
@@ -127,14 +135,14 @@
         </h2>
         
         <!-- Formulário -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <input type="text" id="nome" placeholder="Nome do produto" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
           <input type="number" id="preco" placeholder="Preço de Venda (R$)" step="0.01" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
           <input type="number" id="compra" placeholder="Preço de Compra (R$)" step="0.01" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
           <input type="number" id="estoque" placeholder="Quantidade em Estoque" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
         </div>
         
-        <button onclick="salvarProduto()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition w-full md:w-auto btn-primary">
+        <button onclick="salvarProduto()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition w-full sm:w-auto btn-primary">
           <i class="fas fa-save"></i> Salvar Produto
         </button>
 
@@ -154,27 +162,27 @@
         </h2>
         
         <!-- Botões de ações -->
-        <div class="flex flex-wrap gap-3 mb-6">
-          <button onclick="relatorioLucro()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+        <div class="flex flex-wrap gap-3 mb-6 justify-center lg:justify-start">
+          <button onclick="relatorioLucro()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow flex items-center gap-2 btn-primary text-sm sm:text-base">
             <i class="fas fa-coins"></i> Lucro Total
           </button>
-          <button onclick="gerarRelatorioVendasDetalhado()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+          <button onclick="gerarRelatorioVendasDetalhado()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl shadow flex items-center gap-2 btn-primary text-sm sm:text-base">
             <i class="fas fa-receipt"></i> Vendas Detalhadas
           </button>
-          <button onclick="relatorioProdutosEstoque()" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+          <button onclick="relatorioProdutosEstoque()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl shadow flex items-center gap-2 btn-primary text-sm sm:text-base">
             <i class="fas fa-boxes"></i> Estoque Atual
           </button>
-          <button onclick="exportarCSV()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+          <button onclick="exportarCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl shadow flex items-center gap-2 btn-primary text-sm sm:text-base">
             <i class="fas fa-download"></i> Exportar CSV
           </button>
-          <button onclick="limparHistoricoVendas()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+          <button onclick="limparHistoricoVendas()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl shadow flex items-center gap-2 btn-primary text-sm sm:text-base">
             <i class="fas fa-trash"></i> Limpar Histórico
           </button>
         </div>
 
         <!-- Gráfico -->
         <div class="mb-6 bg-gray-50 p-4 rounded-xl">
-          <canvas id="grafico" width="400" height="200" style="max-height: 300px;"></canvas>
+          <canvas id="grafico" width="400" height="200" style="max-height: 300px; width: 100%;"></canvas>
         </div>
 
         <!-- Área de relatório textual -->
@@ -191,13 +199,14 @@
   let vendas = JSON.parse(localStorage.getItem('vendas')) || [];
   let graficoInstance = null;
 
-  // Dados de exemplo para demonstração (apenas se estiver vazio)
+  // Dados de exemplo para demonstração
   if (produtos.length === 0) {
     produtos = [
       { id: 1, nome: "Coca-Cola 2L", preco: 9.90, compra: 6.50, estoque: 10 },
       { id: 2, nome: "Arroz 5kg", preco: 22.90, compra: 18.00, estoque: 5 },
       { id: 3, nome: "Feijão 1kg", preco: 7.50, compra: 5.00, estoque: 8 },
-      { id: 4, nome: "Macarrão", preco: 4.50, compra: 3.20, estoque: 15 }
+      { id: 4, nome: "Macarrão 500g", preco: 4.50, compra: 3.20, estoque: 15 },
+      { id: 5, nome: "Óleo de Soja", preco: 6.90, compra: 5.00, estoque: 7 }
     ];
     localStorage.setItem('produtos', JSON.stringify(produtos));
   }
@@ -208,6 +217,15 @@
       s.classList.add('hidden-section');
     });
     document.getElementById(sectionId).classList.remove('hidden-section');
+    
+    // Atualizar estilo dos botões do menu
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.classList.remove('nav-btn-active');
+    });
+    const activeBtn = document.getElementById(`nav-${sectionId}`);
+    if (activeBtn) {
+      activeBtn.classList.add('nav-btn-active');
+    }
     
     // Atualiza dados ao mudar de tela
     if (sectionId === 'produtos') renderProdutos();
@@ -234,7 +252,9 @@
     }
 
     if (preco < compra) {
-      alert('⚠️ Atenção: Preço de venda está menor que o preço de compra! Isso gerará prejuízo.');
+      if (!confirm('⚠️ Atenção: Preço de venda está menor que o preço de compra! Isso gerará prejuízo. Deseja continuar mesmo assim?')) {
+        return;
+      }
     }
 
     const novoProduto = {
@@ -261,9 +281,12 @@
   function removerProduto(id) {
     if (confirm('⚠️ Tem certeza que deseja excluir este produto permanentemente?')) {
       produtos = produtos.filter(p => p.id !== id);
+      // Remover do carrinho se existir
+      carrinho = carrinho.filter(item => item.id !== id);
       persistData();
       renderProdutos();
-      renderCarrinho(); // Atualiza carrinho caso o produto esteja nele
+      renderCarrinho();
+      alert('✅ Produto removido com sucesso!');
     }
   }
 
@@ -274,6 +297,15 @@
       produto.estoque = qtd;
       persistData();
       renderProdutos();
+      // Verificar se algum item no carrinho ultrapassou o novo estoque
+      const itemCarrinho = carrinho.find(item => item.id === id);
+      if (itemCarrinho && itemCarrinho.qtd > qtd) {
+        itemCarrinho.qtd = qtd;
+        if (itemCarrinho.qtd === 0) {
+          carrinho = carrinho.filter(item => item.id !== id);
+        }
+        renderCarrinho();
+      }
       alert(`📦 Estoque de "${produto.nome}" atualizado para ${qtd} unidades`);
     }
   }
@@ -347,8 +379,7 @@
         nome: produto.nome,
         preco: produto.preco,
         compra: produto.compra,
-        qtd: 1,
-        estoqueMax: produto.estoque
+        qtd: 1
       });
     }
     renderCarrinho();
@@ -478,7 +509,10 @@
   function relatorioLucro() {
     if (vendas.length === 0) {
       document.getElementById('relatorio').innerHTML = '<div class="text-center p-4 text-gray-500">📊 Nenhuma venda registrada ainda.</div>';
-      if (graficoInstance) graficoInstance.destroy();
+      if (graficoInstance) {
+        graficoInstance.destroy();
+        graficoInstance = null;
+      }
       return;
     }
 
@@ -497,7 +531,9 @@
     const dadosLucro = labels.map(l => lucroPorDia[l]);
 
     // Destruir gráfico antigo se existir
-    if (graficoInstance) graficoInstance.destroy();
+    if (graficoInstance) {
+      graficoInstance.destroy();
+    }
     const ctx = document.getElementById('grafico').getContext('2d');
     graficoInstance = new Chart(ctx, {
       type: 'line',
@@ -555,9 +591,9 @@
     vendas.slice().reverse().forEach(v => {
       html += `
         <div class="border rounded-xl p-4 mb-3 bg-white shadow-sm">
-          <div class="flex justify-between items-center flex-wrap">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div><span class="font-bold">Venda #${v.id}</span><br><span class="text-sm text-gray-500">${v.data}</span></div>
-            <div class="text-right"><span class="text-green-700 font-bold">R$ ${v.total.toFixed(2)}</span><br><span class="text-sm text-blue-600">Lucro: R$ ${v.lucro.toFixed(2)}</span></div>
+            <div class="text-left sm:text-right"><span class="text-green-700 font-bold">R$ ${v.total.toFixed(2)}</span><br><span class="text-sm text-blue-600">Lucro: R$ ${v.lucro.toFixed(2)}</span></div>
           </div>
           <div class="mt-2 text-sm border-t pt-2">
             ${v.itens.map(i => `• ${escapeHtml(i.nome)} - ${i.qtd} x R$ ${i.preco.toFixed(2)} = R$ ${(i.qtd * i.preco).toFixed(2)}`).join('<br>')}
@@ -578,7 +614,7 @@
     produtos.forEach(p => {
       const margem = p.compra > 0 ? ((p.preco - p.compra) / p.compra) * 100 : 0;
       html += `
-        <div class="flex justify-between items-center border-b py-2">
+        <div class="flex justify-between items-center border-b py-2 flex-wrap gap-2">
           <div><span class="font-medium">${escapeHtml(p.nome)}</span><br><span class="text-xs text-gray-500">Estoque: ${p.estoque} un.</span></div>
           <div class="text-right"><span class="text-green-600">R$ ${p.preco.toFixed(2)}</span><br><span class="text-xs ${margem > 0 ? 'text-green-500' : 'text-red-500'}">Margem: ${margem.toFixed(1)}%</span></div>
         </div>
@@ -602,7 +638,7 @@
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;
-    link.setAttribute("download", "relatorio_vendas.csv");
+    link.setAttribute("download", `relatorio_vendas_${new Date().toISOString().slice(0,19)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -634,4 +670,4 @@
   renderProdutos();
 </script>
 </body>
-</html>
+  </html>
