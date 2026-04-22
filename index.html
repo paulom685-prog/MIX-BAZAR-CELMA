@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDV Completo - Sistema Profissional de Vendas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { transition: all 0.2s ease; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    button:active { transform: scale(0.97); }
+    input:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+    .hidden-section { display: none !important; }
+    .table-row-hover:hover { background-color: #f9fafb; }
+    .btn-primary { transition: all 0.3s; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 font-sans">
+
+<div class="flex h-screen overflow-hidden">
+  
+  <!-- MENU LATERAL PROFISSIONAL -->
+  <div class="w-72 bg-gradient-to-b from-blue-900 to-blue-800 text-white shadow-2xl flex flex-col">
+    <div class="p-6 border-b border-blue-700">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-cash-register text-3xl text-yellow-300"></i>
+        <div>
+          <h1 class="text-2xl font-bold tracking-wide">PDV Completo</h1>
+          <p class="text-blue-200 text-xs mt-1">Sistema integrado de vendas</p>
+        </div>
+      </div>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-2 mt-4">
+      <button onclick="show('vendas')" class="sidebar-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-700 transition-all font-medium group">
+        <i class="fas fa-shopping-cart w-5 text-blue-200"></i>
+        <span>🛒 Vendas (PDV)</span>
+      </button>
+      <button onclick="show('produtos')" class="sidebar-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-700 transition-all font-medium group">
+        <i class="fas fa-boxes w-5 text-blue-200"></i>
+        <span>📦 Produtos & Estoque</span>
+      </button>
+      <button onclick="show('relatorios')" class="sidebar-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-700 transition-all font-medium group">
+        <i class="fas fa-chart-line w-5 text-blue-200"></i>
+        <span>📊 Relatórios & Métricas</span>
+      </button>
+    </nav>
+    
+    <div class="p-4 border-t border-blue-700 text-xs text-blue-200 text-center">
+      <i class="fas fa-database mr-1"></i> Dados salvos automaticamente
+    </div>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="flex-1 overflow-y-auto p-6">
+    
+    <!-- ==================== SEÇÃO VENDAS ==================== -->
+    <div id="vendas" class="section">
+      <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+        <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+          <i class="fas fa-tag text-green-600"></i> Ponto de Venda
+        </h2>
+        <p class="text-gray-500 mt-1">Digite o nome do produto e gerencie o carrinho</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <!-- Área de busca rápida -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+          <div class="flex-1 relative">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" id="busca" placeholder="🔍 Nome do produto (ex: Coca, Arroz)" 
+                   class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition"
+                   autocomplete="off" onkeypress="if(event.key==='Enter') addProduto()">
+          </div>
+          <button onclick="addProduto()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+            <i class="fas fa-plus-circle"></i> Adicionar
+          </button>
+          <button onclick="finalizarVenda()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+            <i class="fas fa-check-double"></i> Finalizar
+          </button>
+          <button onclick="limparCarrinho()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+            <i class="fas fa-trash-alt"></i> Limpar
+          </button>
+        </div>
+
+        <!-- Tabela do Carrinho -->
+        <div class="overflow-x-auto border rounded-xl">
+          <table class="w-full">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="py-3 px-4 text-left">Produto</th>
+                <th class="py-3 px-4 text-left">Preço Venda (R$)</th>
+                <th class="py-3 px-4 text-left">Preço Compra (R$)</th>
+                <th class="py-3 px-4 text-left">Quantidade</th>
+                <th class="py-3 px-4 text-left">Subtotal</th>
+                <th class="py-3 px-4 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="carrinho" class="divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+
+        <!-- Totalizador -->
+        <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl">
+          <div class="text-2xl font-bold text-gray-800">
+            Total da Venda: <span class="text-green-700 text-3xl" id="total">0.00</span> R$
+          </div>
+          <div class="flex gap-4">
+            <span class="text-sm text-gray-600"><i class="fas fa-box"></i> Itens: <span id="qtdItensCarrinho">0</span></span>
+            <span class="text-sm text-gray-600"><i class="fas fa-chart-line"></i> Lucro Estimado: R$ <span id="lucroEstimado">0.00</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SEÇÃO PRODUTOS ==================== -->
+    <div id="produtos" class="section hidden-section">
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-cube text-blue-600"></i> Cadastro de Produtos
+        </h2>
+        
+        <!-- Formulário -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <input type="text" id="nome" placeholder="Nome do produto" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
+          <input type="number" id="preco" placeholder="Preço de Venda (R$)" step="0.01" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
+          <input type="number" id="compra" placeholder="Preço de Compra (R$)" step="0.01" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
+          <input type="number" id="estoque" placeholder="Quantidade em Estoque" class="border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500">
+        </div>
+        
+        <button onclick="salvarProduto()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition w-full md:w-auto btn-primary">
+          <i class="fas fa-save"></i> Salvar Produto
+        </button>
+
+        <!-- Listagem de produtos -->
+        <div class="mt-8">
+          <h3 class="font-bold text-lg mb-3 flex items-center gap-2"><i class="fas fa-list"></i> Produtos Cadastrados</h3>
+          <div id="listaProdutos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SEÇÃO RELATÓRIOS ==================== -->
+    <div id="relatorios" class="section hidden-section">
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-chart-pie text-purple-600"></i> Relatórios Gerenciais
+        </h2>
+        
+        <!-- Botões de ações -->
+        <div class="flex flex-wrap gap-3 mb-6">
+          <button onclick="relatorioLucro()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+            <i class="fas fa-coins"></i> Lucro Total
+          </button>
+          <button onclick="gerarRelatorioVendasDetalhado()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+            <i class="fas fa-receipt"></i> Vendas Detalhadas
+          </button>
+          <button onclick="relatorioProdutosEstoque()" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+            <i class="fas fa-boxes"></i> Estoque Atual
+          </button>
+          <button onclick="exportarCSV()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+            <i class="fas fa-download"></i> Exportar CSV
+          </button>
+          <button onclick="limparHistoricoVendas()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow flex items-center gap-2 btn-primary">
+            <i class="fas fa-trash"></i> Limpar Histórico
+          </button>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="mb-6 bg-gray-50 p-4 rounded-xl">
+          <canvas id="grafico" width="400" height="200" style="max-height: 300px;"></canvas>
+        </div>
+
+        <!-- Área de relatório textual -->
+        <div id="relatorio" class="bg-gray-50 p-4 rounded-xl max-h-[400px] overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==================== ESTRUTURA DE DADOS ====================
+  let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+  let carrinho = [];
+  let vendas = JSON.parse(localStorage.getItem('vendas')) || [];
+  let graficoInstance = null;
+
+  // Dados de exemplo para demonstração (apenas se estiver vazio)
+  if (produtos.length === 0) {
+    produtos = [
+      { id: 1, nome: "Coca-Cola 2L", preco: 9.90, compra: 6.50, estoque: 10 },
+      { id: 2, nome: "Arroz 5kg", preco: 22.90, compra: 18.00, estoque: 5 },
+      { id: 3, nome: "Feijão 1kg", preco: 7.50, compra: 5.00, estoque: 8 },
+      { id: 4, nome: "Macarrão", preco: 4.50, compra: 3.20, estoque: 15 }
+    ];
+    localStorage.setItem('produtos', JSON.stringify(produtos));
+  }
+
+  // ==================== FUNÇÕES GERAIS ====================
+  function show(sectionId) {
+    document.querySelectorAll('.section').forEach(s => {
+      s.classList.add('hidden-section');
+    });
+    document.getElementById(sectionId).classList.remove('hidden-section');
+    
+    // Atualiza dados ao mudar de tela
+    if (sectionId === 'produtos') renderProdutos();
+    if (sectionId === 'relatorios') relatorioLucro();
+    if (sectionId === 'vendas') renderCarrinho();
+  }
+
+  // Salvar todos os dados no localStorage
+  function persistData() {
+    localStorage.setItem('produtos', JSON.stringify(produtos));
+    localStorage.setItem('vendas', JSON.stringify(vendas));
+  }
+
+  // ==================== PRODUTOS ====================
+  function salvarProduto() {
+    const nome = document.getElementById('nome').value.trim();
+    const preco = parseFloat(document.getElementById('preco').value);
+    const compra = parseFloat(document.getElementById('compra').value);
+    const estoque = parseInt(document.getElementById('estoque').value);
+
+    if (!nome || isNaN(preco) || isNaN(compra) || isNaN(estoque) || preco <= 0 || compra < 0) {
+      alert('❌ Preencha todos os campos corretamente (preço venda > 0, compra >= 0)');
+      return;
+    }
+
+    if (preco < compra) {
+      alert('⚠️ Atenção: Preço de venda está menor que o preço de compra! Isso gerará prejuízo.');
+    }
+
+    const novoProduto = {
+      id: Date.now(),
+      nome: nome,
+      preco: preco,
+      compra: compra,
+      estoque: estoque
+    };
+    produtos.push(novoProduto);
+    persistData();
+    renderProdutos();
+    limparCamposProduto();
+    alert(`✅ Produto "${nome}" adicionado com sucesso!`);
+  }
+
+  function limparCamposProduto() {
+    document.getElementById('nome').value = '';
+    document.getElementById('preco').value = '';
+    document.getElementById('compra').value = '';
+    document.getElementById('estoque').value = '';
+  }
+
+  function removerProduto(id) {
+    if (confirm('⚠️ Tem certeza que deseja excluir este produto permanentemente?')) {
+      produtos = produtos.filter(p => p.id !== id);
+      persistData();
+      renderProdutos();
+      renderCarrinho(); // Atualiza carrinho caso o produto esteja nele
+    }
+  }
+
+  function atualizarEstoqueProduto(id, novaQtd) {
+    const produto = produtos.find(p => p.id === id);
+    if (produto) {
+      const qtd = Math.max(0, parseInt(novaQtd) || 0);
+      produto.estoque = qtd;
+      persistData();
+      renderProdutos();
+      alert(`📦 Estoque de "${produto.nome}" atualizado para ${qtd} unidades`);
+    }
+  }
+
+  function renderProdutos() {
+    const container = document.getElementById('listaProdutos');
+    if (!container) return;
+
+    if (produtos.length === 0) {
+      container.innerHTML = '<div class="col-span-full text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum produto cadastrado. Adicione o primeiro!</div>';
+      return;
+    }
+
+    container.innerHTML = produtos.map(prod => {
+      const margem = prod.compra > 0 ? ((prod.preco - prod.compra) / prod.compra) * 100 : (prod.preco > 0 ? 999 : 0);
+      const margemFormatada = margem > 999 ? '∞' : margem.toFixed(1);
+      const statusMargem = prod.preco < prod.compra ? 'text-red-600 font-bold' : 'text-green-600';
+      
+      return `
+        <div class="border-2 rounded-xl p-4 bg-white shadow-sm card-hover">
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <h3 class="font-bold text-lg">${escapeHtml(prod.nome)}</h3>
+              <p class="text-blue-600 font-semibold">Venda: R$ ${prod.preco.toFixed(2)}</p>
+              <p class="text-gray-500 text-sm">Compra: R$ ${prod.compra.toFixed(2)}</p>
+              <p class="text-sm mt-1">📦 Estoque: <span class="font-bold ${prod.estoque <= 0 ? 'text-red-500' : 'text-gray-800'}">${prod.estoque}</span> un.</p>
+              <p class="text-xs ${statusMargem}">💰 Margem: ${margemFormatada}% ${prod.preco < prod.compra ? '(Prejuízo)' : ''}</p>
+            </div>
+            <button onclick="removerProduto(${prod.id})" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
+          </div>
+          <div class="mt-3 flex gap-2 items-center">
+            <input type="number" id="stock-${prod.id}" value="${prod.estoque}" class="border rounded-lg w-24 p-2 text-sm" placeholder="Qtd" />
+            <button onclick="atualizarEstoqueProduto(${prod.id}, document.getElementById('stock-${prod.id}').value)" class="bg-amber-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-amber-600">
+              <i class="fas fa-sync-alt"></i> Atualizar
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ==================== CARRINHO / VENDAS ====================
+  function addProduto() {
+    const nomeBusca = document.getElementById('busca').value.trim().toLowerCase();
+    if (!nomeBusca) {
+      alert('🔍 Digite o nome do produto para adicionar');
+      return;
+    }
+
+    const produto = produtos.find(p => p.nome.toLowerCase() === nomeBusca);
+    if (!produto) {
+      alert(`❌ Produto "${nomeBusca}" não encontrado! Cadastre-o primeiro.`);
+      return;
+    }
+
+    if (produto.estoque <= 0) {
+      alert(`⚠️ Produto "${produto.nome}" sem estoque disponível! Estoque atual: ${produto.estoque}`);
+      return;
+    }
+
+    const itemExistente = carrinho.find(item => item.id === produto.id);
+    if (itemExistente) {
+      if (itemExistente.qtd + 1 > produto.estoque) {
+        alert(`⚠️ Estoque insuficiente! Máximo disponível: ${produto.estoque} unidades.`);
+        return;
+      }
+      itemExistente.qtd++;
+    } else {
+      carrinho.push({
+        id: produto.id,
+        nome: produto.nome,
+        preco: produto.preco,
+        compra: produto.compra,
+        qtd: 1,
+        estoqueMax: produto.estoque
+      });
+    }
+    renderCarrinho();
+    document.getElementById('busca').value = '';
+    document.getElementById('busca').focus();
+  }
+
+  function alterarQuantidade(index, delta) {
+    const item = carrinho[index];
+    const produtoOriginal = produtos.find(p => p.id === item.id);
+    if (!produtoOriginal) return;
+
+    const novaQtd = item.qtd + delta;
+    if (novaQtd < 1) {
+      removerItemCarrinho(index);
+      return;
+    }
+    if (novaQtd > produtoOriginal.estoque) {
+      alert(`⚠️ Estoque insuficiente para "${item.nome}". Disponível: ${produtoOriginal.estoque}`);
+      return;
+    }
+    item.qtd = novaQtd;
+    renderCarrinho();
+  }
+
+  function removerItemCarrinho(index) {
+    carrinho.splice(index, 1);
+    renderCarrinho();
+  }
+
+  function limparCarrinho() {
+    if (carrinho.length > 0 && confirm('🗑️ Tem certeza que deseja limpar todo o carrinho?')) {
+      carrinho = [];
+      renderCarrinho();
+    }
+  }
+
+  function renderCarrinho() {
+    const tbody = document.getElementById('carrinho');
+    let total = 0;
+    let lucroTotalEstimado = 0;
+    let qtdItens = 0;
+
+    if (carrinho.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center p-6 text-gray-400">🛒 Carrinho vazio. Adicione produtos!</td></tr>';
+    } else {
+      tbody.innerHTML = carrinho.map((item, idx) => {
+        const subtotal = item.preco * item.qtd;
+        const lucroItem = (item.preco - item.compra) * item.qtd;
+        total += subtotal;
+        lucroTotalEstimado += lucroItem;
+        qtdItens += item.qtd;
+        
+        return `
+          <tr class="table-row-hover border-b">
+            <td class="py-3 px-4 font-medium">${escapeHtml(item.nome)}</td>
+            <td class="py-3 px-4 text-green-600 font-semibold">R$ ${item.preco.toFixed(2)}</td>
+            <td class="py-3 px-4 text-gray-500 text-sm">R$ ${item.compra.toFixed(2)}</td>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2">
+                <button onclick="alterarQuantidade(${idx}, -1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-lg">-</button>
+                <span class="w-8 text-center font-bold">${item.qtd}</span>
+                <button onclick="alterarQuantidade(${idx}, 1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-lg">+</button>
+              </div>
+            </td>
+            <td class="py-3 px-4 font-semibold">R$ ${subtotal.toFixed(2)}</td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="removerItemCarrinho(${idx})" class="text-red-500 hover:text-red-700"><i class="fas fa-times-circle text-xl"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('total').innerText = total.toFixed(2);
+    document.getElementById('qtdItensCarrinho').innerText = qtdItens;
+    document.getElementById('lucroEstimado').innerText = lucroTotalEstimado.toFixed(2);
+  }
+
+  function finalizarVenda() {
+    if (carrinho.length === 0) {
+      alert('❌ Carrinho vazio! Adicione produtos antes de finalizar.');
+      return;
+    }
+
+    // Verificar estoque novamente
+    for (let item of carrinho) {
+      const produtoDB = produtos.find(p => p.id === item.id);
+      if (!produtoDB || produtoDB.estoque < item.qtd) {
+        alert(`⚠️ Estoque insuficiente para "${item.nome}". Disponível: ${produtoDB?.estoque || 0}`);
+        return;
+      }
+    }
+
+    let lucroTotalVenda = 0;
+    let totalVenda = 0;
+
+    // Descontar estoque e calcular lucro real
+    for (let item of carrinho) {
+      const produtoDB = produtos.find(p => p.id === item.id);
+      produtoDB.estoque -= item.qtd;
+      lucroTotalVenda += (item.preco - item.compra) * item.qtd;
+      totalVenda += item.preco * item.qtd;
+    }
+
+    // Registrar venda
+    const venda = {
+      id: Date.now(),
+      data: new Date().toLocaleString(),
+      dataSimples: new Date().toLocaleDateString(),
+      itens: JSON.parse(JSON.stringify(carrinho)),
+      total: totalVenda,
+      lucro: lucroTotalVenda
+    };
+    vendas.push(venda);
+    persistData();
+
+    // Limpar carrinho e atualizar interfaces
+    carrinho = [];
+    renderCarrinho();
+    renderProdutos();
+    
+    alert(`✅ Venda finalizada com sucesso!\n💰 Total: R$ ${totalVenda.toFixed(2)}\n📈 Lucro: R$ ${lucroTotalVenda.toFixed(2)}`);
+  }
+
+  // ==================== RELATÓRIOS ====================
+  function relatorioLucro() {
+    if (vendas.length === 0) {
+      document.getElementById('relatorio').innerHTML = '<div class="text-center p-4 text-gray-500">📊 Nenhuma venda registrada ainda.</div>';
+      if (graficoInstance) graficoInstance.destroy();
+      return;
+    }
+
+    let lucroTotal = 0;
+    let faturamentoTotal = 0;
+    const lucroPorDia = {};
+
+    vendas.forEach(v => {
+      lucroTotal += v.lucro;
+      faturamentoTotal += v.total;
+      const data = v.dataSimples;
+      lucroPorDia[data] = (lucroPorDia[data] || 0) + v.lucro;
+    });
+
+    const labels = Object.keys(lucroPorDia).sort((a,b) => new Date(a) - new Date(b));
+    const dadosLucro = labels.map(l => lucroPorDia[l]);
+
+    // Destruir gráfico antigo se existir
+    if (graficoInstance) graficoInstance.destroy();
+    const ctx = document.getElementById('grafico').getContext('2d');
+    graficoInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Lucro Diário (R$)',
+          data: dadosLucro,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.3,
+          pointBackgroundColor: '#059669',
+          pointBorderColor: '#047857',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { callbacks: { label: (ctx) => `Lucro: R$ ${ctx.raw.toFixed(2)}` } }
+        }
+      }
+    });
+
+    document.getElementById('relatorio').innerHTML = `
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl text-center">
+          <p class="text-gray-600">💰 Lucro Total Acumulado</p>
+          <p class="text-3xl font-bold text-green-700">R$ ${lucroTotal.toFixed(2)}</p>
+        </div>
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl text-center">
+          <p class="text-gray-600">📈 Faturamento Total</p>
+          <p class="text-3xl font-bold text-blue-700">R$ ${faturamentoTotal.toFixed(2)}</p>
+        </div>
+      </div>
+      <div class="bg-yellow-50 p-4 rounded-xl">
+        <p class="font-semibold">📊 Análise: Margem média de lucro: ${faturamentoTotal > 0 ? ((lucroTotal / faturamentoTotal) * 100).toFixed(1) : '0'}%</p>
+        <p class="text-sm text-gray-600 mt-1">Total de vendas realizadas: ${vendas.length}</p>
+      </div>
+    `;
+  }
+
+  function gerarRelatorioVendasDetalhado() {
+    if (vendas.length === 0) {
+      document.getElementById('relatorio').innerHTML = '<div class="text-center p-4 text-gray-500">📋 Nenhuma venda registrada.</div>';
+      return;
+    }
+
+    let html = '<h3 class="font-bold text-lg mb-3">📋 Histórico de Vendas</h3>';
+    vendas.slice().reverse().forEach(v => {
+      html += `
+        <div class="border rounded-xl p-4 mb-3 bg-white shadow-sm">
+          <div class="flex justify-between items-center flex-wrap">
+            <div><span class="font-bold">Venda #${v.id}</span><br><span class="text-sm text-gray-500">${v.data}</span></div>
+            <div class="text-right"><span class="text-green-700 font-bold">R$ ${v.total.toFixed(2)}</span><br><span class="text-sm text-blue-600">Lucro: R$ ${v.lucro.toFixed(2)}</span></div>
+          </div>
+          <div class="mt-2 text-sm border-t pt-2">
+            ${v.itens.map(i => `• ${escapeHtml(i.nome)} - ${i.qtd} x R$ ${i.preco.toFixed(2)} = R$ ${(i.qtd * i.preco).toFixed(2)}`).join('<br>')}
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById('relatorio').innerHTML = html;
+  }
+
+  function relatorioProdutosEstoque() {
+    if (produtos.length === 0) {
+      document.getElementById('relatorio').innerHTML = '<div class="text-center p-4 text-gray-500">📦 Nenhum produto cadastrado.</div>';
+      return;
+    }
+
+    let html = '<h3 class="font-bold text-lg mb-3">📦 Relatório de Estoque e Margem</h3><div class="grid gap-2">';
+    produtos.forEach(p => {
+      const margem = p.compra > 0 ? ((p.preco - p.compra) / p.compra) * 100 : 0;
+      html += `
+        <div class="flex justify-between items-center border-b py-2">
+          <div><span class="font-medium">${escapeHtml(p.nome)}</span><br><span class="text-xs text-gray-500">Estoque: ${p.estoque} un.</span></div>
+          <div class="text-right"><span class="text-green-600">R$ ${p.preco.toFixed(2)}</span><br><span class="text-xs ${margem > 0 ? 'text-green-500' : 'text-red-500'}">Margem: ${margem.toFixed(1)}%</span></div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    document.getElementById('relatorio').innerHTML = html;
+  }
+
+  function exportarCSV() {
+    if (vendas.length === 0) {
+      alert('❌ Nenhuma venda para exportar.');
+      return;
+    }
+    let csv = "Data,Total Venda (R$),Lucro (R$),Itens\n";
+    vendas.forEach(v => {
+      const itensResumo = v.itens.map(i => `${i.nome}(${i.qtd})`).join('; ');
+      csv += `"${v.data}","${v.total.toFixed(2)}","${v.lucro.toFixed(2)}","${itensResumo}"\n`;
+    });
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute("download", "relatorio_vendas.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    alert('✅ Relatório CSV exportado com sucesso!');
+  }
+
+  function limparHistoricoVendas() {
+    if (confirm('⚠️ ATENÇÃO: Isso apagará TODO o histórico de vendas permanentemente. Continuar?')) {
+      vendas = [];
+      persistData();
+      relatorioLucro();
+      alert('🗑️ Histórico de vendas limpo!');
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Inicialização
+  show('vendas');
+  renderProdutos();
+</script>
+</body>
+</html>
