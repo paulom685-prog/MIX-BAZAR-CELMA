@@ -4,32 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>MIX BAZAR - PDV Completo com Gestão de Produtos e Lotes</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { transition: all 0.2s ease; }
     button:active { transform: scale(0.97); }
     input:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
-    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
     .hidden-section { display: none !important; }
-    .nav-btn-active {
-      background-color: #1e40af !important;
-      border-bottom: 3px solid #fbbf24;
-    }
-    .toast-notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #1f2937;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 12px;
-      z-index: 9999;
-      animation: fadeInOut 3s ease forwards;
-    }
+    .nav-btn-active { background-color: #1e40af !important; border-bottom: 3px solid #fbbf24; }
+    .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #1f2937; color: white; padding: 12px 20px; border-radius: 12px; z-index: 9999; animation: fadeInOut 3s ease forwards; }
     @keyframes fadeInOut {
       0% { opacity: 0; transform: translateY(20px); }
       15% { opacity: 1; transform: translateY(0); }
@@ -46,70 +35,22 @@
     .lote-normal { border-left-color: #10b981; background-color: #f0fdf4; }
     .btn-primary { transition: all 0.3s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .tab-active {
-      background-color: #3b82f6 !important;
-      color: white !important;
-    }
-    .lote-input-group {
-      background: #f9fafb;
-      border: 2px dashed #d1d5db;
-      border-radius: 12px;
-      padding: 12px;
-      margin-top: 8px;
-    }
-    .ranking-card {
-      border-left: 5px solid;
-      transition: all 0.3s ease;
-    }
-    .ranking-card:hover {
-      transform: translateX(8px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-    .progress-bar {
-      height: 8px;
-      border-radius: 4px;
-      background: #e5e7eb;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.8s ease;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    .top1-glow {
-      animation: pulse 2s infinite;
-    }
-    .ranking-table-row {
-      transition: all 0.3s ease;
-    }
-    .ranking-table-row:hover {
-      background-color: #f3f4f6;
-      transform: scale(1.01);
-    }
-    .trophy-icon {
-      font-size: 1.5em;
-    }
-    .venda-detalhe {
-      border-left: 3px solid #3b82f6;
-      transition: all 0.3s;
-    }
-    .venda-detalhe:hover {
-      border-left-color: #2563eb;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .filtro-ativo {
-      background-color: #3b82f6 !important;
-      color: white !important;
-    }
-    .grafico-container {
-      position: relative;
-      height: 300px;
-      width: 100%;
-    }
+    .tab-active { background-color: #3b82f6 !important; color: white !important; }
+    .lote-input-group { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 12px; padding: 12px; margin-top: 8px; }
+    .ranking-card { border-left: 5px solid; transition: all 0.3s ease; }
+    .ranking-card:hover { transform: translateX(8px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .progress-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .top1-glow { animation: pulse 2s infinite; }
+    .ranking-table-row { transition: all 0.3s ease; }
+    .ranking-table-row:hover { background-color: #f3f4f6; transform: scale(1.01); }
+    .trophy-icon { font-size: 1.5em; }
+    .venda-detalhe { border-left: 3px solid #3b82f6; transition: all 0.3s; }
+    .venda-detalhe:hover { border-left-color: #2563eb; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .filtro-ativo { background-color: #3b82f6 !important; color: white !important; }
+    .grafico-container { position: relative; height: 300px; width: 100%; }
+    .collapsible-content { overflow: hidden; transition: max-height 0.3s ease; }
   </style>
 </head>
 <body>
@@ -121,14 +62,14 @@
       <div class="bg-gradient-to-r from-blue-900 to-blue-800 p-6 text-white text-center">
         <i class="fas fa-cash-register text-5xl text-yellow-300 mb-3"></i>
         <h1 class="text-2xl font-bold">MIX BAZAR & UTILIDADES</h1>
-        <p class="text-blue-200 text-sm">PDV Profissional com Controle de Vendas e Estoque </p>
+        <p class="text-blue-200 text-sm">PDV Profissional com Controle de Vendas e Estoque</p>
       </div>
       <div class="p-8">
         <div class="mb-6">
           <label class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
           <div class="relative">
             <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
-            <input type="text" id="loginUsuario" placeholder="Digite seu usuário" class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition">
+            <input type="text" id="loginUsuario" placeholder="Digite seu usuário" class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition" autocomplete="off">
           </div>
         </div>
         <div class="mb-6">
@@ -182,7 +123,7 @@
         <div class="flex flex-col md:flex-row items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <i class="fas fa-cash-register text-3xl text-yellow-300"></i>
-            <div><h1 class="text-2xl font-bold">MIX BAZAR & UTILIDADES</h1><p class="text-blue-200 text-xs">Sistema de Controle de Vendas e Estoque </p></div>
+            <div><h1 class="text-2xl font-bold">MIX BAZAR & UTILIDADES</h1><p class="text-blue-200 text-xs">Sistema de Controle de Vendas e Estoque</p></div>
           </div>
           <div class="flex flex-wrap gap-2">
             <button data-nav="vendas" class="nav-btn px-4 py-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-shopping-cart"></i> Vendas</button>
@@ -255,23 +196,27 @@
               <div><input type="number" id="precoCompra" step="0.01" placeholder="Preço de Compra Padrão" class="w-full border-2 rounded-xl p-3"></div>
             </div>
             
-            <!-- Seção de Lotes (1, 2, 3) -->
+            <!-- Seção de Lotes (obrigatório apenas lote 1) -->
             <div class="mb-6">
-              <h3 class="font-bold text-lg mb-3 text-blue-800"><i class="fas fa-layer-group"></i> Lotes do Produto (máximo 3)</h3>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-lg text-blue-800"><i class="fas fa-layer-group"></i> Lotes do Produto</h3>
+                <span class="text-xs text-gray-500">Preencha ao menos o Lote 1 para adicionar estoque</span>
+              </div>
               
-              <!-- Lote 1 -->
+              <!-- Lote 1 (obrigatório) -->
               <div class="lote-input-group mb-4">
                 <div class="flex items-center gap-2 mb-2">
                   <i class="fas fa-tag text-blue-600"></i>
                   <span class="font-bold text-blue-800">Lote 1</span>
+                  <span class="text-xs text-red-500">*</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Número do Lote</label>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Número do Lote *</label>
                     <input type="text" id="lote1Numero" placeholder="Ex: LOTE001" class="w-full border-2 rounded-lg p-2 font-mono text-sm">
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Quantidade</label>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Quantidade *</label>
                     <input type="number" id="lote1Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm">
                   </div>
                   <div>
@@ -289,62 +234,44 @@
                 </div>
               </div>
               
-              <!-- Lote 2 -->
-              <div class="lote-input-group mb-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <i class="fas fa-tag text-green-600"></i>
-                  <span class="font-bold text-green-800">Lote 2 (opcional)</span>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Número do Lote</label>
-                    <input type="text" id="lote2Numero" placeholder="Ex: LOTE002" class="w-full border-2 rounded-lg p-2 font-mono text-sm">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Quantidade</label>
-                    <input type="number" id="lote2Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Preço de Compra (R$)</label>
-                    <input type="number" id="lote2PrecoCompra" step="0.01" class="w-full border-2 rounded-lg p-2 text-sm">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Data de Validade</label>
-                    <input type="date" id="lote2Validade" class="w-full border-2 rounded-lg p-2 text-sm">
-                  </div>
-                  <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Fornecedor</label>
-                    <input type="text" id="lote2Fornecedor" placeholder="Nome do fornecedor" class="w-full border-2 rounded-lg p-2 text-sm">
-                  </div>
-                </div>
+              <!-- Botão para mostrar lotes adicionais -->
+              <div class="text-center mb-3">
+                <button id="btnToggleLotesAdicionais" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
+                  <i class="fas fa-plus-circle"></i> Adicionar mais lotes (até 3)
+                </button>
               </div>
               
-              <!-- Lote 3 -->
-              <div class="lote-input-group">
-                <div class="flex items-center gap-2 mb-2">
-                  <i class="fas fa-tag text-purple-600"></i>
-                  <span class="font-bold text-purple-800">Lote 3 (opcional)</span>
+              <!-- Container colapsável para lotes 2 e 3 -->
+              <div id="lotesAdicionais" class="hidden-section">
+                <!-- Lote 2 -->
+                <div class="lote-input-group mb-4">
+                  <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-tag text-green-600"></i>
+                    <span class="font-bold text-green-800">Lote 2</span>
+                    <span class="text-xs text-gray-400">(opcional)</span>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div><input type="text" id="lote2Numero" placeholder="Número do Lote" class="w-full border-2 rounded-lg p-2 font-mono text-sm"></div>
+                    <div><input type="number" id="lote2Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm"></div>
+                    <div><input type="number" id="lote2PrecoCompra" step="0.01" placeholder="Preço de Compra" class="w-full border-2 rounded-lg p-2 text-sm"></div>
+                    <div><input type="date" id="lote2Validade" class="w-full border-2 rounded-lg p-2 text-sm"></div>
+                    <div class="md:col-span-2"><input type="text" id="lote2Fornecedor" placeholder="Fornecedor" class="w-full border-2 rounded-lg p-2 text-sm"></div>
+                  </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Número do Lote</label>
-                    <input type="text" id="lote3Numero" placeholder="Ex: LOTE003" class="w-full border-2 rounded-lg p-2 font-mono text-sm">
+                
+                <!-- Lote 3 -->
+                <div class="lote-input-group">
+                  <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-tag text-purple-600"></i>
+                    <span class="font-bold text-purple-800">Lote 3</span>
+                    <span class="text-xs text-gray-400">(opcional)</span>
                   </div>
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Quantidade</label>
-                    <input type="number" id="lote3Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Preço de Compra (R$)</label>
-                    <input type="number" id="lote3PrecoCompra" step="0.01" class="w-full border-2 rounded-lg p-2 text-sm">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Data de Validade</label>
-                    <input type="date" id="lote3Validade" class="w-full border-2 rounded-lg p-2 text-sm">
-                  </div>
-                  <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Fornecedor</label>
-                    <input type="text" id="lote3Fornecedor" placeholder="Nome do fornecedor" class="w-full border-2 rounded-lg p-2 text-sm">
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div><input type="text" id="lote3Numero" placeholder="Número do Lote" class="w-full border-2 rounded-lg p-2 font-mono text-sm"></div>
+                    <div><input type="number" id="lote3Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm"></div>
+                    <div><input type="number" id="lote3PrecoCompra" step="0.01" placeholder="Preço de Compra" class="w-full border-2 rounded-lg p-2 text-sm"></div>
+                    <div><input type="date" id="lote3Validade" class="w-full border-2 rounded-lg p-2 text-sm"></div>
+                    <div class="md:col-span-2"><input type="text" id="lote3Fornecedor" placeholder="Fornecedor" class="w-full border-2 rounded-lg p-2 text-sm"></div>
                   </div>
                 </div>
               </div>
@@ -418,12 +345,12 @@
               <div class="stat-card text-white p-4 rounded-xl">
                 <p class="text-sm opacity-90">Faturamento Total</p>
                 <p class="text-2xl font-bold" id="metricFaturamento">R$ 0</p>
-                <p class="text-xs opacity-75 mt-1" id="metricTicketMedio">Ticket Médio: R$ 0</p>
+                <p class="text-xs opacity-75 mt-1" id="metricTicketMedio">Ticket Médio: R$ 0,00</p>
               </div>
               <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                 <p class="text-sm opacity-90">Lucro Total</p>
                 <p class="text-2xl font-bold" id="metricLucro">R$ 0</p>
-                <p class="text-xs opacity-75 mt-1" id="metricLucroMedio">Lucro Médio: R$ 0</p>
+                <p class="text-xs opacity-75 mt-1" id="metricLucroMedio">Lucro Médio: R$ 0,00</p>
               </div>
               <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                 <p class="text-sm opacity-90">Margem Média</p>
@@ -499,11 +426,15 @@
               <h3 class="text-xl font-bold flex items-center gap-2">
                 <i class="fas fa-history text-gray-600"></i> Histórico de Vendas
               </h3>
-              <div class="flex gap-2">
+              <div class="flex gap-2 items-center">
                 <button id="btnFiltroTodas" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-blue-600 text-white transition">Todas</button>
                 <button id="btnFiltroHoje" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-gray-200 hover:bg-gray-300 transition">Hoje</button>
                 <button id="btnFiltroSemana" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-gray-200 hover:bg-gray-300 transition">7 dias</button>
                 <button id="btnFiltroMes" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-gray-200 hover:bg-gray-300 transition">30 dias</button>
+                <!-- Botão de limpar relatórios adicionado -->
+                <button id="btnLimparRelatorios" class="ml-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm transition btn-primary">
+                  <i class="fas fa-trash-alt mr-1"></i>Limpar Histórico
+                </button>
               </div>
             </div>
             
@@ -567,7 +498,6 @@
 
   // ==================== INICIALIZAÇÃO ====================
   function inicializarDados() {
-    // Usuários
     const storedUsuarios = localStorage.getItem('usuarios');
     if (storedUsuarios) {
       usuarios = JSON.parse(storedUsuarios);
@@ -584,7 +514,6 @@
       localStorage.setItem('usuarios', JSON.stringify(usuarios));
     }
     
-    // Produtos
     const storedProdutos = localStorage.getItem('produtos');
     if (storedProdutos) {
       produtos = JSON.parse(storedProdutos);
@@ -599,7 +528,6 @@
       localStorage.setItem('produtos', JSON.stringify(produtos));
     }
     
-    // Lotes de Estoque
     const storedLotes = localStorage.getItem('lotesEstoque');
     if (storedLotes) {
       lotesEstoque = JSON.parse(storedLotes);
@@ -619,7 +547,6 @@
       localStorage.setItem('lotesEstoque', JSON.stringify(lotesEstoque));
     }
     
-    // Vendas
     const storedVendas = localStorage.getItem('vendas');
     vendas = storedVendas ? JSON.parse(storedVendas) : [];
   }
@@ -850,7 +777,7 @@
     }
   }
   
-  // ==================== FUNÇÃO DE BUSCAR PRODUTO POR CÓDIGO ====================
+  // ==================== BUSCAR PRODUTO POR CÓDIGO ====================
   function buscarProduto() {
     const codigo = document.getElementById('codigoBarras').value.trim();
     if (!codigo) {
@@ -865,10 +792,9 @@
       document.getElementById('precoCompra').value = produto.precoCompra || '';
       showToast(`✅ Produto "${produto.nome}" encontrado!`);
       
-      // Buscar lotes existentes para este produto
+      // Preencher lotes existentes
       const lotesProduto = lotesEstoque.filter(l => l.produtoId === produto.id);
       if (lotesProduto.length > 0) {
-        // Preencher os campos de lote com os primeiros lotes encontrados
         lotesProduto.forEach((lote, index) => {
           if (index < 3) {
             const loteNum = index + 1;
@@ -879,95 +805,94 @@
             document.getElementById(`lote${loteNum}Fornecedor`).value = lote.fornecedor || '';
           }
         });
-        
-        showToast(`📦 ${lotesProduto.length} lote(s) encontrado(s) para este produto`);
+        // Mostrar lotes adicionais se houver dados nos lotes 2 ou 3
+        if (lotesProduto.length > 1) {
+          document.getElementById('lotesAdicionais').classList.remove('hidden-section');
+        }
+        showToast(`📦 ${lotesProduto.length} lote(s) encontrado(s)`);
+      } else {
+        // Esconder lotes adicionais e limpar campos
+        document.getElementById('lotesAdicionais').classList.add('hidden-section');
+        for (let i = 1; i <= 3; i++) {
+          document.getElementById(`lote${i}Numero`).value = '';
+          document.getElementById(`lote${i}Quantidade`).value = '0';
+          document.getElementById(`lote${i}PrecoCompra`).value = '';
+          document.getElementById(`lote${i}Validade`).value = '';
+          document.getElementById(`lote${i}Fornecedor`).value = '';
+        }
       }
     } else {
       showToast('Produto não encontrado!', true);
     }
   }
   
-  // ==================== FUNÇÃO DE CADASTRO DE PRODUTO (PRINCIPAL - TOTALMENTE FUNCIONAL) ====================
+  // ==================== CADASTRO DE PRODUTO ====================
   function salvarProdutoComLotes() {
-    // Capturar valores dos campos
     const codigoBarras = document.getElementById('codigoBarras').value.trim();
     const nome = document.getElementById('nome').value.trim();
     const precoVenda = parseFloat(document.getElementById('precoVenda').value);
     const precoCompraPadrao = parseFloat(document.getElementById('precoCompra').value) || 0;
     
-    // Validações
-    if (!codigoBarras) { 
-      showToast('❌ Código de barras é obrigatório!', true); 
-      return; 
+    if (!codigoBarras) { showToast('❌ Código de barras é obrigatório!', true); return; }
+    if (!nome) { showToast('❌ Nome do produto é obrigatório!', true); return; }
+    if (isNaN(precoVenda) || precoVenda <= 0) { showToast('❌ Preço de venda inválido!', true); return; }
+    
+    // Verificar se pelo menos o lote 1 está preenchido (número e quantidade > 0)
+    const lote1Numero = document.getElementById('lote1Numero').value.trim();
+    const lote1Quantidade = parseInt(document.getElementById('lote1Quantidade').value) || 0;
+    if (!lote1Numero || lote1Quantidade <= 0) {
+      showToast('❌ Preencha ao menos o Lote 1 com número e quantidade!', true);
+      return;
     }
-    if (!nome) { 
-      showToast('❌ Nome do produto é obrigatório!', true); 
-      return; 
-    }
-    if (isNaN(precoVenda) || precoVenda <= 0) { 
-      showToast('❌ Preço de venda inválido!', true); 
-      return; 
+    if (!document.getElementById('lote1PrecoCompra').value || parseFloat(document.getElementById('lote1PrecoCompra').value) <= 0) {
+      showToast('❌ Informe o preço de compra do Lote 1!', true);
+      return;
     }
     
-    // Verificar se produto já existe
-    let produtoExistente = produtos.find(p => p.codigoBarras === codigoBarras);
+    if (precoVenda < precoCompraPadrao && precoCompraPadrao > 0) {
+      if (!confirm('⚠️ Preço de venda menor que o preço de compra padrão. Continuar?')) return;
+    }
+    
+    let produtoExistente = produtos.find(p => p.codigoBarras === codigo);
     let produtoId;
     
     if (produtoExistente) {
-      if (!confirm(`⚠️ Produto com código ${codigoBarras} já existe.\n\nDeseja ATUALIZAR os dados e ADICIONAR novos lotes?`)) {
-        return;
-      }
-      // Atualizar produto existente
+      if (!confirm(`⚠️ Produto "${codigo}" já existe. Deseja ATUALIZAR e ADICIONAR lotes?`)) return;
       produtoExistente.nome = nome;
       produtoExistente.precoVenda = precoVenda;
       produtoExistente.precoCompra = precoCompraPadrao;
       produtoId = produtoExistente.id;
-      showToast(`✏️ Produto "${nome}" atualizado com sucesso!`, false);
+      showToast(`✏️ Produto "${nome}" atualizado!`);
     } else {
-      // Verificar alerta de prejuízo
-      if (precoVenda < precoCompraPadrao) {
-        if (!confirm('⚠️ Atenção: Preço de venda está menor que o preço de compra! Isso gerará prejuízo. Deseja continuar?')) {
-          return;
-        }
-      }
-      
-      // Criar novo produto
       const novoProduto = {
         id: Date.now(),
         nome: nome,
-        codigoBarras: codigoBarras,
+        codigoBarras: codigo,
         precoVenda: precoVenda,
         precoCompra: precoCompraPadrao
       };
       produtos.push(novoProduto);
       produtoId = novoProduto.id;
-      showToast(`✅ Novo produto "${nome}" cadastrado!`, false);
+      showToast(`✅ Produto "${nome}" cadastrado!`);
     }
     
-    // Adicionar lotes
     let lotesAdicionados = 0;
     for (let i = 1; i <= 3; i++) {
       const quantidade = parseInt(document.getElementById(`lote${i}Quantidade`).value) || 0;
       const numero = document.getElementById(`lote${i}Numero`).value.trim();
       
-      // Só adiciona lote se tiver número e quantidade > 0
       if (numero && quantidade > 0) {
         const precoCompra = parseFloat(document.getElementById(`lote${i}PrecoCompra`).value) || precoCompraPadrao;
         const validade = document.getElementById(`lote${i}Validade`).value;
         const fornecedor = document.getElementById(`lote${i}Fornecedor`).value.trim();
         
-        // Verificar se lote já existe para evitar duplicação
         const loteExistente = lotesEstoque.find(l => l.produtoId === produtoId && l.numeroLote === numero);
-        
         if (loteExistente) {
-          // Atualizar lote existente
           loteExistente.quantidade += quantidade;
           loteExistente.precoCompra = precoCompra;
           loteExistente.dataValidade = validade || null;
           loteExistente.fornecedor = fornecedor || 'Não informado';
-          lotesAdicionados++;
         } else {
-          // Criar novo lote
           lotesEstoque.push({
             id: Date.now() + i,
             produtoId: produtoId,
@@ -978,36 +903,23 @@
             fornecedor: fornecedor || 'Não informado',
             dataEntrada: new Date().toISOString()
           });
-          lotesAdicionados++;
         }
+        lotesAdicionados++;
       }
     }
     
-    // Salvar no localStorage
     persistData();
-    
-    // Limpar campos do formulário
     limparCamposProduto();
-    
-    // Atualizar todas as interfaces
     renderizarListaProdutos();
     renderizarEstoque();
     carregarSelectProdutos();
     renderizarLotesDoProduto();
     
-    // Mensagem de sucesso
-    if (lotesAdicionados > 0) {
-      showToast(`🎉 Produto salvo com ${lotesAdicionados} lote(s) adicionado(s) ao estoque!`);
-    } else {
-      showToast(`📦 Produto "${nome}" salvo sem lotes!`);
-    }
+    showToast(`🎉 Produto salvo com ${lotesAdicionados} lote(s)!`);
   }
   
   function limparCamposProduto() {
-    ['codigoBarras', 'nome', 'precoVenda', 'precoCompra'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    
+    ['codigoBarras', 'nome', 'precoVenda', 'precoCompra'].forEach(id => document.getElementById(id).value = '');
     for (let i = 1; i <= 3; i++) {
       document.getElementById(`lote${i}Numero`).value = '';
       document.getElementById(`lote${i}Quantidade`).value = '0';
@@ -1015,17 +927,17 @@
       document.getElementById(`lote${i}Validade`).value = '';
       document.getElementById(`lote${i}Fornecedor`).value = '';
     }
+    document.getElementById('lotesAdicionais').classList.add('hidden-section');
   }
   
   function finalizarVenda() {
     if (carrinho.length === 0) {
-      showToast('Carrinho vazio! Adicione produtos antes de finalizar.', true);
+      showToast('Carrinho vazio!', true);
       return;
     }
     
     const itensVendidos = [];
-    let lucroTotalVenda = 0;
-    let totalVenda = 0;
+    let lucroTotalVenda = 0, totalVenda = 0;
     
     try {
       for (let item of carrinho) {
@@ -1072,41 +984,25 @@
   
   // ==================== RELATÓRIOS ====================
   
-  // Filtro de vendas
   function filtrarVendas(filtro) {
     const agora = new Date();
     const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
     
-    let vendasFiltradas = [...vendas];
-    
     switch(filtro) {
       case 'hoje':
-        vendasFiltradas = vendas.filter(v => {
-          const dataVenda = new Date(v.data);
-          return dataVenda >= hoje;
-        });
-        break;
-      case 'semana':
+        return vendas.filter(v => new Date(v.data) >= hoje);
+      case 'semana': {
         const semanaAtras = new Date(hoje);
         semanaAtras.setDate(hoje.getDate() - 7);
-        vendasFiltradas = vendas.filter(v => {
-          const dataVenda = new Date(v.data);
-          return dataVenda >= semanaAtras;
-        });
-        break;
-      case 'mes':
+        return vendas.filter(v => new Date(v.data) >= semanaAtras);
+      }
+      case 'mes': {
         const mesAtras = new Date(hoje);
         mesAtras.setDate(hoje.getDate() - 30);
-        vendasFiltradas = vendas.filter(v => {
-          const dataVenda = new Date(v.data);
-          return dataVenda >= mesAtras;
-        });
-        break;
-      default: // todas
-        break;
+        return vendas.filter(v => new Date(v.data) >= mesAtras);
+      }
+      default: return [...vendas];
     }
-    
-    return vendasFiltradas;
   }
   
   function calcularMetricas(vendasFiltradas) {
@@ -1117,322 +1013,185 @@
     const ticketMedio = totalVendas > 0 ? totalFaturamento / totalVendas : 0;
     const lucroMedio = totalVendas > 0 ? totalLucro / totalVendas : 0;
     
-    let totalItens = 0;
-    let totalProdutosVendidos = 0;
-    vendasFiltradas.forEach(v => {
-      v.itens.forEach(i => {
-        totalItens++;
-        totalProdutosVendidos += i.quantidade;
-      });
-    });
-    
-    const itensPorVenda = totalVendas > 0 ? (totalItens / totalVendas).toFixed(1) : 0;
+    let totalItens = 0, totalProdutosVendidos = 0;
+    vendasFiltradas.forEach(v => v.itens.forEach(i => {
+      totalItens++;
+      totalProdutosVendidos += i.quantidade;
+    }));
     
     return {
-      totalFaturamento,
-      totalLucro,
-      totalVendas,
-      margem,
-      ticketMedio,
-      lucroMedio,
-      totalProdutosVendidos,
-      itensPorVenda
+      totalFaturamento, totalLucro, totalVendas, margem,
+      ticketMedio, lucroMedio, totalProdutosVendidos,
+      itensPorVenda: totalVendas > 0 ? (totalItens / totalVendas).toFixed(1) : 0
     };
   }
   
   function atualizarMetricas(vendasFiltradas) {
-    const metricas = calcularMetricas(vendasFiltradas);
-    
-    document.getElementById('metricFaturamento').innerText = formatCurrency(metricas.totalFaturamento);
-    document.getElementById('metricTicketMedio').innerText = `Ticket Médio: ${formatCurrency(metricas.ticketMedio)}`;
-    
-    document.getElementById('metricLucro').innerText = formatCurrency(metricas.totalLucro);
-    document.getElementById('metricLucroMedio').innerText = `Lucro Médio: ${formatCurrency(metricas.lucroMedio)}`;
-    
-    document.getElementById('metricMargem').innerText = `${metricas.margem.toFixed(1)}%`;
-    document.getElementById('metricProdutosVendidos').innerText = `Produtos Vendidos: ${metricas.totalProdutosVendidos}`;
-    
-    document.getElementById('metricVendas').innerText = metricas.totalVendas;
-    document.getElementById('metricItensPorVenda').innerText = `Itens/Venda: ${metricas.itensPorVenda}`;
+    const m = calcularMetricas(vendasFiltradas);
+    document.getElementById('metricFaturamento').innerText = formatCurrency(m.totalFaturamento);
+    document.getElementById('metricTicketMedio').innerText = `Ticket Médio: ${formatCurrency(m.ticketMedio)}`;
+    document.getElementById('metricLucro').innerText = formatCurrency(m.totalLucro);
+    document.getElementById('metricLucroMedio').innerText = `Lucro Médio: ${formatCurrency(m.lucroMedio)}`;
+    document.getElementById('metricMargem').innerText = `${m.margem.toFixed(1)}%`;
+    document.getElementById('metricProdutosVendidos').innerText = `Produtos Vendidos: ${m.totalProdutosVendidos}`;
+    document.getElementById('metricVendas').innerText = m.totalVendas;
+    document.getElementById('metricItensPorVenda').innerText = `Itens/Venda: ${m.itensPorVenda}`;
   }
   
   function atualizarGraficos(vendasFiltradas) {
-    // Gráfico de Vendas Diárias
-    const ctxVendasDiarias = document.getElementById('graficoVendasDiarias')?.getContext('2d');
-    if (ctxVendasDiarias) {
+    const ctxV = document.getElementById('graficoVendasDiarias')?.getContext('2d');
+    if (ctxV) {
       if (graficoVendasDiarias) graficoVendasDiarias.destroy();
-      
-      // Agrupar vendas por data
-      const vendasPorData = new Map();
+      const porData = new Map();
       vendasFiltradas.forEach(v => {
         const data = new Date(v.data).toLocaleDateString('pt-BR');
-        if (!vendasPorData.has(data)) {
-          vendasPorData.set(data, { faturamento: 0, lucro: 0, quantidade: 0 });
-        }
-        const item = vendasPorData.get(data);
-        item.faturamento += v.total;
-        item.lucro += v.lucro;
-        item.quantidade++;
+        if (!porData.has(data)) porData.set(data, { faturamento: 0, lucro: 0 });
+        const d = porData.get(data);
+        d.faturamento += v.total;
+        d.lucro += v.lucro;
       });
-      
-      const datasOrdenadas = Array.from(vendasPorData.keys()).sort((a, b) => {
-        return new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-'));
-      }).slice(-15);
-      
-      graficoVendasDiarias = new Chart(ctxVendasDiarias, {
+      const datas = Array.from(porData.keys()).sort((a,b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-'))).slice(-15);
+      graficoVendasDiarias = new Chart(ctxV, {
         type: 'line',
         data: {
-          labels: datasOrdenadas,
+          labels: datas,
           datasets: [
-            { 
-              label: 'Faturamento (R$)', 
-              data: datasOrdenadas.map(d => vendasPorData.get(d).faturamento), 
-              borderColor: '#3b82f6',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            { 
-              label: 'Lucro (R$)', 
-              data: datasOrdenadas.map(d => vendasPorData.get(d).lucro), 
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              fill: true,
-              tension: 0.4
-            }
+            { label: 'Faturamento (R$)', data: datas.map(d => porData.get(d).faturamento), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 },
+            { label: 'Lucro (R$)', data: datas.map(d => porData.get(d).lucro), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 }
           ]
         },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'top' } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
       });
     }
     
-    // Gráfico de Faturamento vs Lucro
-    const ctxFaturamentoLucro = document.getElementById('graficoFaturamentoLucro')?.getContext('2d');
-    if (ctxFaturamentoLucro) {
+    const ctxF = document.getElementById('graficoFaturamentoLucro')?.getContext('2d');
+    if (ctxF) {
       if (graficoFaturamentoLucro) graficoFaturamentoLucro.destroy();
-      
-      const ultimasVendas = vendasFiltradas.slice(0, 10).reverse();
-      
-      graficoFaturamentoLucro = new Chart(ctxFaturamentoLucro, {
+      const ultimas = vendasFiltradas.slice(0, 10).reverse();
+      graficoFaturamentoLucro = new Chart(ctxF, {
         type: 'bar',
         data: {
-          labels: ultimasVendas.map((_, i) => `Venda ${i+1}`),
+          labels: ultimas.map((_,i) => `Venda ${i+1}`),
           datasets: [
-            { label: 'Faturamento (R$)', data: ultimasVendas.map(v => v.total), backgroundColor: 'rgba(59, 130, 246, 0.7)', borderColor: '#3b82f6', borderWidth: 1 },
-            { label: 'Lucro (R$)', data: ultimasVendas.map(v => v.lucro), backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: '#10b981', borderWidth: 1 }
+            { label: 'Faturamento (R$)', data: ultimas.map(v => v.total), backgroundColor: 'rgba(59,130,246,0.7)' },
+            { label: 'Lucro (R$)', data: ultimas.map(v => v.lucro), backgroundColor: 'rgba(16,185,129,0.7)' }
           ]
         },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'top' } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
       });
     }
   }
   
   function calcularRankingProdutos() {
-    const vendasPorProduto = new Map();
-    
+    const mapa = new Map();
     vendas.forEach(venda => {
       venda.itens.forEach(item => {
-        if (!vendasPorProduto.has(item.id)) {
-          vendasPorProduto.set(item.id, {
-            id: item.id,
-            nome: item.nome,
-            codigoBarras: item.codigoBarras,
-            precoVenda: item.precoVenda,
-            quantidadeTotal: 0,
-            faturamentoTotal: 0,
-            lucroTotal: 0,
-            vezesVendido: 0
+        if (!mapa.has(item.id)) {
+          mapa.set(item.id, {
+            id: item.id, nome: item.nome, codigoBarras: item.codigoBarras,
+            precoVenda: item.precoVenda, quantidadeTotal: 0, faturamentoTotal: 0,
+            lucroTotal: 0, vezesVendido: 0
           });
         }
-        const prod = vendasPorProduto.get(item.id);
-        prod.quantidadeTotal += item.quantidade;
-        prod.faturamentoTotal += item.precoVenda * item.quantidade;
-        prod.lucroTotal += (item.precoVenda - item.precoCompraMedio) * item.quantidade;
-        prod.vezesVendido++;
+        const p = mapa.get(item.id);
+        p.quantidadeTotal += item.quantidade;
+        p.faturamentoTotal += item.precoVenda * item.quantidade;
+        p.lucroTotal += (item.precoVenda - item.precoCompraMedio) * item.quantidade;
+        p.vezesVendido++;
       });
     });
-    
-    const ranking = Array.from(vendasPorProduto.values());
-    ranking.sort((a, b) => b.quantidadeTotal - a.quantidadeTotal);
-    return ranking.slice(0, 20);
+    return Array.from(mapa.values()).sort((a,b) => b.quantidadeTotal - a.quantidadeTotal).slice(0,20);
   }
   
   function renderizarRanking() {
     const ranking = calcularRankingProdutos();
     const container = document.getElementById('rankingProdutos');
-    const resumoContainer = document.getElementById('rankingResumo');
+    const resumo = document.getElementById('rankingResumo');
     if (!container) return;
     
     if (ranking.length === 0) {
-      container.innerHTML = `
-        <tr>
-          <td colspan="9" class="text-center p-8">
-            <i class="fas fa-chart-bar text-4xl text-gray-300 mb-3 block"></i>
-            <p class="text-gray-500 text-lg">Nenhuma venda registrada ainda</p>
-            <p class="text-sm text-gray-400 mt-1">Os 20 produtos mais vendidos aparecerão aqui</p>
-          </td>
-        </tr>
-      `;
-      if (resumoContainer) resumoContainer.innerHTML = '';
+      container.innerHTML = `<tr><td colspan="9" class="text-center p-8"><i class="fas fa-chart-bar text-4xl text-gray-300 mb-3 block"></i><p class="text-gray-500">Nenhuma venda ainda</p></td></tr>`;
+      if (resumo) resumo.innerHTML = '';
       return;
     }
     
-    const maxQuantidade = ranking[0].quantidadeTotal;
-    const totalFaturamentoGeral = ranking.reduce((sum, p) => sum + p.faturamentoTotal, 0);
-    const totalLucroGeral = ranking.reduce((sum, p) => sum + p.lucroTotal, 0);
-    const totalUnidades = ranking.reduce((sum, p) => sum + p.quantidadeTotal, 0);
-    
-    container.innerHTML = ranking.map((prod, index) => {
-      const posicao = index + 1;
-      let rowClass = '';
-      let posicaoBadge = '';
-      
-      if (posicao === 1) {
-        rowClass = 'bg-yellow-50';
-        posicaoBadge = '<span class="text-2xl">🥇</span>';
-      } else if (posicao === 2) {
-        rowClass = 'bg-gray-50';
-        posicaoBadge = '<span class="text-2xl">🥈</span>';
-      } else if (posicao === 3) {
-        rowClass = 'bg-orange-50';
-        posicaoBadge = '<span class="text-2xl">🥉</span>';
-      } else {
-        posicaoBadge = `<span class="text-lg font-bold text-gray-400">${posicao}º</span>`;
-      }
-      
-      const percentual = maxQuantidade > 0 ? (prod.quantidadeTotal / maxQuantidade) * 100 : 0;
-      const margem = prod.faturamentoTotal > 0 ? (prod.lucroTotal / prod.faturamentoTotal) * 100 : 0;
-      
-      return `
-        <tr class="ranking-table-row ${rowClass}">
-          <td class="py-3 px-4 text-center">${posicaoBadge}</td>
-          <td class="py-3 px-4">
-            <div>
-              <p class="font-semibold">${escapeHtml(prod.nome)}</p>
-              <div class="progress-bar mt-1">
-                <div class="progress-fill ${posicao === 1 ? 'bg-yellow-400' : posicao === 2 ? 'bg-gray-400' : posicao === 3 ? 'bg-orange-400' : 'bg-blue-400'}" style="width: ${percentual}%"></div>
-              </div>
-            </div>
-           </td>
-          <td class="py-3 px-4 text-center font-mono text-sm text-gray-600">${escapeHtml(prod.codigoBarras)}</td>
-          <td class="py-3 px-4 text-center">
-            <span class="font-bold text-lg ${posicao <= 3 ? 'text-blue-700' : 'text-gray-700'}">${prod.quantidadeTotal}</span>
-           </td>
-          <td class="py-3 px-4 text-center font-semibold text-blue-600">${formatCurrency(prod.faturamentoTotal)}</td>
-          <td class="py-3 px-4 text-center font-semibold ${prod.lucroTotal >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(prod.lucroTotal)}</td>
-          <td class="py-3 px-4 text-center">
-            <span class="px-2 py-1 rounded-full text-xs font-bold ${margem >= 30 ? 'bg-green-100 text-green-700' : margem >= 15 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">${margem.toFixed(1)}%</span>
-           </td>
-          <td class="py-3 px-4 text-center text-sm">${prod.vezesVendido}x</td>
-          <td class="py-3 px-4 text-center">
-            <span class="text-xs ${percentual >= 80 ? 'text-green-600 font-bold' : percentual >= 50 ? 'text-blue-600' : 'text-gray-500'}">${percentual.toFixed(0)}%</span>
-           </td>
-         </tr>
-      `;
+    const maxQtd = ranking[0].quantidadeTotal;
+    container.innerHTML = ranking.map((prod, idx) => {
+      const pos = idx+1;
+      let badge = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : `${pos}º`;
+      const pct = maxQtd > 0 ? (prod.quantidadeTotal / maxQtd)*100 : 0;
+      const margem = prod.faturamentoTotal > 0 ? (prod.lucroTotal / prod.faturamentoTotal)*100 : 0;
+      const rowBg = pos === 1 ? 'bg-yellow-50' : pos === 2 ? 'bg-gray-50' : pos === 3 ? 'bg-orange-50' : '';
+      return `<tr class="ranking-table-row ${rowBg}">
+        <td class="py-3 px-4 text-center"><span class="text-2xl">${badge}</span></td>
+        <td class="py-3 px-4"><div><p class="font-semibold">${escapeHtml(prod.nome)}</p><div class="progress-bar mt-1"><div class="progress-fill ${pos===1?'bg-yellow-400':pos===2?'bg-gray-400':pos===3?'bg-orange-400':'bg-blue-400'}" style="width:${pct}%"></div></div></div></td>
+        <td class="py-3 px-4 text-center font-mono text-sm">${escapeHtml(prod.codigoBarras)}</td>
+        <td class="py-3 px-4 text-center font-bold text-lg">${prod.quantidadeTotal}</td>
+        <td class="py-3 px-4 text-center font-semibold text-blue-600">${formatCurrency(prod.faturamentoTotal)}</td>
+        <td class="py-3 px-4 text-center font-semibold ${prod.lucroTotal >=0 ? 'text-green-600':'text-red-600'}">${formatCurrency(prod.lucroTotal)}</td>
+        <td class="py-3 px-4 text-center"><span class="px-2 py-1 rounded-full text-xs font-bold ${margem>=30?'bg-green-100 text-green-700':margem>=15?'bg-blue-100 text-blue-700':'bg-gray-100 text-gray-700'}">${margem.toFixed(1)}%</span></td>
+        <td class="py-3 px-4 text-center text-sm">${prod.vezesVendido}x</td>
+        <td class="py-3 px-4 text-center text-xs ${pct>=80?'text-green-600 font-bold':pct>=50?'text-blue-600':'text-gray-500'}">${pct.toFixed(0)}%</td>
+      </tr>`;
     }).join('');
     
-    if (resumoContainer) {
-      const margemMediaGeral = totalFaturamentoGeral > 0 ? (totalLucroGeral / totalFaturamentoGeral) * 100 : 0;
-      
-      resumoContainer.innerHTML = `
+    if (resumo) {
+      const fatTotal = ranking.reduce((s,p)=>s+p.faturamentoTotal,0);
+      const lucTotal = ranking.reduce((s,p)=>s+p.lucroTotal,0);
+      const margemGeral = fatTotal > 0 ? (lucTotal/fatTotal)*100 : 0;
+      const unidades = ranking.reduce((s,p)=>s+p.quantidadeTotal,0);
+      resumo.innerHTML = `
         <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-xl">
-          <p class="text-sm opacity-90">Top 20 - Faturamento</p>
-          <p class="text-2xl font-bold">${formatCurrency(totalFaturamentoGeral)}</p>
+          <p class="text-sm opacity-90">Faturamento Total</p>
+          <p class="text-2xl font-bold">${formatCurrency(fatTotal)}</p>
         </div>
         <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-xl">
-          <p class="text-sm opacity-90">Top 20 - Lucro</p>
-          <p class="text-2xl font-bold">${formatCurrency(totalLucroGeral)}</p>
+          <p class="text-sm opacity-90">Lucro Total</p>
+          <p class="text-2xl font-bold">${formatCurrency(lucTotal)}</p>
         </div>
         <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-xl">
-          <p class="text-sm opacity-90">Top 20 - Margem Média</p>
-          <p class="text-2xl font-bold">${margemMediaGeral.toFixed(1)}%</p>
-          <p class="text-xs opacity-75">${totalUnidades} unidades vendidas</p>
-        </div>
-      `;
+          <p class="text-sm opacity-90">Margem Média</p>
+          <p class="text-2xl font-bold">${margemGeral.toFixed(1)}%</p>
+          <p class="text-xs opacity-75">${unidades} unidades vendidas</p>
+        </div>`;
     }
   }
   
   function renderizarHistoricoVendas() {
     const container = document.getElementById('listaVendasRelatorio');
     if (!container) return;
-    
     const vendasFiltradas = filtrarVendas(filtroAtualVendas);
     const totalPaginas = Math.ceil(vendasFiltradas.length / itensPorPagina);
-    
     if (paginaAtualVendas > totalPaginas) paginaAtualVendas = Math.max(1, totalPaginas);
-    
-    const inicio = (paginaAtualVendas - 1) * itensPorPagina;
+    const inicio = (paginaAtualVendas-1)*itensPorPagina;
     const fim = inicio + itensPorPagina;
-    const vendasPagina = vendasFiltradas.slice(inicio, fim);
+    const pagina = vendasFiltradas.slice(inicio, fim);
     
     if (vendasFiltradas.length === 0) {
-      container.innerHTML = `
-        <div class="text-center p-8 bg-gray-50 rounded-xl">
-          <i class="fas fa-receipt text-4xl text-gray-300 mb-3"></i>
-          <p class="text-gray-500">Nenhuma venda encontrada</p>
-        </div>
-      `;
+      container.innerHTML = '<div class="text-center p-8 bg-gray-50 rounded-xl"><i class="fas fa-receipt text-4xl text-gray-300 mb-3"></i><p class="text-gray-500">Nenhuma venda encontrada</p></div>';
     } else {
-      container.innerHTML = vendasPagina.map((venda, index) => {
-        const dataFormatada = formatDate(venda.data);
-        const quantidadeItens = venda.itens.reduce((sum, i) => sum + i.quantidade, 0);
-        
-        return `
-          <div class="venda-detalhe bg-white rounded-xl p-4 shadow-sm">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <div class="flex items-center gap-2">
-                  <i class="fas fa-shopping-cart text-blue-500"></i>
-                  <span class="font-bold text-lg">Venda #${vendasFiltradas.length - (inicio + index)}</span>
-                </div>
-                <p class="text-sm text-gray-500 mt-1">
-                  <i class="far fa-calendar-alt mr-1"></i>${dataFormatada}
-                  <span class="mx-2">|</span>
-                  <i class="far fa-user mr-1"></i>${escapeHtml(venda.usuario)}
-                </p>
-              </div>
-              <div class="text-right">
-                <p class="text-2xl font-bold text-green-600">${formatCurrency(venda.total)}</p>
-                <p class="text-sm ${venda.lucro >= 0 ? 'text-green-500' : 'text-red-500'}">
-                  Lucro: ${formatCurrency(venda.lucro)}
-                  <span class="text-xs ml-1">(${((venda.lucro/venda.total)*100).toFixed(1)}%)</span>
-                </p>
-              </div>
+      container.innerHTML = pagina.map((venda, i) => {
+        const qtdItens = venda.itens.reduce((s,it)=>s+it.quantidade,0);
+        return `<div class="venda-detalhe bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="flex items-center gap-2"><i class="fas fa-shopping-cart text-blue-500"></i><span class="font-bold text-lg">Venda #${vendasFiltradas.length - (inicio+i)}</span></div>
+              <p class="text-sm text-gray-500 mt-1"><i class="far fa-calendar-alt mr-1"></i>${formatDate(venda.data)}<span class="mx-2">|</span><i class="far fa-user mr-1"></i>${escapeHtml(venda.usuario)}</p>
             </div>
-            
-            <div class="bg-gray-50 rounded-lg p-3">
-              <p class="text-xs font-semibold text-gray-500 mb-2">ITENS DA VENDA (${quantidadeItens} unidades)</p>
-              <div class="space-y-1">
-                ${venda.itens.map(item => `
-                  <div class="flex justify-between text-sm">
-                    <span>
-                      <span class="font-medium">${escapeHtml(item.nome)}</span>
-                      <span class="text-gray-400 text-xs ml-1">x${item.quantidade}</span>
-                    </span>
-                    <span class="text-gray-600">${formatCurrency(item.precoVenda * item.quantidade)}</span>
-                  </div>
-                `).join('')}
-              </div>
+            <div class="text-right">
+              <p class="text-2xl font-bold text-green-600">${formatCurrency(venda.total)}</p>
+              <p class="text-sm ${venda.lucro>=0?'text-green-500':'text-red-500'}">Lucro: ${formatCurrency(venda.lucro)} (${((venda.lucro/venda.total)*100).toFixed(1)}%)</p>
             </div>
           </div>
-        `;
+          <div class="bg-gray-50 rounded-lg p-3">
+            <p class="text-xs font-semibold text-gray-500 mb-2">ITENS (${qtdItens} unidades)</p>
+            ${venda.itens.map(it => `<div class="flex justify-between text-sm"><span><span class="font-medium">${escapeHtml(it.nome)}</span><span class="text-gray-400 text-xs ml-1">x${it.quantidade}</span></span><span class="text-gray-600">${formatCurrency(it.precoVenda*it.quantidade)}</span></div>`).join('')}
+          </div>
+        </div>`;
       }).join('');
     }
     
-    // Atualizar paginação
-    document.getElementById('infoPaginacao').innerText = 
-      vendasFiltradas.length > 0 ? 
-      `Mostrando ${inicio + 1}-${Math.min(fim, vendasFiltradas.length)} de ${vendasFiltradas.length} vendas` :
-      'Nenhuma venda';
-    
+    document.getElementById('infoPaginacao').innerText = vendasFiltradas.length > 0 ? `Mostrando ${inicio+1}-${Math.min(fim, vendasFiltradas.length)} de ${vendasFiltradas.length} vendas` : 'Nenhuma venda';
     document.getElementById('btnPaginaAnterior').disabled = paginaAtualVendas <= 1;
     document.getElementById('btnPaginaProxima').disabled = paginaAtualVendas >= totalPaginas || totalPaginas === 0;
   }
@@ -1440,18 +1199,9 @@
   function mudarFiltroVendas(filtro) {
     filtroAtualVendas = filtro;
     paginaAtualVendas = 1;
-    
-    document.querySelectorAll('.filtro-venda').forEach(btn => {
-      btn.classList.remove('bg-blue-600', 'text-white');
-      btn.classList.add('bg-gray-200');
-    });
-    
-    const btnAtivo = document.getElementById(`btnFiltro${filtro.charAt(0).toUpperCase() + filtro.slice(1)}`);
-    if (btnAtivo) {
-      btnAtivo.classList.remove('bg-gray-200');
-      btnAtivo.classList.add('bg-blue-600', 'text-white');
-    }
-    
+    document.querySelectorAll('.filtro-venda').forEach(b => { b.classList.remove('bg-blue-600','text-white'); b.classList.add('bg-gray-200'); });
+    const btnAtivo = document.getElementById(`btnFiltro${filtro.charAt(0).toUpperCase()+filtro.slice(1)}`);
+    if (btnAtivo) { btnAtivo.classList.remove('bg-gray-200'); btnAtivo.classList.add('bg-blue-600','text-white'); }
     const vendasFiltradas = filtrarVendas(filtro);
     atualizarMetricas(vendasFiltradas);
     atualizarGraficos(vendasFiltradas);
@@ -1460,28 +1210,38 @@
   
   function exportarRanking() {
     const ranking = calcularRankingProdutos();
-    if (ranking.length === 0) {
-      showToast('Nenhum dado para exportar!', true);
+    if (ranking.length === 0) { showToast('Nenhum dado para exportar!', true); return; }
+    let csv = 'Posição,Produto,Código,Qtd Vendida,Faturamento,Lucro,Margem,Vezes\n';
+    ranking.forEach((p,i)=>{
+      const margem = p.faturamentoTotal>0?(p.lucroTotal/p.faturamentoTotal)*100:0;
+      csv += `${i+1},"${p.nome}","${p.codigoBarras}",${p.quantidadeTotal},${p.faturamentoTotal.toFixed(2)},${p.lucroTotal.toFixed(2)},${margem.toFixed(1)}%,${p.vezesVendido}\n`;
+    });
+    const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `ranking_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    showToast('✅ Ranking exportado!');
+  }
+  
+  // NOVA FUNÇÃO: limpar relatórios (histórico de vendas)
+  function limparRelatorios() {
+    if (vendas.length === 0) {
+      showToast('Nenhuma venda para limpar.', true);
       return;
     }
+    if (!confirm('⚠️ Tem certeza que deseja APAGAR TODAS as vendas registradas? Esta ação não pode ser desfeita.')) return;
     
-    let csv = 'Posição,Produto,Código,Qtd Vendida,Faturamento,Lucro,Margem,Vezes Vendido\n';
-    ranking.forEach((prod, index) => {
-      const margem = prod.faturamentoTotal > 0 ? (prod.lucroTotal / prod.faturamentoTotal) * 100 : 0;
-      csv += `${index + 1},"${prod.nome}","${prod.codigoBarras}",${prod.quantidadeTotal},${prod.faturamentoTotal.toFixed(2)},${prod.lucroTotal.toFixed(2)},${margem.toFixed(1)}%,${prod.vezesVendido}\n`;
-    });
+    vendas = [];
+    paginaAtualVendas = 1;
+    filtroAtualVendas = 'todas'; // reseta filtro para todas
+    document.querySelectorAll('.filtro-venda').forEach(b => { b.classList.remove('bg-blue-600','text-white'); b.classList.add('bg-gray-200'); });
+    document.getElementById('btnFiltroTodas')?.classList.remove('bg-gray-200');
+    document.getElementById('btnFiltroTodas')?.classList.add('bg-blue-600','text-white');
     
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `ranking_produtos_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    showToast('✅ Ranking exportado com sucesso!');
+    persistData();
+    atualizarRelatorios();
+    showToast('✅ Histórico de vendas limpo com sucesso!');
   }
   
   function atualizarRelatorios() {
@@ -1495,24 +1255,20 @@
   // ==================== NAVEGAÇÃO E ABAS ====================
   function mostrarPainelProduto(painel) {
     document.querySelectorAll('.painel-produto').forEach(p => p.classList.add('hidden-section'));
-    document.querySelectorAll('.tab-produto').forEach(t => {
-      t.classList.remove('bg-blue-600', 'text-white');
-      t.classList.add('bg-gray-200');
-    });
-    
+    document.querySelectorAll('.tab-produto').forEach(t => { t.classList.remove('bg-blue-600','text-white'); t.classList.add('bg-gray-200'); });
     if (painel === 'cadastro') {
       document.getElementById('painelCadastroProduto').classList.remove('hidden-section');
       document.getElementById('tabCadastroProduto').classList.remove('bg-gray-200');
-      document.getElementById('tabCadastroProduto').classList.add('bg-blue-600', 'text-white');
+      document.getElementById('tabCadastroProduto').classList.add('bg-blue-600','text-white');
     } else if (painel === 'listaProdutos') {
       document.getElementById('painelListaProdutos').classList.remove('hidden-section');
       document.getElementById('tabListaProdutos').classList.remove('bg-gray-200');
-      document.getElementById('tabListaProdutos').classList.add('bg-blue-600', 'text-white');
+      document.getElementById('tabListaProdutos').classList.add('bg-blue-600','text-white');
       renderizarListaProdutos();
     } else if (painel === 'gerenciarLotes') {
       document.getElementById('painelGerenciarLotes').classList.remove('hidden-section');
       document.getElementById('tabGerenciarLotes').classList.remove('bg-gray-200');
-      document.getElementById('tabGerenciarLotes').classList.add('bg-blue-600', 'text-white');
+      document.getElementById('tabGerenciarLotes').classList.add('bg-blue-600','text-white');
       renderizarLotesDoProduto();
     }
   }
@@ -1521,15 +1277,11 @@
     document.querySelectorAll('#sistemaPrincipal .section').forEach(s => s.classList.add('hidden-section'));
     const target = document.getElementById(sectionId);
     if (target) target.classList.remove('hidden-section');
-    
-    document.querySelectorAll('#sistemaPrincipal .nav-btn').forEach(btn => btn.classList.remove('nav-btn-active'));
+    document.querySelectorAll('#sistemaPrincipal .nav-btn').forEach(b => b.classList.remove('nav-btn-active'));
     const activeBtn = document.querySelector(`[data-nav="${sectionId}"]`);
     if (activeBtn) activeBtn.classList.add('nav-btn-active');
     
-    if (sectionId === 'produtos') {
-      mostrarPainelProduto('listaProdutos');
-      renderizarListaProdutos();
-    }
+    if (sectionId === 'produtos') mostrarPainelProduto('listaProdutos');
     if (sectionId === 'estoque') renderizarEstoque();
     if (sectionId === 'relatorios') atualizarRelatorios();
     if (sectionId === 'usuarios') renderizarUsuarios();
@@ -1539,180 +1291,108 @@
   // ==================== GERENCIAMENTO DE LOTES ====================
   function carregarSelectProdutos() {
     const select = document.getElementById('selectProdutoLote');
-    if (!select) return;
-    select.innerHTML = produtos.map(prod => `<option value="${prod.id}">${escapeHtml(prod.nome)} - ${prod.codigoBarras}</option>`).join('');
+    if (select) select.innerHTML = produtos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} - ${p.codigoBarras}</option>`).join('');
   }
   
   function renderizarLotesDoProduto() {
     const container = document.getElementById('listaLotesProduto');
     const select = document.getElementById('selectProdutoLote');
     if (!container || !select) return;
-    
     const produtoId = parseInt(select.value);
     const produto = produtos.find(p => p.id === produtoId);
-    if (!produto) {
-      container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Selecione um produto</div>';
-      return;
-    }
-    
-    const lotesDoProduto = lotesEstoque.filter(l => l.produtoId === produtoId);
-    
-    if (lotesDoProduto.length === 0) {
-      container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum lote para este produto. Adicione um novo lote.</div>';
-      return;
-    }
-    
-    container.innerHTML = lotesDoProduto.map(lote => {
+    if (!produto) { container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl">Selecione um produto</div>'; return; }
+    const lotes = lotesEstoque.filter(l => l.produtoId === produtoId);
+    if (lotes.length === 0) { container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl">Nenhum lote para este produto</div>'; return; }
+    container.innerHTML = lotes.map(lote => {
       const status = verificarStatusValidade(lote.dataValidade);
+      const classe = status === 'vencido' ? 'lote-vencido' : status === 'proximo' ? 'lote-proximo' : 'lote-normal';
       const dataFormatada = lote.dataValidade ? new Date(lote.dataValidade).toLocaleDateString('pt-BR') : 'Sem validade';
-      let statusClass = 'lote-normal';
-      
-      if (status === 'vencido') statusClass = 'lote-vencido';
-      else if (status === 'proximo') statusClass = 'lote-proximo';
-      
-      return `
-        <div class="lote-card ${statusClass} bg-white p-4 rounded-xl shadow-sm">
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <div class="flex items-center gap-2">
-                <i class="fas fa-tag text-gray-400"></i>
-                <span class="font-mono text-sm font-bold">${escapeHtml(lote.numeroLote)}</span>
-              </div>
-              <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
-                <div>📦 Quantidade: <span class="font-bold">${lote.quantidade}</span></div>
-                <div>💰 Compra: ${formatCurrency(lote.precoCompra)}</div>
-                <div><i class="fas fa-calendar-alt"></i> Validade: ${dataFormatada}</div>
-                <div><i class="fas fa-truck"></i> Fornecedor: ${escapeHtml(lote.fornecedor)}</div>
-              </div>
-            </div>
-            <button data-remover-lote="${lote.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
+      return `<div class="lote-card ${classe} bg-white p-4 rounded-xl shadow-sm">
+        <div class="flex justify-between"><div class="flex-1">
+          <div class="flex items-center gap-2"><i class="fas fa-tag text-gray-400"></i><span class="font-mono font-bold">${escapeHtml(lote.numeroLote)}</span></div>
+          <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+            <div>📦 Qtd: <b>${lote.quantidade}</b></div><div>💰 Compra: ${formatCurrency(lote.precoCompra)}</div>
+            <div><i class="fas fa-calendar-alt"></i> ${dataFormatada}</div><div><i class="fas fa-truck"></i> ${escapeHtml(lote.fornecedor)}</div>
           </div>
         </div>
-      `;
+        <button data-remover-lote="${lote.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button></div>
+      </div>`;
     }).join('');
-    
     document.querySelectorAll('[data-remover-lote]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-remover-lote'));
-        if (confirm('Remover este lote do estoque?')) {
-          lotesEstoque = lotesEstoque.filter(l => l.id !== id);
+        if (confirm('Remover este lote?')) {
+          lotesEstoque = lotesEstoque.filter(l => l.id !== parseInt(btn.getAttribute('data-remover-lote')));
           persistData();
           renderizarLotesDoProduto();
           renderizarEstoque();
           renderizarListaProdutos();
-          showToast('Lote removido do estoque');
+          showToast('Lote removido');
         }
       });
     });
   }
   
   function adicionarNovoLote() {
-    const select = document.getElementById('selectProdutoLote');
-    const produtoId = parseInt(select.value);
-    const produto = produtos.find(p => p.id === produtoId);
-    
-    if (!produto) {
-      showToast('Selecione um produto primeiro!', true);
-      return;
-    }
-    
-    const form = document.getElementById('formNovoLote');
-    form.classList.toggle('hidden-section');
-    
-    if (!form.classList.contains('hidden-section')) {
-      document.getElementById('novoLotePrecoCompra').value = produto.precoCompra;
-    }
+    document.getElementById('formNovoLote').classList.toggle('hidden-section');
   }
   
   function salvarNovoLote() {
-    const select = document.getElementById('selectProdutoLote');
-    const produtoId = parseInt(select.value);
-    const produto = produtos.find(p => p.id === produtoId);
-    
-    if (!produto) {
-      showToast('Selecione um produto!', true);
-      return;
-    }
-    
-    const numeroLote = document.getElementById('novoLoteNumero').value.trim();
+    const produtoId = parseInt(document.getElementById('selectProdutoLote').value);
+    const numero = document.getElementById('novoLoteNumero').value.trim();
     const quantidade = parseInt(document.getElementById('novoLoteQuantidade').value);
-    const precoCompra = parseFloat(document.getElementById('novoLotePrecoCompra').value);
-    const dataValidade = document.getElementById('novoLoteValidade').value;
-    const fornecedor = document.getElementById('novoLoteFornecedor').value.trim();
-    
-    if (!numeroLote) { showToast('Número do lote é obrigatório!', true); return; }
-    if (!quantidade || quantidade <= 0) { showToast('Quantidade inválida!', true); return; }
-    if (!precoCompra || precoCompra <= 0) { showToast('Preço de compra inválido!', true); return; }
-    
+    const preco = parseFloat(document.getElementById('novoLotePrecoCompra').value);
+    if (!numero || quantidade <= 0 || !preco || preco <= 0) { showToast('Preencha todos os campos do lote!', true); return; }
     lotesEstoque.push({
-      id: Date.now(),
-      produtoId: produtoId,
-      quantidade: quantidade,
-      precoCompra: precoCompra,
-      dataValidade: dataValidade || null,
-      numeroLote: numeroLote,
-      fornecedor: fornecedor || 'Não informado',
+      id: Date.now(), produtoId, quantidade, precoCompra: preco,
+      dataValidade: document.getElementById('novoLoteValidade').value || null,
+      numeroLote: numero, fornecedor: document.getElementById('novoLoteFornecedor').value.trim() || 'Não informado',
       dataEntrada: new Date().toISOString()
     });
-    
     persistData();
     document.getElementById('formNovoLote').classList.add('hidden-section');
-    ['novoLoteNumero', 'novoLoteValidade', 'novoLoteFornecedor'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
+    ['novoLoteNumero','novoLoteValidade','novoLoteFornecedor'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('novoLoteQuantidade').value = '1';
-    
     renderizarLotesDoProduto();
     renderizarEstoque();
     renderizarListaProdutos();
-    showToast(`✅ Lote "${numeroLote}" adicionado ao produto "${produto.nome}"`);
+    showToast('✅ Lote adicionado');
   }
   
   function renderizarListaProdutos() {
     const container = document.getElementById('listaProdutos');
     const filtro = document.getElementById('filtroProdutos')?.value.toLowerCase() || '';
     if (!container) return;
-    
-    let produtosFiltrados = [...produtos];
-    if (filtro) {
-      produtosFiltrados = produtosFiltrados.filter(p => p.nome.toLowerCase().includes(filtro) || p.codigoBarras.includes(filtro));
-    }
-    
-    if (produtosFiltrados.length === 0) {
-      container.innerHTML = '<div class="col-span-full text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum produto cadastrado.</div>';
+    let filtrados = [...produtos];
+    if (filtro) filtrados = filtrados.filter(p => p.nome.toLowerCase().includes(filtro) || p.codigoBarras.includes(filtro));
+    if (filtrados.length === 0) {
+      container.innerHTML = '<div class="col-span-full text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum produto encontrado</div>';
       return;
     }
-    
-    container.innerHTML = produtosFiltrados.map(prod => {
-      const estoqueTotal = getEstoqueTotalProduto(prod.id);
+    container.innerHTML = filtrados.map(prod => {
+      const estoque = getEstoqueTotalProduto(prod.id);
       const margem = prod.precoCompra > 0 ? ((prod.precoVenda - prod.precoCompra) / prod.precoCompra) * 100 : 0;
-      const lotesDoProduto = lotesEstoque.filter(l => l.produtoId === prod.id && l.quantidade > 0);
-      
-      return `
-        <div class="border-2 rounded-xl p-4 bg-white shadow-sm">
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <span class="text-xs font-mono text-gray-500"><i class="fas fa-barcode mr-1"></i>${escapeHtml(prod.codigoBarras)}</span>
-              <h3 class="font-bold text-lg">${escapeHtml(prod.nome)}</h3>
-              <p class="text-blue-600 font-semibold">Venda: ${formatCurrency(prod.precoVenda)}</p>
-              <p class="text-gray-500 text-sm">Compra: ${formatCurrency(prod.precoCompra)}</p>
-              <p class="text-sm mt-1">📦 Estoque: <span class="font-bold ${estoqueTotal <= 0 ? 'text-red-500' : 'text-gray-800'}">${estoqueTotal}</span> un.</p>
-              <p class="text-xs ${margem >= 0 ? 'text-green-600' : 'text-red-600'}">💰 Margem: ${margem.toFixed(1)}%</p>
-              <p class="text-xs text-gray-400 mt-1">🏷️ Lotes ativos: ${lotesDoProduto.length}</p>
-            </div>
-            <div class="flex gap-1">
-              <button data-gerenciar-lotes="${prod.id}" class="text-green-600 hover:text-green-800 p-2"><i class="fas fa-layer-group"></i></button>
-              <button data-remover-produto="${prod.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
-            </div>
-          </div>
+      const lotesAtivos = lotesEstoque.filter(l => l.produtoId === prod.id && l.quantidade > 0).length;
+      return `<div class="border-2 rounded-xl p-4 bg-white shadow-sm">
+        <div class="flex justify-between"><div class="flex-1">
+          <span class="text-xs font-mono text-gray-500"><i class="fas fa-barcode mr-1"></i>${escapeHtml(prod.codigoBarras)}</span>
+          <h3 class="font-bold text-lg">${escapeHtml(prod.nome)}</h3>
+          <p class="text-blue-600 font-semibold">Venda: ${formatCurrency(prod.precoVenda)}</p>
+          <p class="text-gray-500 text-sm">Compra: ${formatCurrency(prod.precoCompra)}</p>
+          <p class="text-sm mt-1">📦 Estoque: <span class="font-bold ${estoque === 0 ? 'text-red-500' : ''}">${estoque}</span> un.</p>
+          <p class="text-xs ${margem >= 0 ? 'text-green-600' : 'text-red-600'}">💰 Margem: ${margem.toFixed(1)}%</p>
+          <p class="text-xs text-gray-400">🏷️ Lotes ativos: ${lotesAtivos}</p>
         </div>
-      `;
+        <div class="flex gap-1">
+          <button data-gerenciar="${prod.id}" class="text-green-600 hover:text-green-800 p-2"><i class="fas fa-layer-group"></i></button>
+          <button data-remover="${prod.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
+        </div></div>
+      </div>`;
     }).join('');
     
-    document.querySelectorAll('[data-remover-produto]').forEach(btn => {
+    document.querySelectorAll('[data-remover]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-remover-produto'));
-        if (confirm('⚠️ Excluir este produto e todos os lotes relacionados?')) {
+        const id = parseInt(btn.getAttribute('data-remover'));
+        if (confirm('Excluir produto e todos os lotes?')) {
           produtos = produtos.filter(p => p.id !== id);
           lotesEstoque = lotesEstoque.filter(l => l.produtoId !== id);
           persistData();
@@ -1720,25 +1400,14 @@
           carregarSelectProdutos();
           renderizarEstoque();
           renderizarLotesDoProduto();
-          showToast('Produto removido com sucesso!');
+          showToast('Produto removido');
         }
       });
     });
-    
-    document.querySelectorAll('[data-gerenciar-lotes]').forEach(btn => {
+    document.querySelectorAll('[data-gerenciar]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-gerenciar-lotes'));
-        const select = document.getElementById('selectProdutoLote');
-        if (select) {
-          for (let i = 0; i < select.options.length; i++) {
-            if (parseInt(select.options[i].value) === id) {
-              select.selectedIndex = i;
-              break;
-            }
-          }
-          mostrarPainelProduto('gerenciarLotes');
-          renderizarLotesDoProduto();
-        }
+        document.getElementById('selectProdutoLote').value = btn.getAttribute('data-gerenciar');
+        mostrarPainelProduto('gerenciarLotes');
       });
     });
   }
@@ -1747,70 +1416,42 @@
     const container = document.getElementById('listaEstoque');
     const filtro = document.getElementById('filtroEstoque')?.value.toLowerCase() || '';
     if (!container) return;
+    let lotesComNome = lotesEstoque.map(l => {
+      const prod = produtos.find(p => p.id === l.produtoId);
+      return { ...l, produtoNome: prod?.nome || '?', produtoCodigo: prod?.codigoBarras || '' };
+    }).filter(l => !filtro || l.produtoNome.toLowerCase().includes(filtro) || l.produtoCodigo.includes(filtro));
     
-    if (lotesEstoque.length === 0) {
+    if (lotesComNome.length === 0) {
       container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum lote em estoque</div>';
       return;
     }
-    
-    const lotesComProduto = lotesEstoque.map(lote => {
-      const produto = produtos.find(p => p.id === lote.produtoId);
-      return { ...lote, produtoNome: produto?.nome || 'Produto não encontrado', produtoCodigo: produto?.codigoBarras || '' };
-    }).filter(item => filtro === '' || item.produtoNome.toLowerCase().includes(filtro) || item.produtoCodigo.includes(filtro));
-    
-    if (lotesComProduto.length === 0) {
-      container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum lote encontrado</div>';
-      return;
-    }
-    
-    container.innerHTML = lotesComProduto.map(lote => {
+    container.innerHTML = lotesComNome.map(lote => {
       const status = verificarStatusValidade(lote.dataValidade);
-      const dataFormatada = lote.dataValidade ? new Date(lote.dataValidade).toLocaleDateString('pt-BR') : 'Sem validade';
-      let statusClass = 'lote-normal';
-      let statusBadge = '';
-      
-      if (status === 'vencido') {
-        statusClass = 'lote-vencido';
-        statusBadge = '<span class="text-red-600 text-xs ml-2">⚠️ VENCIDO</span>';
-      } else if (status === 'proximo') {
-        statusClass = 'lote-proximo';
-        statusBadge = '<span class="text-yellow-600 text-xs ml-2">⏰ Próximo ao vencimento</span>';
-      }
-      
-      return `
-        <div class="lote-card ${statusClass} bg-white p-4 rounded-xl shadow-sm">
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <div class="flex items-center gap-2">
-                <i class="fas fa-boxes text-gray-400"></i>
-                <span class="font-mono text-sm font-bold">${escapeHtml(lote.numeroLote)}</span>
-                ${statusBadge}
-              </div>
-              <h3 class="font-bold text-lg mt-1">${escapeHtml(lote.produtoNome)}</h3>
-              <p class="text-sm text-gray-600"><i class="fas fa-barcode"></i> ${escapeHtml(lote.produtoCodigo)}</p>
-              <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
-                <div>📦 Quantidade: <span class="font-bold">${lote.quantidade}</span></div>
-                <div>💰 Compra: ${formatCurrency(lote.precoCompra)}</div>
-                <div><i class="fas fa-calendar-alt"></i> Validade: ${dataFormatada}</div>
-                <div><i class="fas fa-truck"></i> Fornecedor: ${escapeHtml(lote.fornecedor)}</div>
-              </div>
-            </div>
-            <button data-remover-lote-estoque="${lote.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
+      const classe = status === 'vencido' ? 'lote-vencido' : status === 'proximo' ? 'lote-proximo' : 'lote-normal';
+      const badge = status === 'vencido' ? '⚠️ VENCIDO' : status === 'proximo' ? '⏰ Próximo' : '';
+      return `<div class="lote-card ${classe} bg-white p-4 rounded-xl shadow-sm">
+        <div class="flex justify-between"><div class="flex-1">
+          <div class="flex items-center gap-2"><i class="fas fa-boxes text-gray-400"></i><span class="font-mono font-bold">${escapeHtml(lote.numeroLote)}</span>${badge ? `<span class="text-xs ml-2 ${status==='vencido'?'text-red-600':'text-yellow-600'}">${badge}</span>` : ''}</div>
+          <h3 class="font-bold text-lg">${escapeHtml(lote.produtoNome)}</h3>
+          <p class="text-sm"><i class="fas fa-barcode"></i> ${escapeHtml(lote.produtoCodigo)}</p>
+          <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+            <div>📦 Qtd: <b>${lote.quantidade}</b></div><div>💰 Compra: ${formatCurrency(lote.precoCompra)}</div>
+            <div><i class="fas fa-calendar-alt"></i> ${lote.dataValidade ? new Date(lote.dataValidade).toLocaleDateString('pt-BR') : 'Sem validade'}</div>
+            <div><i class="fas fa-truck"></i> ${escapeHtml(lote.fornecedor)}</div>
           </div>
         </div>
-      `;
+        <button data-remover-estoque="${lote.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button></div>
+      </div>`;
     }).join('');
-    
-    document.querySelectorAll('[data-remover-lote-estoque]').forEach(btn => {
+    document.querySelectorAll('[data-remover-estoque]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-remover-lote-estoque'));
-        if (confirm('Remover este lote do estoque?')) {
-          lotesEstoque = lotesEstoque.filter(l => l.id !== id);
+        if (confirm('Remover lote do estoque?')) {
+          lotesEstoque = lotesEstoque.filter(l => l.id !== parseInt(btn.getAttribute('data-remover-estoque')));
           persistData();
           renderizarEstoque();
           renderizarListaProdutos();
           renderizarLotesDoProduto();
-          showToast('Lote removido do estoque');
+          showToast('Lote removido');
         }
       });
     });
@@ -1820,25 +1461,23 @@
   function renderizarUsuarios() {
     const container = document.getElementById('listaUsuarios');
     if (!container) return;
-    
-    container.innerHTML = usuarios.map(user => `
-      <div class="bg-white p-3 rounded-lg border flex justify-between items-center hover:shadow-md transition">
+    container.innerHTML = usuarios.map(u => `
+      <div class="bg-white p-3 rounded-lg border flex justify-between items-center">
         <div>
-          <p class="font-bold">${escapeHtml(user.nome)}</p>
-          <p class="text-sm text-gray-600">@${escapeHtml(user.usuario)} | ${escapeHtml(user.email)}</p>
-          <p class="text-xs text-gray-400">${user.tipo === 'admin' ? '👑 Administrador' : '👤 Usuário'} | Cadastro: ${user.dataCadastro}</p>
+          <p class="font-bold">${escapeHtml(u.nome)}</p>
+          <p class="text-sm text-gray-600">@${escapeHtml(u.usuario)} | ${escapeHtml(u.email)}</p>
+          <p class="text-xs text-gray-400">${u.tipo==='admin'?'👑 Admin':'👤 Usuário'} | ${u.dataCadastro}</p>
         </div>
-        ${usuarioAtual && usuarioAtual.tipo === 'admin' && user.id !== usuarioAtual.id ? `<button onclick="window.excluirUsuario(${user.id})" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>` : ''}
-      </div>
-    `).join('');
+        ${usuarioAtual && usuarioAtual.tipo==='admin' && u.id !== usuarioAtual.id ? `<button onclick="window.excluirUsuario(${u.id})" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>` : ''}
+      </div>`).join('');
   }
   
   window.excluirUsuario = function(id) {
-    if (confirm('⚠️ Excluir este usuário permanentemente?')) {
+    if (confirm('Excluir usuário?')) {
       usuarios = usuarios.filter(u => u.id !== id);
       localStorage.setItem('usuarios', JSON.stringify(usuarios));
       renderizarUsuarios();
-      showToast('Usuário excluído com sucesso');
+      showToast('Usuário excluído');
     }
   };
   
@@ -1847,30 +1486,14 @@
     const usuario = document.getElementById('adminUsuario').value.trim();
     const email = document.getElementById('adminEmail').value.trim();
     const senha = document.getElementById('adminSenha').value;
-    const tipo = document.getElementById('adminTipo').value;
-    
     if (!nome || !usuario || !email || !senha) { showToast('Preencha todos os campos!', true); return; }
-    if (senha.length < 4) { showToast('A senha deve ter pelo menos 4 caracteres!', true); return; }
-    if (usuarios.some(u => u.usuario === usuario)) { showToast('Nome de usuário já existe!', true); return; }
-    if (usuarios.some(u => u.email === email)) { showToast('E-mail já cadastrado!', true); return; }
-    
-    usuarios.push({
-      id: Date.now(),
-      nome: nome,
-      usuario: usuario,
-      email: email,
-      senha: senha,
-      tipo: tipo,
-      dataCadastro: new Date().toLocaleString()
-    });
-    
+    if (senha.length < 4) { showToast('Senha mínima de 4 caracteres', true); return; }
+    if (usuarios.some(u => u.usuario === usuario)) { showToast('Usuário já existe!', true); return; }
+    usuarios.push({ id: Date.now(), nome, usuario, email, senha, tipo: document.getElementById('adminTipo').value, dataCadastro: new Date().toLocaleString() });
     localStorage.setItem('usuarios', JSON.stringify(usuarios));
     renderizarUsuarios();
-    showToast(`✅ Usuário "${nome}" cadastrado com sucesso!`);
-    
-    ['adminNome', 'adminUsuario', 'adminEmail', 'adminSenha'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
+    showToast('✅ Usuário cadastrado');
+    ['adminNome','adminUsuario','adminEmail','adminSenha'].forEach(id => document.getElementById(id).value = '');
   }
   
   // ==================== AUTENTICAÇÃO ====================
@@ -1878,12 +1501,10 @@
     const usuario = document.getElementById('loginUsuario').value.trim();
     const senha = document.getElementById('loginSenha').value;
     const user = usuarios.find(u => u.usuario === usuario && u.senha === senha);
-    
     if (user) {
       usuarioAtual = user;
       localStorage.setItem('usuarioAtual', JSON.stringify(user));
       showToast(`✅ Bem-vindo, ${user.nome}!`);
-      
       setTimeout(() => {
         document.getElementById('telaLogin').classList.add('hidden-section');
         document.getElementById('sistemaPrincipal').classList.remove('hidden-section');
@@ -1910,7 +1531,7 @@
     document.getElementById('sistemaPrincipal').classList.add('hidden-section');
     document.getElementById('loginUsuario').value = '';
     document.getElementById('loginSenha').value = '';
-    showToast('Logout realizado com sucesso');
+    showToast('Logout realizado');
   }
   
   function cadastrarNovoUsuario() {
@@ -1919,32 +1540,17 @@
     const email = document.getElementById('cadEmail').value.trim();
     const senha = document.getElementById('cadSenha').value;
     const confirmar = document.getElementById('cadConfirmarSenha').value;
-    
     if (!nome || !usuario || !email || !senha) { showToast('Preencha todos os campos!', true); return; }
-    if (senha !== confirmar) { showToast('As senhas não coincidem!', true); return; }
-    if (senha.length < 4) { showToast('A senha deve ter pelo menos 4 caracteres!', true); return; }
-    if (usuarios.some(u => u.usuario === usuario)) { showToast('Nome de usuário já existe!', true); return; }
-    if (usuarios.some(u => u.email === email)) { showToast('E-mail já cadastrado!', true); return; }
-    
-    usuarios.push({
-      id: Date.now(),
-      nome: nome,
-      usuario: usuario,
-      email: email,
-      senha: senha,
-      tipo: 'usuario',
-      dataCadastro: new Date().toLocaleString()
-    });
-    
+    if (senha !== confirmar) { showToast('Senhas não coincidem!', true); return; }
+    if (senha.length < 4) { showToast('Senha mínima de 4 caracteres', true); return; }
+    if (usuarios.some(u => u.usuario === usuario)) { showToast('Usuário já existe!', true); return; }
+    usuarios.push({ id: Date.now(), nome, usuario, email, senha, tipo: 'usuario', dataCadastro: new Date().toLocaleString() });
     localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    showToast('✅ Cadastro realizado com sucesso! Faça login.');
-    
+    showToast('✅ Cadastro realizado! Faça login.');
     setTimeout(() => {
       document.getElementById('telaCadastro').classList.add('hidden-section');
       document.getElementById('telaLogin').classList.remove('hidden-section');
-      ['cadNome', 'cadUsuario', 'cadEmail', 'cadSenha', 'cadConfirmarSenha'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
+      ['cadNome','cadUsuario','cadEmail','cadSenha','cadConfirmarSenha'].forEach(id => document.getElementById(id).value = '');
     }, 1500);
   }
   
@@ -1963,9 +1569,7 @@
     document.getElementById('btnCadastrarAdmin')?.addEventListener('click', cadastrarUsuarioAdmin);
     document.getElementById('btnLogout')?.addEventListener('click', fazerLogout);
     
-    document.querySelectorAll('#sistemaPrincipal [data-nav]').forEach(btn => {
-      btn.addEventListener('click', () => mostrarSecao(btn.getAttribute('data-nav')));
-    });
+    document.querySelectorAll('#sistemaPrincipal [data-nav]').forEach(btn => btn.addEventListener('click', () => mostrarSecao(btn.getAttribute('data-nav'))));
     
     document.getElementById('btnAddProduto')?.addEventListener('click', addProdutoCarrinho);
     document.getElementById('btnFinalizarVenda')?.addEventListener('click', finalizarVenda);
@@ -1973,48 +1577,45 @@
     document.getElementById('btnSalvarProduto')?.addEventListener('click', salvarProdutoComLotes);
     document.getElementById('btnBuscarProduto')?.addEventListener('click', buscarProduto);
     document.getElementById('btnLimparProduto')?.addEventListener('click', limparCamposProduto);
-    document.getElementById('btnFiltrarEstoque')?.addEventListener('click', () => renderizarEstoque());
-    document.getElementById('btnFiltrarProdutos')?.addEventListener('click', () => renderizarListaProdutos());
+    document.getElementById('btnFiltrarEstoque')?.addEventListener('click', renderizarEstoque);
+    document.getElementById('btnFiltrarProdutos')?.addEventListener('click', renderizarListaProdutos);
     document.getElementById('btnExportarRanking')?.addEventListener('click', exportarRanking);
     
-    // Filtros de venda
     document.getElementById('btnFiltroTodas')?.addEventListener('click', () => mudarFiltroVendas('todas'));
     document.getElementById('btnFiltroHoje')?.addEventListener('click', () => mudarFiltroVendas('hoje'));
     document.getElementById('btnFiltroSemana')?.addEventListener('click', () => mudarFiltroVendas('semana'));
     document.getElementById('btnFiltroMes')?.addEventListener('click', () => mudarFiltroVendas('mes'));
     
-    // Paginação
+    // Evento do novo botão de limpar relatórios
+    document.getElementById('btnLimparRelatorios')?.addEventListener('click', limparRelatorios);
+    
     document.getElementById('btnPaginaAnterior')?.addEventListener('click', () => {
-      if (paginaAtualVendas > 1) {
-        paginaAtualVendas--;
-        renderizarHistoricoVendas();
-      }
+      if (paginaAtualVendas > 1) { paginaAtualVendas--; renderizarHistoricoVendas(); }
     });
     document.getElementById('btnPaginaProxima')?.addEventListener('click', () => {
-      const vendasFiltradas = filtrarVendas(filtroAtualVendas);
-      const totalPaginas = Math.ceil(vendasFiltradas.length / itensPorPagina);
-      if (paginaAtualVendas < totalPaginas) {
-        paginaAtualVendas++;
-        renderizarHistoricoVendas();
-      }
+      const total = Math.ceil(filtrarVendas(filtroAtualVendas).length / itensPorPagina);
+      if (paginaAtualVendas < total) { paginaAtualVendas++; renderizarHistoricoVendas(); }
     });
     
     document.getElementById('tabCadastroProduto')?.addEventListener('click', () => mostrarPainelProduto('cadastro'));
     document.getElementById('tabListaProdutos')?.addEventListener('click', () => mostrarPainelProduto('listaProdutos'));
     document.getElementById('tabGerenciarLotes')?.addEventListener('click', () => mostrarPainelProduto('gerenciarLotes'));
     
-    document.getElementById('selectProdutoLote')?.addEventListener('change', () => renderizarLotesDoProduto());
+    document.getElementById('selectProdutoLote')?.addEventListener('change', renderizarLotesDoProduto);
     document.getElementById('btnAdicionarLote')?.addEventListener('click', adicionarNovoLote);
     document.getElementById('btnSalvarNovoLote')?.addEventListener('click', salvarNovoLote);
-    document.getElementById('btnCancelarNovoLote')?.addEventListener('click', () => {
-      document.getElementById('formNovoLote').classList.add('hidden-section');
+    document.getElementById('btnCancelarNovoLote')?.addEventListener('click', () => document.getElementById('formNovoLote').classList.add('hidden-section'));
+    
+    document.getElementById('btnToggleLotesAdicionais')?.addEventListener('click', () => {
+      const el = document.getElementById('lotesAdicionais');
+      el.classList.toggle('hidden-section');
     });
     
-    document.getElementById('filtroEstoque')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') renderizarEstoque(); });
-    document.getElementById('filtroProdutos')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') renderizarListaProdutos(); });
-    document.getElementById('busca')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') addProdutoCarrinho(); });
-    document.getElementById('loginUsuario')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') fazerLogin(); });
-    document.getElementById('loginSenha')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') fazerLogin(); });
+    document.getElementById('filtroEstoque')?.addEventListener('keypress', e => { if(e.key==='Enter') renderizarEstoque(); });
+    document.getElementById('filtroProdutos')?.addEventListener('keypress', e => { if(e.key==='Enter') renderizarListaProdutos(); });
+    document.getElementById('busca')?.addEventListener('keypress', e => { if(e.key==='Enter') addProdutoCarrinho(); });
+    document.getElementById('loginUsuario')?.addEventListener('keypress', e => { if(e.key==='Enter') fazerLogin(); });
+    document.getElementById('loginSenha')?.addEventListener('keypress', e => { if(e.key==='Enter') fazerLogin(); });
   }
   
   function verificarSessao() {
@@ -2035,7 +1636,6 @@
     }
   }
   
-  // ==================== INICIALIZAÇÃO ====================
   function init() {
     inicializarDados();
     bindEvents();
