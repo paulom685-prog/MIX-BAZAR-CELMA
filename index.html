@@ -850,6 +850,173 @@
     }
   }
   
+  // ==================== FUNÇÃO DE BUSCAR PRODUTO POR CÓDIGO ====================
+  function buscarProduto() {
+    const codigo = document.getElementById('codigoBarras').value.trim();
+    if (!codigo) {
+      showToast('Digite um código de barras para buscar', true);
+      return;
+    }
+    
+    const produto = produtos.find(p => p.codigoBarras === codigo);
+    if (produto) {
+      document.getElementById('nome').value = produto.nome;
+      document.getElementById('precoVenda').value = produto.precoVenda;
+      document.getElementById('precoCompra').value = produto.precoCompra || '';
+      showToast(`✅ Produto "${produto.nome}" encontrado!`);
+      
+      // Buscar lotes existentes para este produto
+      const lotesProduto = lotesEstoque.filter(l => l.produtoId === produto.id);
+      if (lotesProduto.length > 0) {
+        // Preencher os campos de lote com os primeiros lotes encontrados
+        lotesProduto.forEach((lote, index) => {
+          if (index < 3) {
+            const loteNum = index + 1;
+            document.getElementById(`lote${loteNum}Numero`).value = lote.numeroLote || '';
+            document.getElementById(`lote${loteNum}Quantidade`).value = lote.quantidade;
+            document.getElementById(`lote${loteNum}PrecoCompra`).value = lote.precoCompra;
+            document.getElementById(`lote${loteNum}Validade`).value = lote.dataValidade || '';
+            document.getElementById(`lote${loteNum}Fornecedor`).value = lote.fornecedor || '';
+          }
+        });
+        
+        showToast(`📦 ${lotesProduto.length} lote(s) encontrado(s) para este produto`);
+      }
+    } else {
+      showToast('Produto não encontrado!', true);
+    }
+  }
+  
+  // ==================== FUNÇÃO DE CADASTRO DE PRODUTO (PRINCIPAL - TOTALMENTE FUNCIONAL) ====================
+  function salvarProdutoComLotes() {
+    // Capturar valores dos campos
+    const codigoBarras = document.getElementById('codigoBarras').value.trim();
+    const nome = document.getElementById('nome').value.trim();
+    const precoVenda = parseFloat(document.getElementById('precoVenda').value);
+    const precoCompraPadrao = parseFloat(document.getElementById('precoCompra').value) || 0;
+    
+    // Validações
+    if (!codigoBarras) { 
+      showToast('❌ Código de barras é obrigatório!', true); 
+      return; 
+    }
+    if (!nome) { 
+      showToast('❌ Nome do produto é obrigatório!', true); 
+      return; 
+    }
+    if (isNaN(precoVenda) || precoVenda <= 0) { 
+      showToast('❌ Preço de venda inválido!', true); 
+      return; 
+    }
+    
+    // Verificar se produto já existe
+    let produtoExistente = produtos.find(p => p.codigoBarras === codigoBarras);
+    let produtoId;
+    
+    if (produtoExistente) {
+      if (!confirm(`⚠️ Produto com código ${codigoBarras} já existe.\n\nDeseja ATUALIZAR os dados e ADICIONAR novos lotes?`)) {
+        return;
+      }
+      // Atualizar produto existente
+      produtoExistente.nome = nome;
+      produtoExistente.precoVenda = precoVenda;
+      produtoExistente.precoCompra = precoCompraPadrao;
+      produtoId = produtoExistente.id;
+      showToast(`✏️ Produto "${nome}" atualizado com sucesso!`, false);
+    } else {
+      // Verificar alerta de prejuízo
+      if (precoVenda < precoCompraPadrao) {
+        if (!confirm('⚠️ Atenção: Preço de venda está menor que o preço de compra! Isso gerará prejuízo. Deseja continuar?')) {
+          return;
+        }
+      }
+      
+      // Criar novo produto
+      const novoProduto = {
+        id: Date.now(),
+        nome: nome,
+        codigoBarras: codigoBarras,
+        precoVenda: precoVenda,
+        precoCompra: precoCompraPadrao
+      };
+      produtos.push(novoProduto);
+      produtoId = novoProduto.id;
+      showToast(`✅ Novo produto "${nome}" cadastrado!`, false);
+    }
+    
+    // Adicionar lotes
+    let lotesAdicionados = 0;
+    for (let i = 1; i <= 3; i++) {
+      const quantidade = parseInt(document.getElementById(`lote${i}Quantidade`).value) || 0;
+      const numero = document.getElementById(`lote${i}Numero`).value.trim();
+      
+      // Só adiciona lote se tiver número e quantidade > 0
+      if (numero && quantidade > 0) {
+        const precoCompra = parseFloat(document.getElementById(`lote${i}PrecoCompra`).value) || precoCompraPadrao;
+        const validade = document.getElementById(`lote${i}Validade`).value;
+        const fornecedor = document.getElementById(`lote${i}Fornecedor`).value.trim();
+        
+        // Verificar se lote já existe para evitar duplicação
+        const loteExistente = lotesEstoque.find(l => l.produtoId === produtoId && l.numeroLote === numero);
+        
+        if (loteExistente) {
+          // Atualizar lote existente
+          loteExistente.quantidade += quantidade;
+          loteExistente.precoCompra = precoCompra;
+          loteExistente.dataValidade = validade || null;
+          loteExistente.fornecedor = fornecedor || 'Não informado';
+          lotesAdicionados++;
+        } else {
+          // Criar novo lote
+          lotesEstoque.push({
+            id: Date.now() + i,
+            produtoId: produtoId,
+            quantidade: quantidade,
+            precoCompra: precoCompra,
+            dataValidade: validade || null,
+            numeroLote: numero,
+            fornecedor: fornecedor || 'Não informado',
+            dataEntrada: new Date().toISOString()
+          });
+          lotesAdicionados++;
+        }
+      }
+    }
+    
+    // Salvar no localStorage
+    persistData();
+    
+    // Limpar campos do formulário
+    limparCamposProduto();
+    
+    // Atualizar todas as interfaces
+    renderizarListaProdutos();
+    renderizarEstoque();
+    carregarSelectProdutos();
+    renderizarLotesDoProduto();
+    
+    // Mensagem de sucesso
+    if (lotesAdicionados > 0) {
+      showToast(`🎉 Produto salvo com ${lotesAdicionados} lote(s) adicionado(s) ao estoque!`);
+    } else {
+      showToast(`📦 Produto "${nome}" salvo sem lotes!`);
+    }
+  }
+  
+  function limparCamposProduto() {
+    ['codigoBarras', 'nome', 'precoVenda', 'precoCompra'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById(`lote${i}Numero`).value = '';
+      document.getElementById(`lote${i}Quantidade`).value = '0';
+      document.getElementById(`lote${i}PrecoCompra`).value = '';
+      document.getElementById(`lote${i}Validade`).value = '';
+      document.getElementById(`lote${i}Fornecedor`).value = '';
+    }
+  }
+  
   function finalizarVenda() {
     if (carrinho.length === 0) {
       showToast('Carrinho vazio! Adicione produtos antes de finalizar.', true);
@@ -901,89 +1068,6 @@
     atualizarRelatorios();
     
     showToast(`✅ Venda finalizada! Total: ${formatCurrency(totalVenda)} | Lucro: ${formatCurrency(lucroTotalVenda)}`);
-  }
-  
-  // ==================== PRODUTOS COM LOTES ====================
-  function salvarProdutoComLotes() {
-    const codigoBarras = document.getElementById('codigoBarras').value.trim();
-    const nome = document.getElementById('nome').value.trim();
-    const precoVenda = parseFloat(document.getElementById('precoVenda').value);
-    const precoCompraPadrao = parseFloat(document.getElementById('precoCompra').value) || 0;
-    
-    if (!codigoBarras) { showToast('Código de barras é obrigatório!', true); return; }
-    if (!nome) { showToast('Nome do produto é obrigatório!', true); return; }
-    if (isNaN(precoVenda) || precoVenda <= 0) { showToast('Preço de venda inválido!', true); return; }
-    
-    let produtoExistente = produtos.find(p => p.codigoBarras === codigoBarras);
-    let produtoId;
-    
-    if (produtoExistente) {
-      if (!confirm(`⚠️ Produto com código ${codigoBarras} já existe. Deseja atualizar e adicionar novos lotes?`)) {
-        return;
-      }
-      produtoExistente.nome = nome;
-      produtoExistente.precoVenda = precoVenda;
-      produtoExistente.precoCompra = precoCompraPadrao;
-      produtoId = produtoExistente.id;
-    } else {
-      if (precoVenda < precoCompraPadrao) {
-        if (!confirm('⚠️ Atenção: Preço de venda está menor que o preço de compra! Isso gerará prejuízo. Deseja continuar?')) {
-          return;
-        }
-      }
-      
-      const novoProduto = {
-        id: Date.now(),
-        nome: nome,
-        codigoBarras: codigoBarras,
-        precoVenda: precoVenda,
-        precoCompra: precoCompraPadrao
-      };
-      produtos.push(novoProduto);
-      produtoId = novoProduto.id;
-    }
-    
-    for (let i = 1; i <= 3; i++) {
-      const quantidade = parseInt(document.getElementById(`lote${i}Quantidade`).value) || 0;
-      const precoCompra = parseFloat(document.getElementById(`lote${i}PrecoCompra`).value) || precoCompraPadrao;
-      const numero = document.getElementById(`lote${i}Numero`).value.trim();
-      const validade = document.getElementById(`lote${i}Validade`).value;
-      const fornecedor = document.getElementById(`lote${i}Fornecedor`).value.trim();
-      
-      if (quantidade > 0 && numero) {
-        lotesEstoque.push({
-          id: Date.now() + i,
-          produtoId: produtoId,
-          quantidade: quantidade,
-          precoCompra: precoCompra,
-          dataValidade: validade || null,
-          numeroLote: numero,
-          fornecedor: fornecedor || 'Não informado',
-          dataEntrada: new Date().toISOString()
-        });
-      }
-    }
-    
-    persistData();
-    limparCamposProduto();
-    renderizarListaProdutos();
-    renderizarEstoque();
-    carregarSelectProdutos();
-    showToast(`✅ Produto "${nome}" salvo com sucesso e lotes adicionados ao estoque!`);
-  }
-  
-  function limparCamposProduto() {
-    ['codigoBarras', 'nome', 'precoVenda', 'precoCompra'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    
-    for (let i = 1; i <= 3; i++) {
-      document.getElementById(`lote${i}Numero`).value = '';
-      document.getElementById(`lote${i}Quantidade`).value = '0';
-      document.getElementById(`lote${i}PrecoCompra`).value = '';
-      document.getElementById(`lote${i}Validade`).value = '';
-      document.getElementById(`lote${i}Fornecedor`).value = '';
-    }
   }
   
   // ==================== RELATÓRIOS ====================
@@ -1237,21 +1321,21 @@
                 <div class="progress-fill ${posicao === 1 ? 'bg-yellow-400' : posicao === 2 ? 'bg-gray-400' : posicao === 3 ? 'bg-orange-400' : 'bg-blue-400'}" style="width: ${percentual}%"></div>
               </div>
             </div>
-          </td>
+           </td>
           <td class="py-3 px-4 text-center font-mono text-sm text-gray-600">${escapeHtml(prod.codigoBarras)}</td>
           <td class="py-3 px-4 text-center">
             <span class="font-bold text-lg ${posicao <= 3 ? 'text-blue-700' : 'text-gray-700'}">${prod.quantidadeTotal}</span>
-          </td>
+           </td>
           <td class="py-3 px-4 text-center font-semibold text-blue-600">${formatCurrency(prod.faturamentoTotal)}</td>
           <td class="py-3 px-4 text-center font-semibold ${prod.lucroTotal >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(prod.lucroTotal)}</td>
           <td class="py-3 px-4 text-center">
             <span class="px-2 py-1 rounded-full text-xs font-bold ${margem >= 30 ? 'bg-green-100 text-green-700' : margem >= 15 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">${margem.toFixed(1)}%</span>
-          </td>
+           </td>
           <td class="py-3 px-4 text-center text-sm">${prod.vezesVendido}x</td>
           <td class="py-3 px-4 text-center">
             <span class="text-xs ${percentual >= 80 ? 'text-green-600 font-bold' : percentual >= 50 ? 'text-blue-600' : 'text-gray-500'}">${percentual.toFixed(0)}%</span>
-          </td>
-        </tr>
+           </td>
+         </tr>
       `;
     }).join('');
     
