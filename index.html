@@ -3,31 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>MIX BAZAR - PDV Profissional com Controle de Usuários</title>
+  <title>MIX BAZAR - PDV Completo com Gestão de Produtos e Lotes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { transition: all 0.2s ease; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     button:active { transform: scale(0.97); }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+    input:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
     .hidden-section { display: none !important; }
-    .table-row-hover:hover { background-color: #f9fafb; }
-    .btn-primary { transition: all 0.3s; }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .nav-btn-active {
       background-color: #1e40af !important;
       border-bottom: 3px solid #fbbf24;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    .scanning { animation: pulse 1s ease-in-out infinite; }
     .toast-notification {
       position: fixed;
       bottom: 20px;
@@ -37,7 +28,6 @@
       padding: 12px 20px;
       border-radius: 12px;
       z-index: 9999;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       animation: fadeInOut 3s ease forwards;
     }
     @keyframes fadeInOut {
@@ -46,27 +36,79 @@
       85% { opacity: 1; transform: translateY(0); }
       100% { opacity: 0; transform: translateY(20px); visibility: hidden; }
     }
-    .stat-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      transition: transform 0.3s;
-    }
+    .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: transform 0.3s; }
     .stat-card:hover { transform: translateY(-5px); }
-    .ranking-1 { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
-    .ranking-2 { background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%); }
-    .ranking-3 { background: linear-gradient(135deg, #cd7f32 0%, #b45309 100%); }
-    .vencido { background-color: #fee2e2; border-left: 4px solid #dc2626; }
-    .proximo-vencer { background-color: #fed7aa; border-left: 4px solid #f59e0b; }
-    .valido { background-color: #dcfce7; border-left: 4px solid #10b981; }
-    .login-container {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .login-container { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .lote-card { border-left: 4px solid; transition: all 0.3s; }
+    .lote-card:hover { transform: translateX(5px); }
+    .lote-vencido { border-left-color: #dc2626; background-color: #fee2e2; }
+    .lote-proximo { border-left-color: #f59e0b; background-color: #fed7aa; }
+    .lote-normal { border-left-color: #10b981; background-color: #f0fdf4; }
+    .btn-primary { transition: all 0.3s; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .tab-active {
+      background-color: #3b82f6 !important;
+      color: white !important;
     }
-    .user-card {
+    .lote-input-group {
+      background: #f9fafb;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+    .ranking-card {
+      border-left: 5px solid;
+      transition: all 0.3s ease;
+    }
+    .ranking-card:hover {
+      transform: translateX(8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .progress-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.8s ease;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .top1-glow {
+      animation: pulse 2s infinite;
+    }
+    .ranking-table-row {
+      transition: all 0.3s ease;
+    }
+    .ranking-table-row:hover {
+      background-color: #f3f4f6;
+      transform: scale(1.01);
+    }
+    .trophy-icon {
+      font-size: 1.5em;
+    }
+    .venda-detalhe {
+      border-left: 3px solid #3b82f6;
       transition: all 0.3s;
     }
-    .user-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    .venda-detalhe:hover {
+      border-left-color: #2563eb;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .filtro-ativo {
+      background-color: #3b82f6 !important;
+      color: white !important;
+    }
+    .grafico-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
     }
   </style>
 </head>
@@ -78,33 +120,27 @@
     <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
       <div class="bg-gradient-to-r from-blue-900 to-blue-800 p-6 text-white text-center">
         <i class="fas fa-cash-register text-5xl text-yellow-300 mb-3"></i>
-        <h1 class="text-2xl font-bold">MIX BAZAR & UTILIDADES</h1>
-        <p class="text-blue-200 text-sm">Sistema de Vendas com Controle de Acesso</p>
+        <h1 class="text-2xl font-bold">PDV Profissional</h1>
+        <p class="text-blue-200 text-sm">Sistema com Controle de Estoque PEPS</p>
       </div>
-      
       <div class="p-8">
         <div class="mb-6">
           <label class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
           <div class="relative">
             <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
-            <input type="text" id="loginUsuario" placeholder="Digite seu usuário" 
-                   class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition">
+            <input type="text" id="loginUsuario" placeholder="Digite seu usuário" class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition">
           </div>
         </div>
-        
         <div class="mb-6">
           <label class="block text-gray-700 text-sm font-bold mb-2">Senha</label>
           <div class="relative">
             <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
-            <input type="password" id="loginSenha" placeholder="Digite sua senha" 
-                   class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition">
+            <input type="password" id="loginSenha" placeholder="Digite sua senha" class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition">
           </div>
         </div>
-        
-        <button id="btnLogin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition transform hover:scale-105">
+        <button id="btnLogin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition transform hover:scale-105 btn-primary">
           <i class="fas fa-sign-in-alt mr-2"></i> Entrar
         </button>
-        
         <div class="mt-4 text-center">
           <button id="btnMostrarCadastro" class="text-blue-600 hover:text-blue-800 text-sm">
             <i class="fas fa-user-plus mr-1"></i> Não tem conta? Cadastre-se
@@ -115,7 +151,7 @@
   </div>
 </div>
 
-<!-- TELA DE CADASTRO DE USUÁRIO -->
+<!-- TELA DE CADASTRO -->
 <div id="telaCadastro" class="login-container hidden-section">
   <div class="container mx-auto px-4 py-12">
     <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
@@ -124,297 +160,386 @@
         <h1 class="text-2xl font-bold">Cadastro de Usuário</h1>
         <p class="text-green-200 text-sm">Crie sua conta para acessar o sistema</p>
       </div>
-      
       <div class="p-8">
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Nome Completo *</label>
-          <input type="text" id="cadNome" placeholder="Ex: João Silva" 
-                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
-        </div>
-        
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Usuário *</label>
-          <input type="text" id="cadUsuario" placeholder="Escolha um nome de usuário" 
-                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
-        </div>
-        
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
-          <input type="email" id="cadEmail" placeholder="seu@email.com" 
-                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
-        </div>
-        
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Senha *</label>
-          <input type="password" id="cadSenha" placeholder="Mínimo 4 caracteres" 
-                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
-        </div>
-        
-        <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Confirmar Senha *</label>
-          <input type="password" id="cadConfirmarSenha" placeholder="Digite a senha novamente" 
-                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
-        </div>
-        
-        <button id="btnCadastrarUsuario" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition transform hover:scale-105">
-          <i class="fas fa-check-circle mr-2"></i> Cadastrar
-        </button>
-        
-        <div class="mt-4 text-center">
-          <button id="btnVoltarLogin" class="text-blue-600 hover:text-blue-800 text-sm">
-            <i class="fas fa-arrow-left mr-1"></i> Voltar para o Login
-          </button>
-        </div>
+        <div class="mb-4"><input type="text" id="cadNome" placeholder="Nome completo" class="w-full border-2 border-gray-200 rounded-xl p-3"></div>
+        <div class="mb-4"><input type="text" id="cadUsuario" placeholder="Usuário" class="w-full border-2 border-gray-200 rounded-xl p-3"></div>
+        <div class="mb-4"><input type="email" id="cadEmail" placeholder="E-mail" class="w-full border-2 border-gray-200 rounded-xl p-3"></div>
+        <div class="mb-4"><input type="password" id="cadSenha" placeholder="Senha (mínimo 4 caracteres)" class="w-full border-2 border-gray-200 rounded-xl p-3"></div>
+        <div class="mb-6"><input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha" class="w-full border-2 border-gray-200 rounded-xl p-3"></div>
+        <button id="btnCadastrarUsuario" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition btn-primary">Cadastrar</button>
+        <div class="mt-4 text-center"><button id="btnVoltarLogin" class="text-blue-600">Voltar para o Login</button></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SISTEMA PRINCIPAL (protegido) -->
+<!-- SISTEMA PRINCIPAL -->
 <div id="sistemaPrincipal" class="hidden-section">
-  <div class="min-h-screen">
-    
-    <!-- MENU SUPERIOR COM INFO DO USUÁRIO -->
+  <div class="min-h-screen bg-gray-50">
+    <!-- MENU -->
     <div class="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-2xl sticky top-0 z-20">
       <div class="container mx-auto px-4 py-3">
         <div class="flex flex-col md:flex-row items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <i class="fas fa-cash-register text-3xl text-yellow-300"></i>
-            <div>
-              <h1 class="text-2xl font-bold tracking-wide">MIX BAZAR & UTILIDADES</h1>
-              <p class="text-blue-200 text-xs">Sistema de Controle de Vendas</p>
-            </div>
+            <div><h1 class="text-2xl font-bold">PDV Profissional</h1><p class="text-blue-200 text-xs">Controle de Estoque PEPS</p></div>
           </div>
-          
-          <div class="flex flex-wrap gap-2 justify-center">
-            <button data-nav="vendas" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-              <i class="fas fa-shopping-cart"></i> <span>Vendas</span>
-            </button>
-            <button data-nav="produtos" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-              <i class="fas fa-boxes"></i> <span>Produtos</span>
-            </button>
-            <button data-nav="relatorios" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-              <i class="fas fa-chart-line"></i> <span>Relatórios</span>
-            </button>
-            <button data-nav="validade" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-              <i class="fas fa-calendar-alt"></i> <span>Controle</span>
-            </button>
-            <button data-nav="usuarios" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-              <i class="fas fa-users"></i> <span>Usuários</span>
-            </button>
+          <div class="flex flex-wrap gap-2">
+            <button data-nav="vendas" class="nav-btn px-4 py-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-shopping-cart"></i> Vendas</button>
+            <button data-nav="produtos" class="nav-btn px-4 py-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-boxes"></i> Produtos</button>
+            <button data-nav="estoque" class="nav-btn px-4 py-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-warehouse"></i> Estoque</button>
+            <button data-nav="relatorios" class="nav-btn px-4 py-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-chart-line"></i> Relatórios</button>
+            <button data-nav="usuarios" class="nav-btn px-4 py-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-users"></i> Usuários</button>
           </div>
-          
           <div class="flex items-center gap-3">
-            <div class="text-right">
-              <p class="text-sm font-semibold" id="usuarioLogadoNome"></p>
-              <p class="text-xs text-blue-200" id="usuarioLogadoEmail"></p>
-            </div>
-            <button id="btnLogout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
-              <i class="fas fa-sign-out-alt"></i> Sair
-            </button>
+            <div class="text-right"><p class="text-sm font-semibold" id="usuarioLogadoNome"></p><p class="text-xs text-blue-200" id="usuarioLogadoEmail"></p></div>
+            <button id="btnLogout" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm transition btn-primary"><i class="fas fa-sign-out-alt"></i> Sair</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <div class="container mx-auto px-4 py-6 max-w-7xl">
       
-      <!-- SEÇÃO VENDAS -->
+      <!-- VENDAS -->
       <div id="vendas" class="section">
         <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-          <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
-            <i class="fas fa-tag text-green-600"></i> Ponto de Venda
-          </h2>
+          <h2 class="text-3xl font-bold"><i class="fas fa-tag text-green-600"></i> Ponto de Venda</h2>
           <p class="text-gray-500 mt-1">Digite o código de barras ou nome do produto</p>
         </div>
         <div class="bg-white rounded-2xl shadow-xl p-6">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="md:col-span-2 relative">
               <i class="fas fa-barcode absolute left-3 top-3 text-gray-400"></i>
-              <input type="text" id="busca" placeholder="🔍 Código de barras ou nome do produto" 
-                     class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition text-lg"
-                     autocomplete="off">
+              <input type="text" id="busca" placeholder="🔍 Código de barras ou nome do produto" class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition text-lg" autocomplete="off">
             </div>
-            <button id="btnAddProduto" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
-              <i class="fas fa-plus-circle"></i> Adicionar
-            </button>
-            <button id="btnFinalizarVenda" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
-              <i class="fas fa-check-double"></i> Finalizar
-            </button>
-            <button id="btnLimparCarrinho" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
-              <i class="fas fa-trash-alt"></i> Limpar Carrinho
-            </button>
+            <button id="btnAddProduto" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary"><i class="fas fa-plus-circle"></i> Adicionar</button>
+            <button id="btnFinalizarVenda" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary"><i class="fas fa-check-double"></i> Finalizar</button>
+            <button id="btnLimparCarrinho" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary"><i class="fas fa-trash-alt"></i> Limpar</button>
           </div>
           <div class="overflow-x-auto border rounded-xl">
-            <table class="w-full min-w-[800px]">
+            <table class="w-full min-w-[600px]">
               <thead class="bg-gray-100 text-gray-700">
-                <tr><th class="py-3 px-4 text-left">Código</th><th class="py-3 px-4 text-left">Produto</th><th class="py-3 px-4 text-left">Validade</th><th class="py-3 px-4 text-left">Preço</th><th class="py-3 px-4 text-left">Qtd</th><th class="py-3 px-4 text-left">Subtotal</th><th class="py-3 px-4 text-center">Ações</th></tr>
+                <tr><th class="py-3 px-4 text-left">Código</th><th class="py-3 px-4 text-left">Produto</th><th class="py-3 px-4 text-left">Preço</th><th class="py-3 px-4 text-left">Qtd</th><th class="py-3 px-4 text-left">Subtotal</th><th class="py-3 px-4 text-center">Ações</th></tr>
               </thead>
               <tbody id="carrinho" class="divide-y divide-gray-200"></tbody>
             </table>
           </div>
           <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl">
-            <div class="text-xl md:text-2xl font-bold text-gray-800 text-center md:text-left">Total: <span class="text-green-700 text-2xl md:text-3xl" id="total">0.00</span> R$</div>
-            <div class="text-center"><span class="text-sm text-gray-600"><i class="fas fa-box"></i> Itens: <span id="qtdItensCarrinho" class="font-bold">0</span></span></div>
-            <div class="text-center md:text-right"><span class="text-sm text-gray-600"><i class="fas fa-chart-line"></i> Lucro Estimado: R$ <span id="lucroEstimado" class="font-bold text-green-600">0.00</span></span></div>
+            <div class="text-xl md:text-2xl font-bold">Total: <span class="text-green-700" id="total">0.00</span> R$</div>
+            <div class="text-center">Itens: <span id="qtdItensCarrinho" class="font-bold">0</span></div>
+            <div class="text-right">Lucro Estimado: R$ <span id="lucroEstimado" class="font-bold text-green-600">0.00</span></div>
           </div>
         </div>
       </div>
 
-      <!-- SEÇÃO PRODUTOS -->
+      <!-- PRODUTOS COM LOTES INTEGRADOS -->
       <div id="produtos" class="section hidden-section">
         <div class="bg-white rounded-2xl shadow-xl p-6">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="fas fa-cube text-blue-600"></i> Cadastro de Produtos
-          </h2>
+          <h2 class="text-2xl font-bold mb-4"><i class="fas fa-cube text-blue-600"></i> Gestão de Produtos com Lotes</h2>
+          <p class="text-gray-600 mb-4">Cadastre produtos e seus lotes diretamente. Sistema PEPS: consome primeiro os lotes com menor data de validade</p>
           
-          <!-- Painel do Gerador de Código -->
-          <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl mb-6 border-2 border-purple-200">
-            <div class="flex items-center gap-2 mb-3">
-              <i class="fas fa-barcode text-purple-600 text-xl"></i>
-              <h3 class="font-bold text-purple-800">Gerador Sequencial de Código de Barras (1 a 9999)</h3>
+          <!-- Abas -->
+          <div class="flex gap-2 mb-6 border-b pb-2">
+            <button id="tabCadastroProduto" class="tab-produto px-6 py-2 rounded-lg bg-blue-600 text-white transition">📦 Cadastrar Produto</button>
+            <button id="tabListaProdutos" class="tab-produto px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition">📋 Lista de Produtos</button>
+            <button id="tabGerenciarLotes" class="tab-produto px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition">🏷️ Gerenciar Lotes</button>
+          </div>
+          
+          <!-- Painel Cadastro de Produto com Lotes -->
+          <div id="painelCadastroProduto" class="painel-produto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div><input type="text" id="codigoBarras" placeholder="Código de Barras *" class="w-full border-2 rounded-xl p-3 font-mono"></div>
+              <div><input type="text" id="nome" placeholder="Nome do Produto *" class="w-full border-2 rounded-xl p-3"></div>
+              <div><input type="number" id="precoVenda" step="0.01" placeholder="Preço de Venda *" class="w-full border-2 rounded-xl p-3"></div>
+              <div><input type="number" id="precoCompra" step="0.01" placeholder="Preço de Compra Padrão" class="w-full border-2 rounded-xl p-3"></div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Prefixo</label>
-                <input type="text" id="prefixo" placeholder="Ex: 789" maxlength="10" 
-                       class="w-full border-2 border-gray-200 rounded-lg p-2 font-mono text-sm">
+            
+            <!-- Seção de Lotes (1, 2, 3) -->
+            <div class="mb-6">
+              <h3 class="font-bold text-lg mb-3 text-blue-800"><i class="fas fa-layer-group"></i> Lotes do Produto (máximo 3)</h3>
+              
+              <!-- Lote 1 -->
+              <div class="lote-input-group mb-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <i class="fas fa-tag text-blue-600"></i>
+                  <span class="font-bold text-blue-800">Lote 1</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Número do Lote</label>
+                    <input type="text" id="lote1Numero" placeholder="Ex: LOTE001" class="w-full border-2 rounded-lg p-2 font-mono text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Quantidade</label>
+                    <input type="number" id="lote1Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Preço de Compra (R$)</label>
+                    <input type="number" id="lote1PrecoCompra" step="0.01" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Data de Validade</label>
+                    <input type="date" id="lote1Validade" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Fornecedor</label>
+                    <input type="text" id="lote1Fornecedor" placeholder="Nome do fornecedor" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                </div>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Número (1-9999)</label>
-                <input type="number" id="numeroSequencial" min="1" max="9999" value="1" 
-                       class="w-full border-2 border-gray-200 rounded-lg p-2 font-mono text-sm">
+              
+              <!-- Lote 2 -->
+              <div class="lote-input-group mb-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <i class="fas fa-tag text-green-600"></i>
+                  <span class="font-bold text-green-800">Lote 2 (opcional)</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Número do Lote</label>
+                    <input type="text" id="lote2Numero" placeholder="Ex: LOTE002" class="w-full border-2 rounded-lg p-2 font-mono text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Quantidade</label>
+                    <input type="number" id="lote2Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Preço de Compra (R$)</label>
+                    <input type="number" id="lote2PrecoCompra" step="0.01" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Data de Validade</label>
+                    <input type="date" id="lote2Validade" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Fornecedor</label>
+                    <input type="text" id="lote2Fornecedor" placeholder="Nome do fornecedor" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                </div>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Complemento</label>
-                <select id="comprimentoMinimo" class="w-full border-2 border-gray-200 rounded-lg p-2 text-sm">
-                  <option value="0">Sem zeros</option>
-                  <option value="4">4 dígitos (0001)</option>
-                  <option value="5">5 dígitos (00001)</option>
-                  <option value="6">6 dígitos (000001)</option>
-                </select>
-              </div>
-              <div class="flex items-end gap-2">
-                <button id="btnGerarCodigoProduto" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-sm transition">
-                  <i class="fas fa-magic"></i> Gerar
-                </button>
-                <button id="btnVerificarDisponivel" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition">
-                  <i class="fas fa-check"></i> Verificar
-                </button>
-              </div>
-            </div>
-            <div class="mt-3 p-2 bg-white rounded-lg text-center">
-              <span class="text-sm text-gray-600">Visualização:</span>
-              <span id="previewCodigoProduto" class="font-mono font-bold text-purple-600 text-lg ml-2">7890001</span>
-            </div>
-          </div>
-          
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Código de Barras *</label><input type="text" id="codigoBarras" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 font-mono"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto *</label><input type="text" id="nome" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Preço de Venda (R$) *</label><input type="number" id="preco" step="0.01" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Preço de Compra (R$)</label><input type="number" id="compra" step="0.01" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Quantidade em Estoque</label><input type="number" id="estoque" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Data de Validade</label><input type="date" id="validade" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-          </div>
-          
-          <div class="flex gap-3 flex-wrap mb-6">
-            <button id="btnSalvarProduto" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-save"></i> Salvar</button>
-            <button id="btnBuscarPorCodigo" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-search"></i> Buscar</button>
-            <button id="btnLimparCampos" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-eraser"></i> Limpar</button>
-          </div>
-          
-          <div id="listaProdutos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
-        </div>
-      </div>
-
-      <!-- SEÇÃO RELATÓRIOS -->
-      <div id="relatorios" class="section hidden-section">
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="fas fa-chart-pie text-purple-600"></i> Relatórios Gerenciais
-          </h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="stat-card text-white p-4 rounded-xl"><p class="text-sm opacity-90">Faturamento Total</p><p class="text-2xl font-bold" id="metricFaturamento">R$ 0,00</p></div>
-            <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"><p class="text-sm opacity-90">Lucro Total</p><p class="text-2xl font-bold" id="metricLucro">R$ 0,00</p></div>
-            <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"><p class="text-sm opacity-90">Margem Média</p><p class="text-2xl font-bold" id="metricMargem">0%</p></div>
-            <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"><p class="text-sm opacity-90">Total de Vendas</p><p class="text-2xl font-bold" id="metricVendas">0</p></div>
-          </div>
-          
-          <div class="mb-6">
-            <div class="flex items-center gap-2 mb-4">
-              <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
-              <h3 class="text-xl font-bold text-gray-800">🏆 Top 15 Produtos Mais Vendidos</h3>
-            </div>
-            <div id="rankingProdutos" class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto"></div>
-          </div>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-gray-50 p-4 rounded-xl"><canvas id="graficoLucro"></canvas></div>
-            <div class="bg-gray-50 p-4 rounded-xl"><canvas id="graficoFaturamento"></canvas></div>
-          </div>
-          
-          <div id="relatorio" class="bg-gray-50 p-4 rounded-xl max-h-[400px] overflow-y-auto"></div>
-        </div>
-      </div>
-
-      <!-- SEÇÃO CONTROLE DE VALIDADE -->
-      <div id="validade" class="section hidden-section">
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="fas fa-calendar-alt text-orange-600"></i> Controle de Validade
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-600 font-bold text-lg">⚠️ Vencidos</p><p class="text-2xl font-bold" id="totalVencidos">0</p></div>
-            <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200"><p class="text-yellow-600 font-bold text-lg">⏰ Próximos 30 dias</p><p class="text-2xl font-bold" id="totalProximos">0</p></div>
-            <div class="bg-green-50 p-4 rounded-xl border border-green-200"><p class="text-green-600 font-bold text-lg">✅ Válidos</p><p class="text-2xl font-bold" id="totalValidos">0</p></div>
-          </div>
-          <select id="filtroValidade" class="border-2 border-gray-200 rounded-xl p-2 w-48 mb-4">
-            <option value="todos">Todos os produtos</option>
-            <option value="vencidos">Vencidos</option>
-            <option value="proximos">Próximos 30 dias</option>
-            <option value="validos">Válidos</option>
-          </select>
-          <div id="listaValidade" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
-        </div>
-      </div>
-
-      <!-- SEÇÃO USUÁRIOS -->
-      <div id="usuarios" class="section hidden-section">
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="fas fa-users text-blue-600"></i> Gerenciamento de Usuários
-          </h2>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Formulário de Cadastro de Usuários -->
-            <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl">
-              <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-                <i class="fas fa-user-plus text-green-600"></i> Novo Usuário
-              </h3>
-              <div class="space-y-3">
-                <input type="text" id="adminNome" placeholder="Nome completo" class="w-full border-2 border-gray-200 rounded-lg p-2">
-                <input type="text" id="adminUsuario" placeholder="Usuário" class="w-full border-2 border-gray-200 rounded-lg p-2">
-                <input type="email" id="adminEmail" placeholder="E-mail" class="w-full border-2 border-gray-200 rounded-lg p-2">
-                <input type="password" id="adminSenha" placeholder="Senha" class="w-full border-2 border-gray-200 rounded-lg p-2">
-                <select id="adminTipo" class="w-full border-2 border-gray-200 rounded-lg p-2">
-                  <option value="usuario">Usuário Comum</option>
-                  <option value="admin">Administrador</option>
-                </select>
-                <button id="btnCadastrarAdminUsuario" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition">
-                  <i class="fas fa-save"></i> Cadastrar Usuário
-                </button>
+              
+              <!-- Lote 3 -->
+              <div class="lote-input-group">
+                <div class="flex items-center gap-2 mb-2">
+                  <i class="fas fa-tag text-purple-600"></i>
+                  <span class="font-bold text-purple-800">Lote 3 (opcional)</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Número do Lote</label>
+                    <input type="text" id="lote3Numero" placeholder="Ex: LOTE003" class="w-full border-2 rounded-lg p-2 font-mono text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Quantidade</label>
+                    <input type="number" id="lote3Quantidade" min="0" value="0" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Preço de Compra (R$)</label>
+                    <input type="number" id="lote3PrecoCompra" step="0.01" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Data de Validade</label>
+                    <input type="date" id="lote3Validade" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Fornecedor</label>
+                    <input type="text" id="lote3Fornecedor" placeholder="Nome do fornecedor" class="w-full border-2 rounded-lg p-2 text-sm">
+                  </div>
+                </div>
               </div>
             </div>
             
-            <!-- Lista de Usuários -->
-            <div class="lg:col-span-2 bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl">
-              <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-                <i class="fas fa-list text-blue-600"></i> Usuários Cadastrados
+            <div class="flex gap-3 flex-wrap mb-6">
+              <button id="btnSalvarProduto" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2 btn-primary"><i class="fas fa-save"></i> Salvar Produto com Lotes</button>
+              <button id="btnBuscarProduto" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2 btn-primary"><i class="fas fa-search"></i> Buscar por Código</button>
+              <button id="btnLimparProduto" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2 btn-primary"><i class="fas fa-eraser"></i> Limpar Campos</button>
+            </div>
+          </div>
+          
+          <!-- Painel Lista de Produtos -->
+          <div id="painelListaProdutos" class="painel-produto hidden-section">
+            <div class="mb-4 flex gap-2">
+              <input type="text" id="filtroProdutos" placeholder="Filtrar produtos..." class="border-2 rounded-xl p-2 flex-1">
+              <button id="btnFiltrarProdutos" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Filtrar</button>
+            </div>
+            <div id="listaProdutos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
+          </div>
+          
+          <!-- Painel Gerenciar Lotes -->
+          <div id="painelGerenciarLotes" class="painel-produto hidden-section">
+            <div class="mb-4 flex gap-2">
+              <select id="selectProdutoLote" class="border-2 rounded-xl p-2 flex-1"></select>
+              <button id="btnAdicionarLote" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition btn-primary"><i class="fas fa-plus"></i> Adicionar Lote</button>
+            </div>
+            
+            <!-- Form para novo lote -->
+            <div id="formNovoLote" class="hidden-section bg-green-50 p-4 rounded-xl mb-4">
+              <h4 class="font-bold mb-2 text-green-800">Novo Lote</h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div><input type="text" id="novoLoteNumero" placeholder="Número do Lote" class="w-full border-2 rounded-lg p-2"></div>
+                <div><input type="number" id="novoLoteQuantidade" min="1" value="1" class="w-full border-2 rounded-lg p-2"></div>
+                <div><input type="number" id="novoLotePrecoCompra" step="0.01" placeholder="Preço de Compra" class="w-full border-2 rounded-lg p-2"></div>
+                <div><input type="date" id="novoLoteValidade" class="w-full border-2 rounded-lg p-2"></div>
+                <div><input type="text" id="novoLoteFornecedor" placeholder="Fornecedor" class="w-full border-2 rounded-lg p-2"></div>
+                <div class="flex gap-2">
+                  <button id="btnSalvarNovoLote" class="bg-green-600 text-white px-4 py-2 rounded-lg flex-1 transition">Salvar</button>
+                  <button id="btnCancelarNovoLote" class="bg-gray-400 text-white px-4 py-2 rounded-lg flex-1 transition">Cancelar</button>
+                </div>
+              </div>
+            </div>
+            
+            <div id="listaLotesProduto" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTOQUE -->
+      <div id="estoque" class="section hidden-section">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-2xl font-bold mb-4"><i class="fas fa-warehouse text-orange-600"></i> Controle de Estoque por Lote (PEPS)</h2>
+          <p class="text-gray-600 mb-4">Sistema PEPS: Consome primeiro os lotes com menor data de validade</p>
+          <div class="mb-4 flex gap-2">
+            <input type="text" id="filtroEstoque" placeholder="Filtrar por produto..." class="border-2 rounded-xl p-2 flex-1">
+            <button id="btnFiltrarEstoque" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Filtrar</button>
+          </div>
+          <div id="listaEstoque" class="space-y-3 max-h-[600px] overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <!-- RELATÓRIOS -->
+      <div id="relatorios" class="section hidden-section">
+        <div class="space-y-6">
+          
+          <!-- Cards de Métricas -->
+          <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h2 class="text-2xl font-bold mb-4"><i class="fas fa-chart-pie text-purple-600"></i> Dashboard de Vendas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="stat-card text-white p-4 rounded-xl">
+                <p class="text-sm opacity-90">Faturamento Total</p>
+                <p class="text-2xl font-bold" id="metricFaturamento">R$ 0</p>
+                <p class="text-xs opacity-75 mt-1" id="metricTicketMedio">Ticket Médio: R$ 0</p>
+              </div>
+              <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <p class="text-sm opacity-90">Lucro Total</p>
+                <p class="text-2xl font-bold" id="metricLucro">R$ 0</p>
+                <p class="text-xs opacity-75 mt-1" id="metricLucroMedio">Lucro Médio: R$ 0</p>
+              </div>
+              <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <p class="text-sm opacity-90">Margem Média</p>
+                <p class="text-2xl font-bold" id="metricMargem">0%</p>
+                <p class="text-xs opacity-75 mt-1" id="metricProdutosVendidos">Produtos Vendidos: 0</p>
+              </div>
+              <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <p class="text-sm opacity-90">Total Vendas</p>
+                <p class="text-2xl font-bold" id="metricVendas">0</p>
+                <p class="text-xs opacity-75 mt-1" id="metricItensPorVenda">Itens/Venda: 0</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Gráficos -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Gráfico de Vendas Diárias -->
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+              <h3 class="font-bold text-lg mb-4"><i class="fas fa-chart-line text-blue-600"></i> Vendas por Período</h3>
+              <div class="grafico-container">
+                <canvas id="graficoVendasDiarias"></canvas>
+              </div>
+            </div>
+            
+            <!-- Gráfico de Faturamento vs Lucro -->
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+              <h3 class="font-bold text-lg mb-4"><i class="fas fa-chart-bar text-green-600"></i> Faturamento vs Lucro</h3>
+              <div class="grafico-container">
+                <canvas id="graficoFaturamentoLucro"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Ranking TOP 20 -->
+          <div class="bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-trophy text-yellow-500"></i> 
+                Top 20 Produtos Mais Vendidos
               </h3>
-              <div id="listaUsuarios" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
+              <button id="btnExportarRanking" class="text-sm bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+                <i class="fas fa-download mr-1"></i>Exportar CSV
+              </button>
+            </div>
+            
+            <!-- Tabela de Ranking -->
+            <div class="overflow-x-auto rounded-xl border">
+              <table class="w-full min-w-[800px]">
+                <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                  <tr>
+                    <th class="py-3 px-4 text-left text-sm font-semibold">#</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold">Produto</th>
+                    <th class="py-3 px-4 text-center text-sm font-semibold">Código</th>
+                    <th class="py-3 px-4 text-center text-sm font-semibold">Qtd Vendida</th>
+                    <th class="py-3 px-4 text-center text-sm font-semibold">Faturamento</th>
+                    <th class="py-3 px-4 text-center text-sm font-semibold">Lucro</th>
+                    <th class="py-3 px-4 text-center text-sm font-semibold">Margem</th>
+                    <th class="py-3 px-4 text-center text-sm font-semibold">Vezes</th>
+                    <th class="py-3 px-4 text-center text-sm font-semibold">% Top 1</th>
+                  </tr>
+                </thead>
+                <tbody id="rankingProdutos" class="divide-y divide-gray-200"></tbody>
+              </table>
+            </div>
+            
+            <!-- Resumo do Ranking -->
+            <div id="rankingResumo" class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+          </div>
+          
+          <!-- Histórico de Vendas -->
+          <div class="bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-history text-gray-600"></i> Histórico de Vendas
+              </h3>
+              <div class="flex gap-2">
+                <button id="btnFiltroTodas" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-blue-600 text-white transition">Todas</button>
+                <button id="btnFiltroHoje" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-gray-200 hover:bg-gray-300 transition">Hoje</button>
+                <button id="btnFiltroSemana" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-gray-200 hover:bg-gray-300 transition">7 dias</button>
+                <button id="btnFiltroMes" class="filtro-venda px-3 py-1 rounded-lg text-sm bg-gray-200 hover:bg-gray-300 transition">30 dias</button>
+              </div>
+            </div>
+            
+            <!-- Lista de Vendas -->
+            <div id="listaVendasRelatorio" class="space-y-3 max-h-[600px] overflow-y-auto"></div>
+            
+            <!-- Paginação -->
+            <div id="paginacaoVendas" class="flex justify-between items-center mt-4 pt-4 border-t">
+              <span class="text-sm text-gray-500" id="infoPaginacao"></span>
+              <div class="flex gap-2">
+                <button id="btnPaginaAnterior" class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-sm" disabled>Anterior</button>
+                <button id="btnPaginaProxima" class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-sm">Próxima</button>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <!-- USUÁRIOS -->
+      <div id="usuarios" class="section hidden-section">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-2xl font-bold mb-4"><i class="fas fa-users text-blue-600"></i> Gerenciamento de Usuários</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-gray-50 p-6 rounded-xl">
+              <h3 class="font-bold mb-4">Novo Usuário</h3>
+              <input type="text" id="adminNome" placeholder="Nome" class="w-full border-2 rounded-lg p-2 mb-2">
+              <input type="text" id="adminUsuario" placeholder="Usuário" class="w-full border-2 rounded-lg p-2 mb-2">
+              <input type="email" id="adminEmail" placeholder="E-mail" class="w-full border-2 rounded-lg p-2 mb-2">
+              <input type="password" id="adminSenha" placeholder="Senha" class="w-full border-2 rounded-lg p-2 mb-2">
+              <select id="adminTipo" class="w-full border-2 rounded-lg p-2 mb-2"><option value="usuario">Usuário</option><option value="admin">Administrador</option></select>
+              <button id="btnCadastrarAdmin" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition btn-primary"><i class="fas fa-save"></i> Cadastrar</button>
+            </div>
+            <div class="lg:col-span-2 bg-gray-50 p-6 rounded-xl">
+              <h3 class="font-bold mb-4">Usuários Cadastrados</h3>
+              <div id="listaUsuarios" class="space-y-2 max-h-[500px] overflow-y-auto"></div>
             </div>
           </div>
         </div>
@@ -425,259 +550,154 @@
 
 <script>
 (function() {
-  // ==================== SISTEMA DE AUTENTICAÇÃO ====================
-  let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-  let usuarioAtual = null;
-  
-  // Dados iniciais: criar usuário admin padrão se não existir
-  if (usuarios.length === 0) {
-    usuarios.push({
-      id: Date.now(),
-      nome: "Administrador",
-      usuario: "admin",
-      email: "admin@mixbazar.com",
-      senha: "admin123",
-      tipo: "admin",
-      dataCadastro: new Date().toLocaleString()
-    });
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-  }
-  
-  // ==================== VARIÁVEIS GLOBAIS DO SISTEMA ====================
+  // ==================== DADOS GLOBAIS ====================
   let produtos = [];
-  let carrinho = [];
+  let lotesEstoque = [];
   let vendas = [];
-  let graficoInstance = null;
-  let graficoFaturamento = null;
+  let usuarios = [];
+  let usuarioAtual = null;
+  let carrinho = [];
+  let graficoVendasDiarias = null;
+  let graficoFaturamentoLucro = null;
   
-  // DOM Elements
-  const DOM = {
-    busca: document.getElementById('busca'),
-    carrinhoBody: document.getElementById('carrinho'),
-    totalSpan: document.getElementById('total'),
-    qtdItensSpan: document.getElementById('qtdItensCarrinho'),
-    lucroEstimadoSpan: document.getElementById('lucroEstimado'),
-    listaProdutos: document.getElementById('listaProdutos'),
-    listaValidade: document.getElementById('listaValidade'),
-    listaUsuarios: document.getElementById('listaUsuarios'),
-    relatorioDiv: document.getElementById('relatorio'),
-    rankingProdutos: document.getElementById('rankingProdutos'),
-    graficoLucro: document.getElementById('graficoLucro'),
-    graficoFaturamento: document.getElementById('graficoFaturamento'),
-    metricFaturamento: document.getElementById('metricFaturamento'),
-    metricLucro: document.getElementById('metricLucro'),
-    metricMargem: document.getElementById('metricMargem'),
-    metricVendas: document.getElementById('metricVendas'),
-    totalVencidos: document.getElementById('totalVencidos'),
-    totalProximos: document.getElementById('totalProximos'),
-    totalValidos: document.getElementById('totalValidos'),
-    filtroValidade: document.getElementById('filtroValidade'),
-    previewCodigoProduto: document.getElementById('previewCodigoProduto'),
-    usuarioLogadoNome: document.getElementById('usuarioLogadoNome'),
-    usuarioLogadoEmail: document.getElementById('usuarioLogadoEmail')
-  };
-  
-  // ==================== FUNÇÕES DE AUTENTICAÇÃO ====================
-  function fazerLogin() {
-    const usuario = document.getElementById('loginUsuario').value.trim();
-    const senha = document.getElementById('loginSenha').value;
-    
-    if (!usuario || !senha) {
-      showToastLogin('Preencha todos os campos', true);
-      return;
-    }
-    
-    const user = usuarios.find(u => u.usuario === usuario && u.senha === senha);
-    
-    if (user) {
-      usuarioAtual = user;
-      localStorage.setItem('usuarioAtual', JSON.stringify(user));
-      showToastLogin(`Bem-vindo, ${user.nome}!`);
-      setTimeout(() => {
-        document.getElementById('telaLogin').classList.add('hidden-section');
-        document.getElementById('sistemaPrincipal').classList.remove('hidden-section');
-        if (DOM.usuarioLogadoNome) DOM.usuarioLogadoNome.innerText = user.nome;
-        if (DOM.usuarioLogadoEmail) DOM.usuarioLogadoEmail.innerText = user.email;
-        carregarDadosSistema();
-        showSection('vendas');
-      }, 500);
+  // Paginação
+  let paginaAtualVendas = 1;
+  const itensPorPagina = 10;
+  let filtroAtualVendas = 'todas';
+
+  // ==================== INICIALIZAÇÃO ====================
+  function inicializarDados() {
+    // Usuários
+    const storedUsuarios = localStorage.getItem('usuarios');
+    if (storedUsuarios) {
+      usuarios = JSON.parse(storedUsuarios);
     } else {
-      showToastLogin('Usuário ou senha inválidos', true);
-    }
-  }
-  
-  function fazerLogout() {
-    usuarioAtual = null;
-    localStorage.removeItem('usuarioAtual');
-    document.getElementById('telaLogin').classList.remove('hidden-section');
-    document.getElementById('sistemaPrincipal').classList.add('hidden-section');
-    document.getElementById('loginUsuario').value = '';
-    document.getElementById('loginSenha').value = '';
-  }
-  
-  function cadastrarNovoUsuario() {
-    const nome = document.getElementById('cadNome').value.trim();
-    const usuario = document.getElementById('cadUsuario').value.trim();
-    const email = document.getElementById('cadEmail').value.trim();
-    const senha = document.getElementById('cadSenha').value;
-    const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
-    
-    if (!nome || !usuario || !email || !senha) {
-      showToastLogin('Preencha todos os campos', true);
-      return;
-    }
-    
-    if (senha !== confirmarSenha) {
-      showToastLogin('As senhas não coincidem', true);
-      return;
-    }
-    
-    if (senha.length < 4) {
-      showToastLogin('A senha deve ter pelo menos 4 caracteres', true);
-      return;
-    }
-    
-    if (usuarios.some(u => u.usuario === usuario)) {
-      showToastLogin('Este nome de usuário já existe', true);
-      return;
-    }
-    
-    if (usuarios.some(u => u.email === email)) {
-      showToastLogin('Este e-mail já está cadastrado', true);
-      return;
-    }
-    
-    const novoUsuario = {
-      id: Date.now(),
-      nome: nome,
-      usuario: usuario,
-      email: email,
-      senha: senha,
-      tipo: 'usuario',
-      dataCadastro: new Date().toLocaleString()
-    };
-    
-    usuarios.push(novoUsuario);
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    
-    showToastLogin('Cadastro realizado com sucesso! Faça login.');
-    setTimeout(() => {
-      document.getElementById('telaCadastro').classList.add('hidden-section');
-      document.getElementById('telaLogin').classList.remove('hidden-section');
-      limparCamposCadastro();
-    }, 1500);
-  }
-  
-  function cadastrarUsuarioAdmin() {
-    const nome = document.getElementById('adminNome').value.trim();
-    const usuario = document.getElementById('adminUsuario').value.trim();
-    const email = document.getElementById('adminEmail').value.trim();
-    const senha = document.getElementById('adminSenha').value;
-    const tipo = document.getElementById('adminTipo').value;
-    
-    if (!nome || !usuario || !email || !senha) {
-      showToast('Preencha todos os campos', true);
-      return;
-    }
-    
-    if (senha.length < 4) {
-      showToast('A senha deve ter pelo menos 4 caracteres', true);
-      return;
-    }
-    
-    if (usuarios.some(u => u.usuario === usuario)) {
-      showToast('Este nome de usuário já existe', true);
-      return;
-    }
-    
-    if (usuarios.some(u => u.email === email)) {
-      showToast('Este e-mail já está cadastrado', true);
-      return;
-    }
-    
-    const novoUsuario = {
-      id: Date.now(),
-      nome: nome,
-      usuario: usuario,
-      email: email,
-      senha: senha,
-      tipo: tipo,
-      dataCadastro: new Date().toLocaleString()
-    };
-    
-    usuarios.push(novoUsuario);
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    
-    showToast(`Usuário ${nome} cadastrado com sucesso!`);
-    limparCamposAdminUsuario();
-    renderizarListaUsuarios();
-  }
-  
-  function renderizarListaUsuarios() {
-    if (!DOM.listaUsuarios) return;
-    
-    if (usuarios.length === 0) {
-      DOM.listaUsuarios.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl">Nenhum usuário cadastrado</div>';
-      return;
-    }
-    
-    DOM.listaUsuarios.innerHTML = usuarios.map(user => `
-      <div class="user-card bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-        <div class="flex justify-between items-start">
-          <div class="flex-1">
-            <div class="flex items-center gap-2">
-              <i class="fas ${user.tipo === 'admin' ? 'fa-crown text-yellow-500' : 'fa-user text-blue-500'}"></i>
-              <h3 class="font-bold">${escapeHtml(user.nome)}</h3>
-              ${user.tipo === 'admin' ? '<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Administrador</span>' : '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Usuário</span>'}
-            </div>
-            <p class="text-sm text-gray-600 mt-1"><i class="fas fa-user"></i> @${escapeHtml(user.usuario)}</p>
-            <p class="text-sm text-gray-600"><i class="fas fa-envelope"></i> ${escapeHtml(user.email)}</p>
-            <p class="text-xs text-gray-400 mt-1">Cadastrado em: ${user.dataCadastro}</p>
-          </div>
-          ${usuarioAtual && usuarioAtual.tipo === 'admin' && user.id !== usuarioAtual.id ? `
-            <button onclick="excluirUsuario(${user.id})" class="text-red-500 hover:text-red-700 p-2">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          ` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
-  
-  window.excluirUsuario = function(id) {
-    if (confirm('Tem certeza que deseja excluir este usuário?')) {
-      usuarios = usuarios.filter(u => u.id !== id);
+      usuarios = [{
+        id: Date.now(),
+        nome: "Administrador",
+        usuario: "admin",
+        email: "admin@mixbazar.com",
+        senha: "admin123",
+        tipo: "admin",
+        dataCadastro: new Date().toLocaleString()
+      }];
       localStorage.setItem('usuarios', JSON.stringify(usuarios));
-      renderizarListaUsuarios();
-      showToast('Usuário excluído com sucesso');
     }
-  };
-  
-  function limparCamposCadastro() {
-    document.getElementById('cadNome').value = '';
-    document.getElementById('cadUsuario').value = '';
-    document.getElementById('cadEmail').value = '';
-    document.getElementById('cadSenha').value = '';
-    document.getElementById('cadConfirmarSenha').value = '';
+    
+    // Produtos
+    const storedProdutos = localStorage.getItem('produtos');
+    if (storedProdutos) {
+      produtos = JSON.parse(storedProdutos);
+    } else {
+      produtos = [
+        { id: 1, nome: "Coca-Cola 2L", codigoBarras: "7890001", precoVenda: 9.90, precoCompra: 6.50 },
+        { id: 2, nome: "Arroz 5kg", codigoBarras: "7890002", precoVenda: 22.90, precoCompra: 18.00 },
+        { id: 3, nome: "Feijão 1kg", codigoBarras: "7890003", precoVenda: 7.50, precoCompra: 5.00 },
+        { id: 4, nome: "Macarrão 500g", codigoBarras: "7890004", precoVenda: 4.50, precoCompra: 3.20 },
+        { id: 5, nome: "Óleo de Soja", codigoBarras: "7890005", precoVenda: 6.90, precoCompra: 5.00 }
+      ];
+      localStorage.setItem('produtos', JSON.stringify(produtos));
+    }
+    
+    // Lotes de Estoque
+    const storedLotes = localStorage.getItem('lotesEstoque');
+    if (storedLotes) {
+      lotesEstoque = JSON.parse(storedLotes);
+    } else {
+      const hoje = new Date();
+      const daqui30Dias = new Date(hoje); daqui30Dias.setDate(hoje.getDate() + 30);
+      const daqui60Dias = new Date(hoje); daqui60Dias.setDate(hoje.getDate() + 60);
+      
+      lotesEstoque = [
+        { id: 1001, produtoId: 1, quantidade: 10, precoCompra: 6.50, dataValidade: daqui60Dias.toISOString().split('T')[0], numeroLote: "LOTE001", fornecedor: "Distribuidora ABC", dataEntrada: new Date().toISOString() },
+        { id: 1002, produtoId: 1, quantidade: 5, precoCompra: 7.00, dataValidade: daqui30Dias.toISOString().split('T')[0], numeroLote: "LOTE002", fornecedor: "Fornecedor XYZ", dataEntrada: new Date().toISOString() },
+        { id: 1003, produtoId: 2, quantidade: 5, precoCompra: 18.00, dataValidade: daqui60Dias.toISOString().split('T')[0], numeroLote: "LOTE003", fornecedor: "Distribuidora ABC", dataEntrada: new Date().toISOString() },
+        { id: 1004, produtoId: 3, quantidade: 8, precoCompra: 5.00, dataValidade: null, numeroLote: "LOTE004", fornecedor: "Fornecedor XYZ", dataEntrada: new Date().toISOString() },
+        { id: 1005, produtoId: 4, quantidade: 15, precoCompra: 3.20, dataValidade: null, numeroLote: "LOTE005", fornecedor: "Distribuidora ABC", dataEntrada: new Date().toISOString() },
+        { id: 1006, produtoId: 5, quantidade: 7, precoCompra: 5.00, dataValidade: null, numeroLote: "LOTE006", fornecedor: "Fornecedor XYZ", dataEntrada: new Date().toISOString() }
+      ];
+      localStorage.setItem('lotesEstoque', JSON.stringify(lotesEstoque));
+    }
+    
+    // Vendas
+    const storedVendas = localStorage.getItem('vendas');
+    vendas = storedVendas ? JSON.parse(storedVendas) : [];
   }
   
-  function limparCamposAdminUsuario() {
-    document.getElementById('adminNome').value = '';
-    document.getElementById('adminUsuario').value = '';
-    document.getElementById('adminEmail').value = '';
-    document.getElementById('adminSenha').value = '';
+  function persistData() {
+    localStorage.setItem('produtos', JSON.stringify(produtos));
+    localStorage.setItem('lotesEstoque', JSON.stringify(lotesEstoque));
+    localStorage.setItem('vendas', JSON.stringify(vendas));
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
   }
   
-  function showToastLogin(msg, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.style.backgroundColor = isError ? '#b91c1c' : '#1f2937';
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i> ${msg}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+  // ==================== FUNÇÕES DE ESTOQUE PEPS ====================
+  function getLotesDisponiveisPorProduto(produtoId) {
+    return lotesEstoque
+      .filter(lote => lote.produtoId === produtoId && lote.quantidade > 0)
+      .sort((a, b) => {
+        if (!a.dataValidade && !b.dataValidade) return 0;
+        if (!a.dataValidade) return 1;
+        if (!b.dataValidade) return -1;
+        return new Date(a.dataValidade) - new Date(b.dataValidade);
+      });
   }
   
-  // ==================== FUNÇÕES DO SISTEMA ====================
+  function getEstoqueTotalProduto(produtoId) {
+    return lotesEstoque.filter(lote => lote.produtoId === produtoId).reduce((sum, lote) => sum + lote.quantidade, 0);
+  }
+  
+  function getPrecoMedioProduto(produtoId) {
+    const lotes = lotesEstoque.filter(lote => lote.produtoId === produtoId && lote.quantidade > 0);
+    if (lotes.length === 0) return 0;
+    const quantidadeTotal = lotes.reduce((sum, lote) => sum + lote.quantidade, 0);
+    const valorTotal = lotes.reduce((sum, lote) => sum + (lote.precoCompra * lote.quantidade), 0);
+    return valorTotal / quantidadeTotal;
+  }
+  
+  function consumirEstoquePEPS(produtoId, quantidade) {
+    const lotesDisponiveis = getLotesDisponiveisPorProduto(produtoId);
+    let quantidadeRestante = quantidade;
+    const lotesConsumidos = [];
+    
+    for (let lote of lotesDisponiveis) {
+      if (quantidadeRestante <= 0) break;
+      const quantidadeConsumida = Math.min(lote.quantidade, quantidadeRestante);
+      lotesConsumidos.push({
+        loteId: lote.id,
+        quantidade: quantidadeConsumida,
+        precoCompra: lote.precoCompra,
+        dataValidade: lote.dataValidade
+      });
+      lote.quantidade -= quantidadeConsumida;
+      quantidadeRestante -= quantidadeConsumida;
+    }
+    
+    if (quantidadeRestante > 0) {
+      throw new Error(`Estoque insuficiente. Faltam ${quantidadeRestante} unidades.`);
+    }
+    
+    lotesEstoque = lotesEstoque.filter(lote => lote.quantidade > 0);
+    persistData();
+    return lotesConsumidos;
+  }
+  
+  function verificarStatusValidade(dataValidade) {
+    if (!dataValidade) return 'sem-data';
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    const validade = new Date(dataValidade); validade.setHours(0, 0, 0, 0);
+    if (validade < hoje) return 'vencido';
+    const diffDays = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
+    if (diffDays <= 30) return 'proximo';
+    return 'valido';
+  }
+  
+  // ==================== UTILITÁRIOS ====================
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+  }
+  
   function showToast(msg, isError = false) {
     const toast = document.createElement('div');
     toast.className = 'toast-notification';
@@ -687,141 +707,450 @@
     setTimeout(() => toast.remove(), 3000);
   }
   
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
+  function formatCurrency(value) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+  }
+  
+  function formatDate(dateString) {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return dateString;
+    }
+  }
+  
+  // ==================== CARRINHO ====================
+  function renderizarCarrinho() {
+    const tbody = document.getElementById('carrinho');
+    let total = 0, lucroTotal = 0, qtdItens = 0;
+    
+    if (carrinho.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center p-6 text-gray-400">🛒 Carrinho vazio. Adicione produtos!</td></tr>';
+    } else {
+      tbody.innerHTML = carrinho.map((item, idx) => {
+        const precoMedio = getPrecoMedioProduto(item.id);
+        const subtotal = item.precoVenda * item.qtd;
+        const lucroItem = (item.precoVenda - precoMedio) * item.qtd;
+        total += subtotal;
+        lucroTotal += lucroItem;
+        qtdItens += item.qtd;
+        
+        return `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-3 px-4 font-mono text-sm">${escapeHtml(item.codigoBarras)}</td>
+            <td class="py-3 px-4 font-medium">${escapeHtml(item.nome)}</td>
+            <td class="py-3 px-4 text-green-600 font-semibold">${formatCurrency(item.precoVenda)}</td>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2">
+                <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-lg transition" data-acao="decrementar" data-indice="${idx}">-</button>
+                <span class="w-8 text-center font-bold">${item.qtd}</span>
+                <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-lg transition" data-acao="incrementar" data-indice="${idx}">+</button>
+              </div>
+            </td>
+            <td class="py-3 px-4 font-semibold">${formatCurrency(subtotal)}</td>
+            <td class="py-3 px-4 text-center">
+              <button class="text-red-500 hover:text-red-700 transition" data-acao="remover" data-indice="${idx}"><i class="fas fa-times-circle text-xl"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    document.getElementById('total').innerText = total.toFixed(2);
+    document.getElementById('qtdItensCarrinho').innerText = qtdItens;
+    document.getElementById('lucroEstimado').innerText = lucroTotal.toFixed(2);
+    
+    document.querySelectorAll('[data-acao="decrementar"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-indice'));
+        if (carrinho[idx]) {
+          if (carrinho[idx].qtd > 1) {
+            carrinho[idx].qtd--;
+          } else {
+            carrinho.splice(idx, 1);
+          }
+          renderizarCarrinho();
+        }
+      });
+    });
+    
+    document.querySelectorAll('[data-acao="incrementar"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-indice'));
+        if (carrinho[idx]) {
+          const estoqueTotal = getEstoqueTotalProduto(carrinho[idx].id);
+          if (carrinho[idx].qtd + 1 > estoqueTotal) {
+            showToast('Estoque insuficiente!', true);
+          } else {
+            carrinho[idx].qtd++;
+            renderizarCarrinho();
+          }
+        }
+      });
+    });
+    
+    document.querySelectorAll('[data-acao="remover"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-indice'));
+        carrinho.splice(idx, 1);
+        renderizarCarrinho();
+      });
     });
   }
   
-  function carregarDadosSistema() {
-    const storedProdutos = localStorage.getItem('produtos');
-    const storedVendas = localStorage.getItem('vendas');
-    
-    if (storedProdutos) {
-      produtos = JSON.parse(storedProdutos);
-    } else {
-      const hoje = new Date();
-      const daqui30Dias = new Date(hoje);
-      daqui30Dias.setDate(hoje.getDate() + 30);
-      produtos = [
-        { id: 1, nome: "Coca-Cola 2L", codigoBarras: "7890001", preco: 9.90, compra: 6.50, estoque: 10, validade: new Date(hoje.getFullYear(), hoje.getMonth()+2, hoje.getDate()).toISOString().split('T')[0] },
-        { id: 2, nome: "Arroz 5kg", codigoBarras: "7890002", preco: 22.90, compra: 18.00, estoque: 5, validade: daqui30Dias.toISOString().split('T')[0] },
-        { id: 3, nome: "Feijão 1kg", codigoBarras: "7890003", preco: 7.50, compra: 5.00, estoque: 8, validade: null },
-        { id: 4, nome: "Macarrão 500g", codigoBarras: "7890004", preco: 4.50, compra: 3.20, estoque: 15, validade: null },
-        { id: 5, nome: "Óleo de Soja", codigoBarras: "7890005", preco: 6.90, compra: 5.00, estoque: 7, validade: null }
-      ];
-      localStorage.setItem('produtos', JSON.stringify(produtos));
-    }
-    
-    vendas = JSON.parse(localStorage.getItem('vendas')) || [];
-    
-    if (vendas.length === 0) {
-      for (let i = 0; i < 20; i++) {
-        const vendaItens = [];
-        const numItens = Math.floor(Math.random() * 3) + 1;
-        for (let j = 0; j < numItens; j++) {
-          const prod = produtos[Math.floor(Math.random() * produtos.length)];
-          const qtd = Math.floor(Math.random() * 5) + 1;
-          vendaItens.push({
-            id: prod.id,
-            nome: prod.nome,
-            codigoBarras: prod.codigoBarras,
-            preco: prod.preco,
-            compra: prod.compra,
-            qtd: qtd
-          });
-        }
-        const totalVenda = vendaItens.reduce((sum, item) => sum + (item.preco * item.qtd), 0);
-        const lucroVenda = vendaItens.reduce((sum, item) => sum + ((item.preco - item.compra) * item.qtd), 0);
-        vendas.push({
-          id: Date.now() + i,
-          data: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toLocaleString(),
-          itens: vendaItens,
-          total: totalVenda,
-          lucro: lucroVenda
-        });
-      }
-      localStorage.setItem('vendas', JSON.stringify(vendas));
-    }
-  }
-  
-  function persistData() {
-    localStorage.setItem('produtos', JSON.stringify(produtos));
-    localStorage.setItem('vendas', JSON.stringify(vendas));
-  }
-  
-  // ==================== GERADOR DE CÓDIGO ====================
-  function formatarCodigo(prefixo, numero, comprimentoMinimo) {
-    let numeroStr = numero.toString();
-    const comprimento = parseInt(comprimentoMinimo);
-    if (comprimento > 0) {
-      numeroStr = numeroStr.padStart(comprimento, '0');
-    }
-    return prefixo ? prefixo + numeroStr : numeroStr;
-  }
-  
-  function gerarPreviewProduto() {
-    const prefixo = document.getElementById('prefixo').value.trim();
-    const numero = parseInt(document.getElementById('numeroSequencial').value) || 1;
-    const comprimento = document.getElementById('comprimentoMinimo').value;
-    if (numero < 1 || numero > 9999) return;
-    const codigoGerado = formatarCodigo(prefixo, numero, comprimento);
-    if (DOM.previewCodigoProduto) DOM.previewCodigoProduto.innerText = codigoGerado;
-  }
-  
-  function gerarCodigoProduto() {
-    const prefixo = document.getElementById('prefixo').value.trim();
-    let numero = parseInt(document.getElementById('numeroSequencial').value) || 1;
-    const comprimento = document.getElementById('comprimentoMinimo').value;
-    
-    if (numero < 1 || numero > 9999) {
-      showToast('Número inválido! Use 1 a 9999', true);
+  function addProdutoCarrinho() {
+    const busca = document.getElementById('busca').value.trim();
+    if (!busca) {
+      showToast('Digite o código de barras ou nome do produto', true);
       return;
     }
     
-    let codigoGerado = formatarCodigo(prefixo, numero, comprimento);
-    let tentativas = 0;
-    const maxTentativas = 100;
+    let produto = produtos.find(p => p.codigoBarras === busca);
+    if (!produto) produto = produtos.find(p => p.nome.toLowerCase() === busca.toLowerCase());
     
-    while (produtos.some(p => p.codigoBarras === codigoGerado) && tentativas < maxTentativas) {
-      numero++;
-      if (numero > 9999) {
-        showToast('Todos os códigos disponíveis estão ocupados!', true);
+    if (!produto) {
+      showToast('Produto não encontrado!', true);
+      return;
+    }
+    
+    const estoqueTotal = getEstoqueTotalProduto(produto.id);
+    if (estoqueTotal <= 0) {
+      showToast(`Produto "${produto.nome}" sem estoque!`, true);
+      return;
+    }
+    
+    const itemExistente = carrinho.find(item => item.id === produto.id);
+    if (itemExistente) {
+      if (itemExistente.qtd + 1 > estoqueTotal) {
+        showToast('Estoque insuficiente!', true);
         return;
       }
-      codigoGerado = formatarCodigo(prefixo, numero, comprimento);
-      tentativas++;
+      itemExistente.qtd++;
+    } else {
+      carrinho.push({
+        id: produto.id,
+        nome: produto.nome,
+        codigoBarras: produto.codigoBarras,
+        precoVenda: produto.precoVenda,
+        qtd: 1
+      });
     }
     
-    document.getElementById('codigoBarras').value = codigoGerado;
-    document.getElementById('numeroSequencial').value = numero;
-    gerarPreviewProduto();
-    
-    const inputCodigo = document.getElementById('codigoBarras');
-    inputCodigo.classList.add('scanning');
-    setTimeout(() => inputCodigo.classList.remove('scanning'), 500);
-    showToast(`✅ Código ${codigoGerado} gerado com sucesso!`);
+    renderizarCarrinho();
+    document.getElementById('busca').value = '';
+    document.getElementById('busca').focus();
   }
   
-  function verificarDisponibilidade() {
-    const codigo = document.getElementById('codigoBarras').value.trim();
-    if (!codigo) {
-      showToast('Digite ou gere um código primeiro', true);
+  function limparCarrinho() {
+    if (carrinho.length > 0 && confirm('⚠️ Tem certeza que deseja limpar todo o carrinho?')) {
+      carrinho = [];
+      renderizarCarrinho();
+      showToast('Carrinho limpo');
+    }
+  }
+  
+  function finalizarVenda() {
+    if (carrinho.length === 0) {
+      showToast('Carrinho vazio! Adicione produtos antes de finalizar.', true);
       return;
     }
-    const existe = produtos.some(p => p.codigoBarras === codigo);
-    if (existe) {
-      showToast(`❌ Código ${codigo} já está em uso`, true);
+    
+    const itensVendidos = [];
+    let lucroTotalVenda = 0;
+    let totalVenda = 0;
+    
+    try {
+      for (let item of carrinho) {
+        const lotesConsumidos = consumirEstoquePEPS(item.id, item.qtd);
+        const precoMedioUsado = lotesConsumidos.reduce((sum, l) => sum + (l.precoCompra * l.quantidade), 0) / item.qtd;
+        const lucroItem = (item.precoVenda - precoMedioUsado) * item.qtd;
+        
+        itensVendidos.push({
+          id: item.id,
+          nome: item.nome,
+          codigoBarras: item.codigoBarras,
+          precoVenda: item.precoVenda,
+          precoCompraMedio: precoMedioUsado,
+          quantidade: item.qtd,
+          lotesConsumidos: lotesConsumidos
+        });
+        
+        lucroTotalVenda += lucroItem;
+        totalVenda += item.precoVenda * item.qtd;
+      }
+    } catch (error) {
+      showToast(error.message, true);
+      return;
+    }
+    
+    vendas.unshift({
+      id: Date.now(),
+      data: new Date().toISOString(),
+      usuario: usuarioAtual ? usuarioAtual.nome : 'Sistema',
+      itens: itensVendidos,
+      total: totalVenda,
+      lucro: lucroTotalVenda
+    });
+    
+    persistData();
+    carrinho = [];
+    renderizarCarrinho();
+    renderizarListaProdutos();
+    renderizarEstoque();
+    atualizarRelatorios();
+    
+    showToast(`✅ Venda finalizada! Total: ${formatCurrency(totalVenda)} | Lucro: ${formatCurrency(lucroTotalVenda)}`);
+  }
+  
+  // ==================== PRODUTOS COM LOTES ====================
+  function salvarProdutoComLotes() {
+    const codigoBarras = document.getElementById('codigoBarras').value.trim();
+    const nome = document.getElementById('nome').value.trim();
+    const precoVenda = parseFloat(document.getElementById('precoVenda').value);
+    const precoCompraPadrao = parseFloat(document.getElementById('precoCompra').value) || 0;
+    
+    if (!codigoBarras) { showToast('Código de barras é obrigatório!', true); return; }
+    if (!nome) { showToast('Nome do produto é obrigatório!', true); return; }
+    if (isNaN(precoVenda) || precoVenda <= 0) { showToast('Preço de venda inválido!', true); return; }
+    
+    let produtoExistente = produtos.find(p => p.codigoBarras === codigoBarras);
+    let produtoId;
+    
+    if (produtoExistente) {
+      if (!confirm(`⚠️ Produto com código ${codigoBarras} já existe. Deseja atualizar e adicionar novos lotes?`)) {
+        return;
+      }
+      produtoExistente.nome = nome;
+      produtoExistente.precoVenda = precoVenda;
+      produtoExistente.precoCompra = precoCompraPadrao;
+      produtoId = produtoExistente.id;
     } else {
-      showToast(`✅ Código ${codigo} está disponível`);
+      if (precoVenda < precoCompraPadrao) {
+        if (!confirm('⚠️ Atenção: Preço de venda está menor que o preço de compra! Isso gerará prejuízo. Deseja continuar?')) {
+          return;
+        }
+      }
+      
+      const novoProduto = {
+        id: Date.now(),
+        nome: nome,
+        codigoBarras: codigoBarras,
+        precoVenda: precoVenda,
+        precoCompra: precoCompraPadrao
+      };
+      produtos.push(novoProduto);
+      produtoId = novoProduto.id;
+    }
+    
+    for (let i = 1; i <= 3; i++) {
+      const quantidade = parseInt(document.getElementById(`lote${i}Quantidade`).value) || 0;
+      const precoCompra = parseFloat(document.getElementById(`lote${i}PrecoCompra`).value) || precoCompraPadrao;
+      const numero = document.getElementById(`lote${i}Numero`).value.trim();
+      const validade = document.getElementById(`lote${i}Validade`).value;
+      const fornecedor = document.getElementById(`lote${i}Fornecedor`).value.trim();
+      
+      if (quantidade > 0 && numero) {
+        lotesEstoque.push({
+          id: Date.now() + i,
+          produtoId: produtoId,
+          quantidade: quantidade,
+          precoCompra: precoCompra,
+          dataValidade: validade || null,
+          numeroLote: numero,
+          fornecedor: fornecedor || 'Não informado',
+          dataEntrada: new Date().toISOString()
+        });
+      }
+    }
+    
+    persistData();
+    limparCamposProduto();
+    renderizarListaProdutos();
+    renderizarEstoque();
+    carregarSelectProdutos();
+    showToast(`✅ Produto "${nome}" salvo com sucesso e lotes adicionados ao estoque!`);
+  }
+  
+  function limparCamposProduto() {
+    ['codigoBarras', 'nome', 'precoVenda', 'precoCompra'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById(`lote${i}Numero`).value = '';
+      document.getElementById(`lote${i}Quantidade`).value = '0';
+      document.getElementById(`lote${i}PrecoCompra`).value = '';
+      document.getElementById(`lote${i}Validade`).value = '';
+      document.getElementById(`lote${i}Fornecedor`).value = '';
     }
   }
   
-  // ==================== RANKING DE PRODUTOS ====================
+  // ==================== RELATÓRIOS ====================
+  
+  // Filtro de vendas
+  function filtrarVendas(filtro) {
+    const agora = new Date();
+    const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+    
+    let vendasFiltradas = [...vendas];
+    
+    switch(filtro) {
+      case 'hoje':
+        vendasFiltradas = vendas.filter(v => {
+          const dataVenda = new Date(v.data);
+          return dataVenda >= hoje;
+        });
+        break;
+      case 'semana':
+        const semanaAtras = new Date(hoje);
+        semanaAtras.setDate(hoje.getDate() - 7);
+        vendasFiltradas = vendas.filter(v => {
+          const dataVenda = new Date(v.data);
+          return dataVenda >= semanaAtras;
+        });
+        break;
+      case 'mes':
+        const mesAtras = new Date(hoje);
+        mesAtras.setDate(hoje.getDate() - 30);
+        vendasFiltradas = vendas.filter(v => {
+          const dataVenda = new Date(v.data);
+          return dataVenda >= mesAtras;
+        });
+        break;
+      default: // todas
+        break;
+    }
+    
+    return vendasFiltradas;
+  }
+  
+  function calcularMetricas(vendasFiltradas) {
+    const totalFaturamento = vendasFiltradas.reduce((sum, v) => sum + v.total, 0);
+    const totalLucro = vendasFiltradas.reduce((sum, v) => sum + v.lucro, 0);
+    const totalVendas = vendasFiltradas.length;
+    const margem = totalFaturamento > 0 ? (totalLucro / totalFaturamento) * 100 : 0;
+    const ticketMedio = totalVendas > 0 ? totalFaturamento / totalVendas : 0;
+    const lucroMedio = totalVendas > 0 ? totalLucro / totalVendas : 0;
+    
+    let totalItens = 0;
+    let totalProdutosVendidos = 0;
+    vendasFiltradas.forEach(v => {
+      v.itens.forEach(i => {
+        totalItens++;
+        totalProdutosVendidos += i.quantidade;
+      });
+    });
+    
+    const itensPorVenda = totalVendas > 0 ? (totalItens / totalVendas).toFixed(1) : 0;
+    
+    return {
+      totalFaturamento,
+      totalLucro,
+      totalVendas,
+      margem,
+      ticketMedio,
+      lucroMedio,
+      totalProdutosVendidos,
+      itensPorVenda
+    };
+  }
+  
+  function atualizarMetricas(vendasFiltradas) {
+    const metricas = calcularMetricas(vendasFiltradas);
+    
+    document.getElementById('metricFaturamento').innerText = formatCurrency(metricas.totalFaturamento);
+    document.getElementById('metricTicketMedio').innerText = `Ticket Médio: ${formatCurrency(metricas.ticketMedio)}`;
+    
+    document.getElementById('metricLucro').innerText = formatCurrency(metricas.totalLucro);
+    document.getElementById('metricLucroMedio').innerText = `Lucro Médio: ${formatCurrency(metricas.lucroMedio)}`;
+    
+    document.getElementById('metricMargem').innerText = `${metricas.margem.toFixed(1)}%`;
+    document.getElementById('metricProdutosVendidos').innerText = `Produtos Vendidos: ${metricas.totalProdutosVendidos}`;
+    
+    document.getElementById('metricVendas').innerText = metricas.totalVendas;
+    document.getElementById('metricItensPorVenda').innerText = `Itens/Venda: ${metricas.itensPorVenda}`;
+  }
+  
+  function atualizarGraficos(vendasFiltradas) {
+    // Gráfico de Vendas Diárias
+    const ctxVendasDiarias = document.getElementById('graficoVendasDiarias')?.getContext('2d');
+    if (ctxVendasDiarias) {
+      if (graficoVendasDiarias) graficoVendasDiarias.destroy();
+      
+      // Agrupar vendas por data
+      const vendasPorData = new Map();
+      vendasFiltradas.forEach(v => {
+        const data = new Date(v.data).toLocaleDateString('pt-BR');
+        if (!vendasPorData.has(data)) {
+          vendasPorData.set(data, { faturamento: 0, lucro: 0, quantidade: 0 });
+        }
+        const item = vendasPorData.get(data);
+        item.faturamento += v.total;
+        item.lucro += v.lucro;
+        item.quantidade++;
+      });
+      
+      const datasOrdenadas = Array.from(vendasPorData.keys()).sort((a, b) => {
+        return new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-'));
+      }).slice(-15);
+      
+      graficoVendasDiarias = new Chart(ctxVendasDiarias, {
+        type: 'line',
+        data: {
+          labels: datasOrdenadas,
+          datasets: [
+            { 
+              label: 'Faturamento (R$)', 
+              data: datasOrdenadas.map(d => vendasPorData.get(d).faturamento), 
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              fill: true,
+              tension: 0.4
+            },
+            { 
+              label: 'Lucro (R$)', 
+              data: datasOrdenadas.map(d => vendasPorData.get(d).lucro), 
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top' } }
+        }
+      });
+    }
+    
+    // Gráfico de Faturamento vs Lucro
+    const ctxFaturamentoLucro = document.getElementById('graficoFaturamentoLucro')?.getContext('2d');
+    if (ctxFaturamentoLucro) {
+      if (graficoFaturamentoLucro) graficoFaturamentoLucro.destroy();
+      
+      const ultimasVendas = vendasFiltradas.slice(0, 10).reverse();
+      
+      graficoFaturamentoLucro = new Chart(ctxFaturamentoLucro, {
+        type: 'bar',
+        data: {
+          labels: ultimasVendas.map((_, i) => `Venda ${i+1}`),
+          datasets: [
+            { label: 'Faturamento (R$)', data: ultimasVendas.map(v => v.total), backgroundColor: 'rgba(59, 130, 246, 0.7)', borderColor: '#3b82f6', borderWidth: 1 },
+            { label: 'Lucro (R$)', data: ultimasVendas.map(v => v.lucro), backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: '#10b981', borderWidth: 1 }
+          ]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top' } }
+        }
+      });
+    }
+  }
+  
   function calcularRankingProdutos() {
     const vendasPorProduto = new Map();
     
@@ -832,8 +1161,7 @@
             id: item.id,
             nome: item.nome,
             codigoBarras: item.codigoBarras,
-            preco: item.preco,
-            compra: item.compra,
+            precoVenda: item.precoVenda,
             quantidadeTotal: 0,
             faturamentoTotal: 0,
             lucroTotal: 0,
@@ -841,423 +1169,699 @@
           });
         }
         const prod = vendasPorProduto.get(item.id);
-        prod.quantidadeTotal += item.qtd;
-        prod.faturamentoTotal += item.preco * item.qtd;
-        prod.lucroTotal += (item.preco - item.compra) * item.qtd;
+        prod.quantidadeTotal += item.quantidade;
+        prod.faturamentoTotal += item.precoVenda * item.quantidade;
+        prod.lucroTotal += (item.precoVenda - item.precoCompraMedio) * item.quantidade;
         prod.vezesVendido++;
       });
     });
     
     const ranking = Array.from(vendasPorProduto.values());
     ranking.sort((a, b) => b.quantidadeTotal - a.quantidadeTotal);
-    return ranking.slice(0, 15);
+    return ranking.slice(0, 20);
   }
   
   function renderizarRanking() {
     const ranking = calcularRankingProdutos();
-    if (!DOM.rankingProdutos) return;
+    const container = document.getElementById('rankingProdutos');
+    const resumoContainer = document.getElementById('rankingResumo');
+    if (!container) return;
     
     if (ranking.length === 0) {
-      DOM.rankingProdutos.innerHTML = '<div class="col-span-full text-center p-6 bg-gray-100 rounded-xl">Nenhuma venda registrada ainda</div>';
+      container.innerHTML = `
+        <tr>
+          <td colspan="9" class="text-center p-8">
+            <i class="fas fa-chart-bar text-4xl text-gray-300 mb-3 block"></i>
+            <p class="text-gray-500 text-lg">Nenhuma venda registrada ainda</p>
+            <p class="text-sm text-gray-400 mt-1">Os 20 produtos mais vendidos aparecerão aqui</p>
+          </td>
+        </tr>
+      `;
+      if (resumoContainer) resumoContainer.innerHTML = '';
       return;
     }
     
-    DOM.rankingProdutos.innerHTML = ranking.map((prod, index) => {
-      const medalha = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}º`;
+    const maxQuantidade = ranking[0].quantidadeTotal;
+    const totalFaturamentoGeral = ranking.reduce((sum, p) => sum + p.faturamentoTotal, 0);
+    const totalLucroGeral = ranking.reduce((sum, p) => sum + p.lucroTotal, 0);
+    const totalUnidades = ranking.reduce((sum, p) => sum + p.quantidadeTotal, 0);
+    
+    container.innerHTML = ranking.map((prod, index) => {
+      const posicao = index + 1;
+      let rowClass = '';
+      let posicaoBadge = '';
+      
+      if (posicao === 1) {
+        rowClass = 'bg-yellow-50';
+        posicaoBadge = '<span class="text-2xl">🥇</span>';
+      } else if (posicao === 2) {
+        rowClass = 'bg-gray-50';
+        posicaoBadge = '<span class="text-2xl">🥈</span>';
+      } else if (posicao === 3) {
+        rowClass = 'bg-orange-50';
+        posicaoBadge = '<span class="text-2xl">🥉</span>';
+      } else {
+        posicaoBadge = `<span class="text-lg font-bold text-gray-400">${posicao}º</span>`;
+      }
+      
+      const percentual = maxQuantidade > 0 ? (prod.quantidadeTotal / maxQuantidade) * 100 : 0;
       const margem = prod.faturamentoTotal > 0 ? (prod.lucroTotal / prod.faturamentoTotal) * 100 : 0;
       
       return `
-        <div class="bg-white rounded-xl p-4 shadow-md border-l-4 ${index === 0 ? 'border-yellow-500' : index === 1 ? 'border-gray-400' : index === 2 ? 'border-orange-500' : 'border-blue-200'} hover:shadow-lg transition">
-          <div class="flex items-start gap-3">
-            <div class="text-3xl ${index < 3 ? 'font-bold' : ''}">${medalha}</div>
-            <div class="flex-1">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="font-bold text-lg">${escapeHtml(prod.nome)}</h3>
-                  <p class="text-xs font-mono text-gray-500"><i class="fas fa-barcode"></i> ${escapeHtml(prod.codigoBarras)}</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-2xl font-bold text-green-600">${prod.quantidadeTotal}</p>
-                  <p class="text-xs text-gray-500">unidades vendidas</p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-2 mt-3 text-sm">
-                <div class="bg-blue-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Faturamento</p><p class="font-bold text-blue-600">R$ ${prod.faturamentoTotal.toFixed(2)}</p></div>
-                <div class="bg-green-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Lucro gerado</p><p class="font-bold text-green-600">R$ ${prod.lucroTotal.toFixed(2)}</p></div>
-                <div class="bg-purple-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Preço médio</p><p class="font-bold text-purple-600">R$ ${prod.preco.toFixed(2)}</p></div>
-                <div class="bg-orange-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Margem</p><p class="font-bold text-orange-600">${margem.toFixed(1)}%</p></div>
-              </div>
-              <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all" style="width: ${Math.min(100, (prod.quantidadeTotal / ranking[0].quantidadeTotal) * 100)}%"></div>
+        <tr class="ranking-table-row ${rowClass}">
+          <td class="py-3 px-4 text-center">${posicaoBadge}</td>
+          <td class="py-3 px-4">
+            <div>
+              <p class="font-semibold">${escapeHtml(prod.nome)}</p>
+              <div class="progress-bar mt-1">
+                <div class="progress-fill ${posicao === 1 ? 'bg-yellow-400' : posicao === 2 ? 'bg-gray-400' : posicao === 3 ? 'bg-orange-400' : 'bg-blue-400'}" style="width: ${percentual}%"></div>
               </div>
             </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-  
-  // ==================== VALIDADE ====================
-  function verificarStatusValidade(dataValidade) {
-    if (!dataValidade) return 'sem-data';
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const validade = new Date(dataValidade);
-    validade.setHours(0, 0, 0, 0);
-    if (validade < hoje) return 'vencido';
-    const diffDays = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
-    if (diffDays <= 30) return 'proximo';
-    return 'valido';
-  }
-  
-  function atualizarDashboardValidade() {
-    let vencidos = 0, proximos = 0, validos = 0;
-    produtos.forEach(prod => {
-      const status = verificarStatusValidade(prod.validade);
-      if (status === 'vencido') vencidos++;
-      else if (status === 'proximo') proximos++;
-      else if (status === 'valido') validos++;
-    });
-    if (DOM.totalVencidos) DOM.totalVencidos.innerText = vencidos;
-    if (DOM.totalProximos) DOM.totalProximos.innerText = proximos;
-    if (DOM.totalValidos) DOM.totalValidos.innerText = validos;
-  }
-  
-  function renderControleValidade() {
-    if (!DOM.listaValidade) return;
-    const filtro = DOM.filtroValidade ? DOM.filtroValidade.value : 'todos';
-    let produtosFiltrados = [...produtos];
-    if (filtro !== 'todos') {
-      produtosFiltrados = produtosFiltrados.filter(prod => verificarStatusValidade(prod.validade) === filtro);
-    }
-    
-    if (produtosFiltrados.length === 0) {
-      DOM.listaValidade.innerHTML = '<div class="col-span-full text-center p-6 bg-gray-100 rounded-xl">Nenhum produto encontrado</div>';
-      return;
-    }
-    
-    DOM.listaValidade.innerHTML = produtosFiltrados.map(prod => {
-      const status = verificarStatusValidade(prod.validade);
-      const dataFormatada = prod.validade ? new Date(prod.validade).toLocaleDateString('pt-BR') : 'Não cadastrada';
-      return `
-        <div class="border-2 rounded-xl p-4 ${status === 'vencido' ? 'vencido' : status === 'proximo' ? 'proximo-vencer' : 'valido'} shadow-sm">
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <div class="flex items-center gap-2 mb-2">
-                <i class="fas fa-barcode text-gray-400"></i>
-                <span class="text-xs font-mono">${escapeHtml(prod.codigoBarras)}</span>
-              </div>
-              <h3 class="font-bold">${escapeHtml(prod.nome)}</h3>
-              <p class="text-sm mt-1"><i class="fas fa-calendar-alt"></i> ${dataFormatada}</p>
-              <p class="text-sm">📦 ${prod.estoque} un.</p>
-              <p class="text-green-600 font-semibold">R$ ${prod.preco.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-  
-  // ==================== PRODUTOS ====================
-  function renderProdutos() {
-    if (!DOM.listaProdutos) return;
-    if (produtos.length === 0) {
-      DOM.listaProdutos.innerHTML = '<div class="col-span-full text-center p-6 bg-gray-100 rounded-xl">Nenhum produto cadastrado</div>';
-      return;
-    }
-    
-    DOM.listaProdutos.innerHTML = produtos.map(prod => {
-      const margem = prod.compra > 0 ? ((prod.preco - prod.compra) / prod.compra) * 100 : 0;
-      return `
-        <div class="border-2 rounded-xl p-4 bg-white shadow-sm">
-          <div class="flex justify-between">
-            <div class="flex-1">
-              <div class="text-xs font-mono text-gray-500">${escapeHtml(prod.codigoBarras)}</div>
-              <h3 class="font-bold">${escapeHtml(prod.nome)}</h3>
-              <p class="text-green-600">R$ ${prod.preco.toFixed(2)}</p>
-              <p class="text-sm">📦 ${prod.estoque} un.</p>
-              <p class="text-xs text-gray-500">Margem: ${margem.toFixed(1)}%</p>
-            </div>
-            <button data-remover="${prod.id}" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
-          </div>
-          <div class="mt-3 flex gap-2">
-            <input type="number" id="stock-${prod.id}" value="${prod.estoque}" class="border rounded-lg w-24 p-2 text-sm">
-            <button data-atualizar="${prod.id}" class="bg-amber-500 text-white px-3 py-2 rounded-lg text-sm">Atualizar</button>
-          </div>
-        </div>
+          </td>
+          <td class="py-3 px-4 text-center font-mono text-sm text-gray-600">${escapeHtml(prod.codigoBarras)}</td>
+          <td class="py-3 px-4 text-center">
+            <span class="font-bold text-lg ${posicao <= 3 ? 'text-blue-700' : 'text-gray-700'}">${prod.quantidadeTotal}</span>
+          </td>
+          <td class="py-3 px-4 text-center font-semibold text-blue-600">${formatCurrency(prod.faturamentoTotal)}</td>
+          <td class="py-3 px-4 text-center font-semibold ${prod.lucroTotal >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(prod.lucroTotal)}</td>
+          <td class="py-3 px-4 text-center">
+            <span class="px-2 py-1 rounded-full text-xs font-bold ${margem >= 30 ? 'bg-green-100 text-green-700' : margem >= 15 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">${margem.toFixed(1)}%</span>
+          </td>
+          <td class="py-3 px-4 text-center text-sm">${prod.vezesVendido}x</td>
+          <td class="py-3 px-4 text-center">
+            <span class="text-xs ${percentual >= 80 ? 'text-green-600 font-bold' : percentual >= 50 ? 'text-blue-600' : 'text-gray-500'}">${percentual.toFixed(0)}%</span>
+          </td>
+        </tr>
       `;
     }).join('');
     
-    document.querySelectorAll('[data-remover]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-remover'));
-        if (confirm('Remover produto?')) {
-          produtos = produtos.filter(p => p.id !== id);
-          carrinho = carrinho.filter(item => item.id !== id);
-          persistData();
-          renderProdutos();
-          renderControleValidade();
-          atualizarDashboardValidade();
-          renderCarrinho();
-          showToast('Produto removido');
-        }
-      });
-    });
-    
-    document.querySelectorAll('[data-atualizar]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-atualizar'));
-        const input = document.getElementById(`stock-${id}`);
-        const novaQtd = Math.max(0, parseInt(input.value) || 0);
-        const produto = produtos.find(p => p.id === id);
-        if (produto) {
-          produto.estoque = novaQtd;
-          persistData();
-          renderProdutos();
-          renderControleValidade();
-          showToast(`Estoque atualizado: ${produto.nome}`);
-        }
-      });
-    });
-  }
-  
-  function salvarProduto() {
-    const codigoBarras = document.getElementById('codigoBarras').value.trim();
-    const nome = document.getElementById('nome').value.trim();
-    const preco = parseFloat(document.getElementById('preco').value);
-    const compra = parseFloat(document.getElementById('compra').value) || 0;
-    const estoque = parseInt(document.getElementById('estoque').value) || 0;
-    const validade = document.getElementById('validade').value;
-    
-    if (!codigoBarras) { showToast('Código de barras obrigatório', true); return; }
-    if (!nome) { showToast('Nome do produto obrigatório', true); return; }
-    if (isNaN(preco) || preco <= 0) { showToast('Preço inválido', true); return; }
-    
-    const existente = produtos.find(p => p.codigoBarras === codigoBarras);
-    if (existente) {
-      if (confirm(`Atualizar produto ${nome}?`)) {
-        existente.nome = nome;
-        existente.preco = preco;
-        existente.compra = compra;
-        existente.estoque = estoque;
-        existente.validade = validade;
-        persistData();
-        renderProdutos();
-        renderControleValidade();
-        atualizarDashboardValidade();
-        showToast(`Produto ${nome} atualizado`);
-      }
-      return;
+    if (resumoContainer) {
+      const margemMediaGeral = totalFaturamentoGeral > 0 ? (totalLucroGeral / totalFaturamentoGeral) * 100 : 0;
+      
+      resumoContainer.innerHTML = `
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-xl">
+          <p class="text-sm opacity-90">Top 20 - Faturamento</p>
+          <p class="text-2xl font-bold">${formatCurrency(totalFaturamentoGeral)}</p>
+        </div>
+        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-xl">
+          <p class="text-sm opacity-90">Top 20 - Lucro</p>
+          <p class="text-2xl font-bold">${formatCurrency(totalLucroGeral)}</p>
+        </div>
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-xl">
+          <p class="text-sm opacity-90">Top 20 - Margem Média</p>
+          <p class="text-2xl font-bold">${margemMediaGeral.toFixed(1)}%</p>
+          <p class="text-xs opacity-75">${totalUnidades} unidades vendidas</p>
+        </div>
+      `;
     }
+  }
+  
+  function renderizarHistoricoVendas() {
+    const container = document.getElementById('listaVendasRelatorio');
+    if (!container) return;
     
-    const novoProduto = { id: Date.now(), nome, codigoBarras, preco, compra, estoque, validade };
-    produtos.push(novoProduto);
-    persistData();
-    renderProdutos();
-    renderControleValidade();
-    atualizarDashboardValidade();
-    limparCamposProduto();
-    showToast(`Produto ${nome} cadastrado`);
-  }
-  
-  function limparCamposProduto() {
-    document.getElementById('codigoBarras').value = '';
-    document.getElementById('nome').value = '';
-    document.getElementById('preco').value = '';
-    document.getElementById('compra').value = '';
-    document.getElementById('estoque').value = '';
-    document.getElementById('validade').value = '';
-  }
-  
-  function buscarProdutoPorCodigo() {
-    const codigo = document.getElementById('codigoBarras').value.trim();
-    const produto = produtos.find(p => p.codigoBarras === codigo);
-    if (produto) {
-      document.getElementById('nome').value = produto.nome;
-      document.getElementById('preco').value = produto.preco;
-      document.getElementById('compra').value = produto.compra;
-      document.getElementById('estoque').value = produto.estoque;
-      document.getElementById('validade').value = produto.validade || '';
-      showToast(`Produto encontrado: ${produto.nome}`);
+    const vendasFiltradas = filtrarVendas(filtroAtualVendas);
+    const totalPaginas = Math.ceil(vendasFiltradas.length / itensPorPagina);
+    
+    if (paginaAtualVendas > totalPaginas) paginaAtualVendas = Math.max(1, totalPaginas);
+    
+    const inicio = (paginaAtualVendas - 1) * itensPorPagina;
+    const fim = inicio + itensPorPagina;
+    const vendasPagina = vendasFiltradas.slice(inicio, fim);
+    
+    if (vendasFiltradas.length === 0) {
+      container.innerHTML = `
+        <div class="text-center p-8 bg-gray-50 rounded-xl">
+          <i class="fas fa-receipt text-4xl text-gray-300 mb-3"></i>
+          <p class="text-gray-500">Nenhuma venda encontrada</p>
+        </div>
+      `;
     } else {
-      showToast('Produto não encontrado', true);
-    }
-  }
-  
-  // ==================== CARRINHO ====================
-  function addProduto() {
-    const busca = DOM.busca.value.trim();
-    if (!busca) { showToast('Digite o código ou nome', true); return; }
-    
-    let produto = produtos.find(p => p.codigoBarras === busca);
-    if (!produto) produto = produtos.find(p => p.nome.toLowerCase() === busca.toLowerCase());
-    if (!produto) { showToast('Produto não encontrado', true); return; }
-    
-    const statusValidade = verificarStatusValidade(produto.validade);
-    if (statusValidade === 'vencido') {
-      showToast(`Produto VENCIDO: ${produto.nome}`, true);
-      return;
-    }
-    
-    if (produto.estoque <= 0) { showToast('Sem estoque', true); return; }
-    
-    const itemExistente = carrinho.find(item => item.id === produto.id);
-    if (itemExistente) {
-      if (itemExistente.qtd + 1 > produto.estoque) { showToast('Estoque insuficiente', true); return; }
-      itemExistente.qtd++;
-    } else {
-      carrinho.push({ ...produto, qtd: 1 });
-    }
-    renderCarrinho();
-    DOM.busca.value = '';
-    DOM.busca.focus();
-  }
-  
-  function renderCarrinho() {
-    let total = 0, lucroTotal = 0, qtdItens = 0;
-    if (carrinho.length === 0) {
-      DOM.carrinhoBody.innerHTML = '<tr><td colspan="7" class="text-center p-6 text-gray-400">Carrinho vazio</td>' + '</tr>';
-    } else {
-      DOM.carrinhoBody.innerHTML = carrinho.map((item, idx) => {
-        const subtotal = item.preco * item.qtd;
-        total += subtotal;
-        lucroTotal += (item.preco - item.compra) * item.qtd;
-        qtdItens += item.qtd;
+      container.innerHTML = vendasPagina.map((venda, index) => {
+        const dataFormatada = formatDate(venda.data);
+        const quantidadeItens = venda.itens.reduce((sum, i) => sum + i.quantidade, 0);
+        
         return `
-          <tr class="border-b">
-            <td class="p-2 font-mono text-sm">${escapeHtml(item.codigoBarras)}</td>
-            <td class="p-2">${escapeHtml(item.nome)}</td>
-            <td class="p-2 text-sm">${item.validade ? new Date(item.validade).toLocaleDateString('pt-BR') : '---'}</td>
-            <td class="p-2">R$ ${item.preco.toFixed(2)}</td>
-            <td class="p-2"><button data-dec="${idx}" class="bg-gray-200 px-2 rounded">-</button> ${item.qtd} <button data-inc="${idx}" class="bg-gray-200 px-2 rounded">+</button></td>
-            <td class="p-2">R$ ${subtotal.toFixed(2)}</td>
-            <td class="p-2 text-center"><button data-rem="${idx}" class="text-red-500"><i class="fas fa-times"></i></button></td>
-          </tr>
+          <div class="venda-detalhe bg-white rounded-xl p-4 shadow-sm">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-shopping-cart text-blue-500"></i>
+                  <span class="font-bold text-lg">Venda #${vendasFiltradas.length - (inicio + index)}</span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">
+                  <i class="far fa-calendar-alt mr-1"></i>${dataFormatada}
+                  <span class="mx-2">|</span>
+                  <i class="far fa-user mr-1"></i>${escapeHtml(venda.usuario)}
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-2xl font-bold text-green-600">${formatCurrency(venda.total)}</p>
+                <p class="text-sm ${venda.lucro >= 0 ? 'text-green-500' : 'text-red-500'}">
+                  Lucro: ${formatCurrency(venda.lucro)}
+                  <span class="text-xs ml-1">(${((venda.lucro/venda.total)*100).toFixed(1)}%)</span>
+                </p>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-3">
+              <p class="text-xs font-semibold text-gray-500 mb-2">ITENS DA VENDA (${quantidadeItens} unidades)</p>
+              <div class="space-y-1">
+                ${venda.itens.map(item => `
+                  <div class="flex justify-between text-sm">
+                    <span>
+                      <span class="font-medium">${escapeHtml(item.nome)}</span>
+                      <span class="text-gray-400 text-xs ml-1">x${item.quantidade}</span>
+                    </span>
+                    <span class="text-gray-600">${formatCurrency(item.precoVenda * item.quantidade)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
         `;
       }).join('');
     }
-    DOM.totalSpan.innerText = total.toFixed(2);
-    DOM.qtdItensSpan.innerText = qtdItens;
-    DOM.lucroEstimadoSpan.innerText = lucroTotal.toFixed(2);
     
-    document.querySelectorAll('[data-dec]').forEach(btn => {
-      btn.addEventListener('click', () => alterarQuantidade(parseInt(btn.getAttribute('data-dec')), -1));
-    });
-    document.querySelectorAll('[data-inc]').forEach(btn => {
-      btn.addEventListener('click', () => alterarQuantidade(parseInt(btn.getAttribute('data-inc')), 1));
-    });
-    document.querySelectorAll('[data-rem]').forEach(btn => {
-      btn.addEventListener('click', () => removerItemCarrinho(parseInt(btn.getAttribute('data-rem'))));
-    });
-  }
-  
-  function alterarQuantidade(index, delta) {
-    const item = carrinho[index];
-    const produtoDB = produtos.find(p => p.id === item.id);
-    const novaQtd = item.qtd + delta;
-    if (novaQtd < 1) { removerItemCarrinho(index); return; }
-    if (novaQtd > produtoDB.estoque) { showToast('Estoque insuficiente', true); return; }
-    item.qtd = novaQtd;
-    renderCarrinho();
-  }
-  
-  function removerItemCarrinho(index) {
-    carrinho.splice(index, 1);
-    renderCarrinho();
-  }
-  
-  function limparCarrinho() {
-    if (carrinho.length && confirm('Limpar carrinho?')) {
-      carrinho = [];
-      renderCarrinho();
-    }
-  }
-  
-  function finalizarVenda() {
-    if (carrinho.length === 0) { showToast('Carrinho vazio', true); return; }
+    // Atualizar paginação
+    document.getElementById('infoPaginacao').innerText = 
+      vendasFiltradas.length > 0 ? 
+      `Mostrando ${inicio + 1}-${Math.min(fim, vendasFiltradas.length)} de ${vendasFiltradas.length} vendas` :
+      'Nenhuma venda';
     
-    for (let item of carrinho) {
-      const produtoDB = produtos.find(p => p.id === item.id);
-      if (!produtoDB) { showToast(`Produto ${item.nome} não encontrado`, true); return; }
-      if (produtoDB.estoque < item.qtd) { showToast(`Estoque insuficiente: ${item.nome}`, true); return; }
+    document.getElementById('btnPaginaAnterior').disabled = paginaAtualVendas <= 1;
+    document.getElementById('btnPaginaProxima').disabled = paginaAtualVendas >= totalPaginas || totalPaginas === 0;
+  }
+  
+  function mudarFiltroVendas(filtro) {
+    filtroAtualVendas = filtro;
+    paginaAtualVendas = 1;
+    
+    document.querySelectorAll('.filtro-venda').forEach(btn => {
+      btn.classList.remove('bg-blue-600', 'text-white');
+      btn.classList.add('bg-gray-200');
+    });
+    
+    const btnAtivo = document.getElementById(`btnFiltro${filtro.charAt(0).toUpperCase() + filtro.slice(1)}`);
+    if (btnAtivo) {
+      btnAtivo.classList.remove('bg-gray-200');
+      btnAtivo.classList.add('bg-blue-600', 'text-white');
     }
     
-    let lucroTotal = 0, totalVenda = 0;
-    for (let item of carrinho) {
-      const produtoDB = produtos.find(p => p.id === item.id);
-      produtoDB.estoque -= item.qtd;
-      lucroTotal += (item.preco - item.compra) * item.qtd;
-      totalVenda += item.preco * item.qtd;
-    }
-    
-    vendas.push({
-      id: Date.now(),
-      data: new Date().toLocaleString(),
-      usuario: usuarioAtual ? usuarioAtual.nome : 'Sistema',
-      itens: JSON.parse(JSON.stringify(carrinho)),
-      total: totalVenda,
-      lucro: lucroTotal
-    });
-    persistData();
-    carrinho = [];
-    renderCarrinho();
-    renderProdutos();
-    atualizarRelatorios();
-    renderizarRanking();
-    showToast(`Venda finalizada! Total: R$ ${totalVenda.toFixed(2)}`);
+    const vendasFiltradas = filtrarVendas(filtro);
+    atualizarMetricas(vendasFiltradas);
+    atualizarGraficos(vendasFiltradas);
+    renderizarHistoricoVendas();
   }
   
-  // ==================== RELATÓRIOS ====================
+  function exportarRanking() {
+    const ranking = calcularRankingProdutos();
+    if (ranking.length === 0) {
+      showToast('Nenhum dado para exportar!', true);
+      return;
+    }
+    
+    let csv = 'Posição,Produto,Código,Qtd Vendida,Faturamento,Lucro,Margem,Vezes Vendido\n';
+    ranking.forEach((prod, index) => {
+      const margem = prod.faturamentoTotal > 0 ? (prod.lucroTotal / prod.faturamentoTotal) * 100 : 0;
+      csv += `${index + 1},"${prod.nome}","${prod.codigoBarras}",${prod.quantidadeTotal},${prod.faturamentoTotal.toFixed(2)},${prod.lucroTotal.toFixed(2)},${margem.toFixed(1)}%,${prod.vezesVendido}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `ranking_produtos_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast('✅ Ranking exportado com sucesso!');
+  }
+  
   function atualizarRelatorios() {
-    const totalFaturamento = vendas.reduce((sum, v) => sum + v.total, 0);
-    const totalLucro = vendas.reduce((sum, v) => sum + v.lucro, 0);
-    const margem = totalFaturamento > 0 ? (totalLucro / totalFaturamento) * 100 : 0;
-    
-    if (DOM.metricFaturamento) DOM.metricFaturamento.innerText = `R$ ${totalFaturamento.toFixed(2)}`;
-    if (DOM.metricLucro) DOM.metricLucro.innerText = `R$ ${totalLucro.toFixed(2)}`;
-    if (DOM.metricMargem) DOM.metricMargem.innerText = `${margem.toFixed(1)}%`;
-    if (DOM.metricVendas) DOM.metricVendas.innerText = vendas.length;
-    
-    if (graficoInstance) graficoInstance.destroy();
-    if (graficoFaturamento) graficoFaturamento.destroy();
-    
-    if (DOM.graficoLucro) {
-      graficoInstance = new Chart(DOM.graficoLucro, {
-        type: 'bar',
-        data: { labels: vendas.map((_,i) => i+1), datasets: [{ label: 'Lucro (R$)', data: vendas.map(v => v.lucro), backgroundColor: '#10b981' }] },
-        options: { responsive: true, maintainAspectRatio: true }
-      });
-    }
-    
-    if (DOM.graficoFaturamento) {
-      graficoFaturamento = new Chart(DOM.graficoFaturamento, {
-        type: 'line',
-        data: { labels: vendas.map((_,i) => i+1), datasets: [{ label: 'Faturamento (R$)', data: vendas.map(v => v.total), borderColor: '#3b82f6', fill: true }] },
-        options: { responsive: true, maintainAspectRatio: true }
-      });
-    }
-    
-    if (DOM.relatorioDiv) {
-      DOM.relatorioDiv.innerHTML = vendas.length === 0 ? 'Nenhuma venda' : 
-        vendas.slice().reverse().slice(0, 10).map(v => `<div class="border p-2 mb-2 rounded"><strong>${v.data}</strong> - Usuário: ${v.usuario || 'Sistema'} - Total: R$ ${v.total.toFixed(2)} - Lucro: R$ ${v.lucro.toFixed(2)}<br><small>${v.itens.map(i => `${i.nome} (${i.qtd})`).join(', ')}</small></div>`).join('');
-    }
-    
+    const vendasFiltradas = filtrarVendas(filtroAtualVendas);
+    atualizarMetricas(vendasFiltradas);
+    atualizarGraficos(vendasFiltradas);
     renderizarRanking();
+    renderizarHistoricoVendas();
   }
   
-  // ==================== NAVEGAÇÃO ====================
-  function showSection(sectionId) {
+  // ==================== NAVEGAÇÃO E ABAS ====================
+  function mostrarPainelProduto(painel) {
+    document.querySelectorAll('.painel-produto').forEach(p => p.classList.add('hidden-section'));
+    document.querySelectorAll('.tab-produto').forEach(t => {
+      t.classList.remove('bg-blue-600', 'text-white');
+      t.classList.add('bg-gray-200');
+    });
+    
+    if (painel === 'cadastro') {
+      document.getElementById('painelCadastroProduto').classList.remove('hidden-section');
+      document.getElementById('tabCadastroProduto').classList.remove('bg-gray-200');
+      document.getElementById('tabCadastroProduto').classList.add('bg-blue-600', 'text-white');
+    } else if (painel === 'listaProdutos') {
+      document.getElementById('painelListaProdutos').classList.remove('hidden-section');
+      document.getElementById('tabListaProdutos').classList.remove('bg-gray-200');
+      document.getElementById('tabListaProdutos').classList.add('bg-blue-600', 'text-white');
+      renderizarListaProdutos();
+    } else if (painel === 'gerenciarLotes') {
+      document.getElementById('painelGerenciarLotes').classList.remove('hidden-section');
+      document.getElementById('tabGerenciarLotes').classList.remove('bg-gray-200');
+      document.getElementById('tabGerenciarLotes').classList.add('bg-blue-600', 'text-white');
+      renderizarLotesDoProduto();
+    }
+  }
+  
+  function mostrarSecao(sectionId) {
     document.querySelectorAll('#sistemaPrincipal .section').forEach(s => s.classList.add('hidden-section'));
-    document.getElementById(sectionId).classList.remove('hidden-section');
+    const target = document.getElementById(sectionId);
+    if (target) target.classList.remove('hidden-section');
+    
     document.querySelectorAll('#sistemaPrincipal .nav-btn').forEach(btn => btn.classList.remove('nav-btn-active'));
     const activeBtn = document.querySelector(`[data-nav="${sectionId}"]`);
     if (activeBtn) activeBtn.classList.add('nav-btn-active');
     
-    if (sectionId === 'produtos') renderProdutos();
-    if (sectionId === 'validade') { renderControleValidade(); atualizarDashboardValidade(); }
-    if (sectionId === 'relatorios') { atualizarRelatorios(); renderizarRanking(); }
-    if (sectionId === 'vendas') renderCarrinho();
-    if (sectionId === 'usuarios') renderizarListaUsuarios();
+    if (sectionId === 'produtos') {
+      mostrarPainelProduto('listaProdutos');
+      renderizarListaProdutos();
+    }
+    if (sectionId === 'estoque') renderizarEstoque();
+    if (sectionId === 'relatorios') atualizarRelatorios();
+    if (sectionId === 'usuarios') renderizarUsuarios();
+    if (sectionId === 'vendas') renderizarCarrinho();
+  }
+  
+  // ==================== GERENCIAMENTO DE LOTES ====================
+  function carregarSelectProdutos() {
+    const select = document.getElementById('selectProdutoLote');
+    if (!select) return;
+    select.innerHTML = produtos.map(prod => `<option value="${prod.id}">${escapeHtml(prod.nome)} - ${prod.codigoBarras}</option>`).join('');
+  }
+  
+  function renderizarLotesDoProduto() {
+    const container = document.getElementById('listaLotesProduto');
+    const select = document.getElementById('selectProdutoLote');
+    if (!container || !select) return;
+    
+    const produtoId = parseInt(select.value);
+    const produto = produtos.find(p => p.id === produtoId);
+    if (!produto) {
+      container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Selecione um produto</div>';
+      return;
+    }
+    
+    const lotesDoProduto = lotesEstoque.filter(l => l.produtoId === produtoId);
+    
+    if (lotesDoProduto.length === 0) {
+      container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum lote para este produto. Adicione um novo lote.</div>';
+      return;
+    }
+    
+    container.innerHTML = lotesDoProduto.map(lote => {
+      const status = verificarStatusValidade(lote.dataValidade);
+      const dataFormatada = lote.dataValidade ? new Date(lote.dataValidade).toLocaleDateString('pt-BR') : 'Sem validade';
+      let statusClass = 'lote-normal';
+      
+      if (status === 'vencido') statusClass = 'lote-vencido';
+      else if (status === 'proximo') statusClass = 'lote-proximo';
+      
+      return `
+        <div class="lote-card ${statusClass} bg-white p-4 rounded-xl shadow-sm">
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-tag text-gray-400"></i>
+                <span class="font-mono text-sm font-bold">${escapeHtml(lote.numeroLote)}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+                <div>📦 Quantidade: <span class="font-bold">${lote.quantidade}</span></div>
+                <div>💰 Compra: ${formatCurrency(lote.precoCompra)}</div>
+                <div><i class="fas fa-calendar-alt"></i> Validade: ${dataFormatada}</div>
+                <div><i class="fas fa-truck"></i> Fornecedor: ${escapeHtml(lote.fornecedor)}</div>
+              </div>
+            </div>
+            <button data-remover-lote="${lote.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    document.querySelectorAll('[data-remover-lote]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.getAttribute('data-remover-lote'));
+        if (confirm('Remover este lote do estoque?')) {
+          lotesEstoque = lotesEstoque.filter(l => l.id !== id);
+          persistData();
+          renderizarLotesDoProduto();
+          renderizarEstoque();
+          renderizarListaProdutos();
+          showToast('Lote removido do estoque');
+        }
+      });
+    });
+  }
+  
+  function adicionarNovoLote() {
+    const select = document.getElementById('selectProdutoLote');
+    const produtoId = parseInt(select.value);
+    const produto = produtos.find(p => p.id === produtoId);
+    
+    if (!produto) {
+      showToast('Selecione um produto primeiro!', true);
+      return;
+    }
+    
+    const form = document.getElementById('formNovoLote');
+    form.classList.toggle('hidden-section');
+    
+    if (!form.classList.contains('hidden-section')) {
+      document.getElementById('novoLotePrecoCompra').value = produto.precoCompra;
+    }
+  }
+  
+  function salvarNovoLote() {
+    const select = document.getElementById('selectProdutoLote');
+    const produtoId = parseInt(select.value);
+    const produto = produtos.find(p => p.id === produtoId);
+    
+    if (!produto) {
+      showToast('Selecione um produto!', true);
+      return;
+    }
+    
+    const numeroLote = document.getElementById('novoLoteNumero').value.trim();
+    const quantidade = parseInt(document.getElementById('novoLoteQuantidade').value);
+    const precoCompra = parseFloat(document.getElementById('novoLotePrecoCompra').value);
+    const dataValidade = document.getElementById('novoLoteValidade').value;
+    const fornecedor = document.getElementById('novoLoteFornecedor').value.trim();
+    
+    if (!numeroLote) { showToast('Número do lote é obrigatório!', true); return; }
+    if (!quantidade || quantidade <= 0) { showToast('Quantidade inválida!', true); return; }
+    if (!precoCompra || precoCompra <= 0) { showToast('Preço de compra inválido!', true); return; }
+    
+    lotesEstoque.push({
+      id: Date.now(),
+      produtoId: produtoId,
+      quantidade: quantidade,
+      precoCompra: precoCompra,
+      dataValidade: dataValidade || null,
+      numeroLote: numeroLote,
+      fornecedor: fornecedor || 'Não informado',
+      dataEntrada: new Date().toISOString()
+    });
+    
+    persistData();
+    document.getElementById('formNovoLote').classList.add('hidden-section');
+    ['novoLoteNumero', 'novoLoteValidade', 'novoLoteFornecedor'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('novoLoteQuantidade').value = '1';
+    
+    renderizarLotesDoProduto();
+    renderizarEstoque();
+    renderizarListaProdutos();
+    showToast(`✅ Lote "${numeroLote}" adicionado ao produto "${produto.nome}"`);
+  }
+  
+  function renderizarListaProdutos() {
+    const container = document.getElementById('listaProdutos');
+    const filtro = document.getElementById('filtroProdutos')?.value.toLowerCase() || '';
+    if (!container) return;
+    
+    let produtosFiltrados = [...produtos];
+    if (filtro) {
+      produtosFiltrados = produtosFiltrados.filter(p => p.nome.toLowerCase().includes(filtro) || p.codigoBarras.includes(filtro));
+    }
+    
+    if (produtosFiltrados.length === 0) {
+      container.innerHTML = '<div class="col-span-full text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum produto cadastrado.</div>';
+      return;
+    }
+    
+    container.innerHTML = produtosFiltrados.map(prod => {
+      const estoqueTotal = getEstoqueTotalProduto(prod.id);
+      const margem = prod.precoCompra > 0 ? ((prod.precoVenda - prod.precoCompra) / prod.precoCompra) * 100 : 0;
+      const lotesDoProduto = lotesEstoque.filter(l => l.produtoId === prod.id && l.quantidade > 0);
+      
+      return `
+        <div class="border-2 rounded-xl p-4 bg-white shadow-sm">
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <span class="text-xs font-mono text-gray-500"><i class="fas fa-barcode mr-1"></i>${escapeHtml(prod.codigoBarras)}</span>
+              <h3 class="font-bold text-lg">${escapeHtml(prod.nome)}</h3>
+              <p class="text-blue-600 font-semibold">Venda: ${formatCurrency(prod.precoVenda)}</p>
+              <p class="text-gray-500 text-sm">Compra: ${formatCurrency(prod.precoCompra)}</p>
+              <p class="text-sm mt-1">📦 Estoque: <span class="font-bold ${estoqueTotal <= 0 ? 'text-red-500' : 'text-gray-800'}">${estoqueTotal}</span> un.</p>
+              <p class="text-xs ${margem >= 0 ? 'text-green-600' : 'text-red-600'}">💰 Margem: ${margem.toFixed(1)}%</p>
+              <p class="text-xs text-gray-400 mt-1">🏷️ Lotes ativos: ${lotesDoProduto.length}</p>
+            </div>
+            <div class="flex gap-1">
+              <button data-gerenciar-lotes="${prod.id}" class="text-green-600 hover:text-green-800 p-2"><i class="fas fa-layer-group"></i></button>
+              <button data-remover-produto="${prod.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    document.querySelectorAll('[data-remover-produto]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.getAttribute('data-remover-produto'));
+        if (confirm('⚠️ Excluir este produto e todos os lotes relacionados?')) {
+          produtos = produtos.filter(p => p.id !== id);
+          lotesEstoque = lotesEstoque.filter(l => l.produtoId !== id);
+          persistData();
+          renderizarListaProdutos();
+          carregarSelectProdutos();
+          renderizarEstoque();
+          renderizarLotesDoProduto();
+          showToast('Produto removido com sucesso!');
+        }
+      });
+    });
+    
+    document.querySelectorAll('[data-gerenciar-lotes]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.getAttribute('data-gerenciar-lotes'));
+        const select = document.getElementById('selectProdutoLote');
+        if (select) {
+          for (let i = 0; i < select.options.length; i++) {
+            if (parseInt(select.options[i].value) === id) {
+              select.selectedIndex = i;
+              break;
+            }
+          }
+          mostrarPainelProduto('gerenciarLotes');
+          renderizarLotesDoProduto();
+        }
+      });
+    });
+  }
+  
+  function renderizarEstoque() {
+    const container = document.getElementById('listaEstoque');
+    const filtro = document.getElementById('filtroEstoque')?.value.toLowerCase() || '';
+    if (!container) return;
+    
+    if (lotesEstoque.length === 0) {
+      container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum lote em estoque</div>';
+      return;
+    }
+    
+    const lotesComProduto = lotesEstoque.map(lote => {
+      const produto = produtos.find(p => p.id === lote.produtoId);
+      return { ...lote, produtoNome: produto?.nome || 'Produto não encontrado', produtoCodigo: produto?.codigoBarras || '' };
+    }).filter(item => filtro === '' || item.produtoNome.toLowerCase().includes(filtro) || item.produtoCodigo.includes(filtro));
+    
+    if (lotesComProduto.length === 0) {
+      container.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl text-gray-500">Nenhum lote encontrado</div>';
+      return;
+    }
+    
+    container.innerHTML = lotesComProduto.map(lote => {
+      const status = verificarStatusValidade(lote.dataValidade);
+      const dataFormatada = lote.dataValidade ? new Date(lote.dataValidade).toLocaleDateString('pt-BR') : 'Sem validade';
+      let statusClass = 'lote-normal';
+      let statusBadge = '';
+      
+      if (status === 'vencido') {
+        statusClass = 'lote-vencido';
+        statusBadge = '<span class="text-red-600 text-xs ml-2">⚠️ VENCIDO</span>';
+      } else if (status === 'proximo') {
+        statusClass = 'lote-proximo';
+        statusBadge = '<span class="text-yellow-600 text-xs ml-2">⏰ Próximo ao vencimento</span>';
+      }
+      
+      return `
+        <div class="lote-card ${statusClass} bg-white p-4 rounded-xl shadow-sm">
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-boxes text-gray-400"></i>
+                <span class="font-mono text-sm font-bold">${escapeHtml(lote.numeroLote)}</span>
+                ${statusBadge}
+              </div>
+              <h3 class="font-bold text-lg mt-1">${escapeHtml(lote.produtoNome)}</h3>
+              <p class="text-sm text-gray-600"><i class="fas fa-barcode"></i> ${escapeHtml(lote.produtoCodigo)}</p>
+              <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+                <div>📦 Quantidade: <span class="font-bold">${lote.quantidade}</span></div>
+                <div>💰 Compra: ${formatCurrency(lote.precoCompra)}</div>
+                <div><i class="fas fa-calendar-alt"></i> Validade: ${dataFormatada}</div>
+                <div><i class="fas fa-truck"></i> Fornecedor: ${escapeHtml(lote.fornecedor)}</div>
+              </div>
+            </div>
+            <button data-remover-lote-estoque="${lote.id}" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    document.querySelectorAll('[data-remover-lote-estoque]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.getAttribute('data-remover-lote-estoque'));
+        if (confirm('Remover este lote do estoque?')) {
+          lotesEstoque = lotesEstoque.filter(l => l.id !== id);
+          persistData();
+          renderizarEstoque();
+          renderizarListaProdutos();
+          renderizarLotesDoProduto();
+          showToast('Lote removido do estoque');
+        }
+      });
+    });
+  }
+  
+  // ==================== USUÁRIOS ====================
+  function renderizarUsuarios() {
+    const container = document.getElementById('listaUsuarios');
+    if (!container) return;
+    
+    container.innerHTML = usuarios.map(user => `
+      <div class="bg-white p-3 rounded-lg border flex justify-between items-center hover:shadow-md transition">
+        <div>
+          <p class="font-bold">${escapeHtml(user.nome)}</p>
+          <p class="text-sm text-gray-600">@${escapeHtml(user.usuario)} | ${escapeHtml(user.email)}</p>
+          <p class="text-xs text-gray-400">${user.tipo === 'admin' ? '👑 Administrador' : '👤 Usuário'} | Cadastro: ${user.dataCadastro}</p>
+        </div>
+        ${usuarioAtual && usuarioAtual.tipo === 'admin' && user.id !== usuarioAtual.id ? `<button onclick="window.excluirUsuario(${user.id})" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash-alt"></i></button>` : ''}
+      </div>
+    `).join('');
+  }
+  
+  window.excluirUsuario = function(id) {
+    if (confirm('⚠️ Excluir este usuário permanentemente?')) {
+      usuarios = usuarios.filter(u => u.id !== id);
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+      renderizarUsuarios();
+      showToast('Usuário excluído com sucesso');
+    }
+  };
+  
+  function cadastrarUsuarioAdmin() {
+    const nome = document.getElementById('adminNome').value.trim();
+    const usuario = document.getElementById('adminUsuario').value.trim();
+    const email = document.getElementById('adminEmail').value.trim();
+    const senha = document.getElementById('adminSenha').value;
+    const tipo = document.getElementById('adminTipo').value;
+    
+    if (!nome || !usuario || !email || !senha) { showToast('Preencha todos os campos!', true); return; }
+    if (senha.length < 4) { showToast('A senha deve ter pelo menos 4 caracteres!', true); return; }
+    if (usuarios.some(u => u.usuario === usuario)) { showToast('Nome de usuário já existe!', true); return; }
+    if (usuarios.some(u => u.email === email)) { showToast('E-mail já cadastrado!', true); return; }
+    
+    usuarios.push({
+      id: Date.now(),
+      nome: nome,
+      usuario: usuario,
+      email: email,
+      senha: senha,
+      tipo: tipo,
+      dataCadastro: new Date().toLocaleString()
+    });
+    
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    renderizarUsuarios();
+    showToast(`✅ Usuário "${nome}" cadastrado com sucesso!`);
+    
+    ['adminNome', 'adminUsuario', 'adminEmail', 'adminSenha'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+  }
+  
+  // ==================== AUTENTICAÇÃO ====================
+  function fazerLogin() {
+    const usuario = document.getElementById('loginUsuario').value.trim();
+    const senha = document.getElementById('loginSenha').value;
+    const user = usuarios.find(u => u.usuario === usuario && u.senha === senha);
+    
+    if (user) {
+      usuarioAtual = user;
+      localStorage.setItem('usuarioAtual', JSON.stringify(user));
+      showToast(`✅ Bem-vindo, ${user.nome}!`);
+      
+      setTimeout(() => {
+        document.getElementById('telaLogin').classList.add('hidden-section');
+        document.getElementById('sistemaPrincipal').classList.remove('hidden-section');
+        document.getElementById('usuarioLogadoNome').innerText = user.nome;
+        document.getElementById('usuarioLogadoEmail').innerText = user.email;
+        renderizarCarrinho();
+        renderizarListaProdutos();
+        renderizarEstoque();
+        carregarSelectProdutos();
+        atualizarRelatorios();
+        renderizarUsuarios();
+        mostrarSecao('vendas');
+      }, 500);
+    } else {
+      showToast('❌ Usuário ou senha inválidos!', true);
+    }
+  }
+  
+  function fazerLogout() {
+    usuarioAtual = null;
+    localStorage.removeItem('usuarioAtual');
+    carrinho = [];
+    document.getElementById('telaLogin').classList.remove('hidden-section');
+    document.getElementById('sistemaPrincipal').classList.add('hidden-section');
+    document.getElementById('loginUsuario').value = '';
+    document.getElementById('loginSenha').value = '';
+    showToast('Logout realizado com sucesso');
+  }
+  
+  function cadastrarNovoUsuario() {
+    const nome = document.getElementById('cadNome').value.trim();
+    const usuario = document.getElementById('cadUsuario').value.trim();
+    const email = document.getElementById('cadEmail').value.trim();
+    const senha = document.getElementById('cadSenha').value;
+    const confirmar = document.getElementById('cadConfirmarSenha').value;
+    
+    if (!nome || !usuario || !email || !senha) { showToast('Preencha todos os campos!', true); return; }
+    if (senha !== confirmar) { showToast('As senhas não coincidem!', true); return; }
+    if (senha.length < 4) { showToast('A senha deve ter pelo menos 4 caracteres!', true); return; }
+    if (usuarios.some(u => u.usuario === usuario)) { showToast('Nome de usuário já existe!', true); return; }
+    if (usuarios.some(u => u.email === email)) { showToast('E-mail já cadastrado!', true); return; }
+    
+    usuarios.push({
+      id: Date.now(),
+      nome: nome,
+      usuario: usuario,
+      email: email,
+      senha: senha,
+      tipo: 'usuario',
+      dataCadastro: new Date().toLocaleString()
+    });
+    
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    showToast('✅ Cadastro realizado com sucesso! Faça login.');
+    
+    setTimeout(() => {
+      document.getElementById('telaCadastro').classList.add('hidden-section');
+      document.getElementById('telaLogin').classList.remove('hidden-section');
+      ['cadNome', 'cadUsuario', 'cadEmail', 'cadSenha', 'cadConfirmarSenha'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }, 1500);
   }
   
   // ==================== EVENTOS ====================
@@ -1270,58 +1874,92 @@
     document.getElementById('btnVoltarLogin')?.addEventListener('click', () => {
       document.getElementById('telaCadastro').classList.add('hidden-section');
       document.getElementById('telaLogin').classList.remove('hidden-section');
-      limparCamposCadastro();
     });
     document.getElementById('btnCadastrarUsuario')?.addEventListener('click', cadastrarNovoUsuario);
-    document.getElementById('btnCadastrarAdminUsuario')?.addEventListener('click', cadastrarUsuarioAdmin);
+    document.getElementById('btnCadastrarAdmin')?.addEventListener('click', cadastrarUsuarioAdmin);
     document.getElementById('btnLogout')?.addEventListener('click', fazerLogout);
     
     document.querySelectorAll('#sistemaPrincipal [data-nav]').forEach(btn => {
-      btn.addEventListener('click', () => showSection(btn.getAttribute('data-nav')));
+      btn.addEventListener('click', () => mostrarSecao(btn.getAttribute('data-nav')));
     });
     
-    document.getElementById('btnAddProduto')?.addEventListener('click', addProduto);
+    document.getElementById('btnAddProduto')?.addEventListener('click', addProdutoCarrinho);
     document.getElementById('btnFinalizarVenda')?.addEventListener('click', finalizarVenda);
     document.getElementById('btnLimparCarrinho')?.addEventListener('click', limparCarrinho);
-    document.getElementById('btnSalvarProduto')?.addEventListener('click', salvarProduto);
-    document.getElementById('btnBuscarPorCodigo')?.addEventListener('click', buscarProdutoPorCodigo);
-    document.getElementById('btnLimparCampos')?.addEventListener('click', limparCamposProduto);
-    document.getElementById('btnGerarCodigoProduto')?.addEventListener('click', gerarCodigoProduto);
-    document.getElementById('btnVerificarDisponivel')?.addEventListener('click', verificarDisponibilidade);
-    document.getElementById('prefixo')?.addEventListener('input', gerarPreviewProduto);
-    document.getElementById('numeroSequencial')?.addEventListener('input', gerarPreviewProduto);
-    document.getElementById('comprimentoMinimo')?.addEventListener('change', gerarPreviewProduto);
+    document.getElementById('btnSalvarProduto')?.addEventListener('click', salvarProdutoComLotes);
+    document.getElementById('btnBuscarProduto')?.addEventListener('click', buscarProduto);
+    document.getElementById('btnLimparProduto')?.addEventListener('click', limparCamposProduto);
+    document.getElementById('btnFiltrarEstoque')?.addEventListener('click', () => renderizarEstoque());
+    document.getElementById('btnFiltrarProdutos')?.addEventListener('click', () => renderizarListaProdutos());
+    document.getElementById('btnExportarRanking')?.addEventListener('click', exportarRanking);
     
-    DOM.filtroValidade?.addEventListener('change', () => renderControleValidade());
-    DOM.busca?.addEventListener('keypress', (e) => { if(e.key === 'Enter') addProduto(); });
+    // Filtros de venda
+    document.getElementById('btnFiltroTodas')?.addEventListener('click', () => mudarFiltroVendas('todas'));
+    document.getElementById('btnFiltroHoje')?.addEventListener('click', () => mudarFiltroVendas('hoje'));
+    document.getElementById('btnFiltroSemana')?.addEventListener('click', () => mudarFiltroVendas('semana'));
+    document.getElementById('btnFiltroMes')?.addEventListener('click', () => mudarFiltroVendas('mes'));
     
+    // Paginação
+    document.getElementById('btnPaginaAnterior')?.addEventListener('click', () => {
+      if (paginaAtualVendas > 1) {
+        paginaAtualVendas--;
+        renderizarHistoricoVendas();
+      }
+    });
+    document.getElementById('btnPaginaProxima')?.addEventListener('click', () => {
+      const vendasFiltradas = filtrarVendas(filtroAtualVendas);
+      const totalPaginas = Math.ceil(vendasFiltradas.length / itensPorPagina);
+      if (paginaAtualVendas < totalPaginas) {
+        paginaAtualVendas++;
+        renderizarHistoricoVendas();
+      }
+    });
+    
+    document.getElementById('tabCadastroProduto')?.addEventListener('click', () => mostrarPainelProduto('cadastro'));
+    document.getElementById('tabListaProdutos')?.addEventListener('click', () => mostrarPainelProduto('listaProdutos'));
+    document.getElementById('tabGerenciarLotes')?.addEventListener('click', () => mostrarPainelProduto('gerenciarLotes'));
+    
+    document.getElementById('selectProdutoLote')?.addEventListener('change', () => renderizarLotesDoProduto());
+    document.getElementById('btnAdicionarLote')?.addEventListener('click', adicionarNovoLote);
+    document.getElementById('btnSalvarNovoLote')?.addEventListener('click', salvarNovoLote);
+    document.getElementById('btnCancelarNovoLote')?.addEventListener('click', () => {
+      document.getElementById('formNovoLote').classList.add('hidden-section');
+    });
+    
+    document.getElementById('filtroEstoque')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') renderizarEstoque(); });
+    document.getElementById('filtroProdutos')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') renderizarListaProdutos(); });
+    document.getElementById('busca')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') addProdutoCarrinho(); });
     document.getElementById('loginUsuario')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') fazerLogin(); });
     document.getElementById('loginSenha')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') fazerLogin(); });
   }
   
-  // Verificar se já existe usuário logado
   function verificarSessao() {
     const userSalvo = localStorage.getItem('usuarioAtual');
     if (userSalvo) {
       usuarioAtual = JSON.parse(userSalvo);
       document.getElementById('telaLogin').classList.add('hidden-section');
       document.getElementById('sistemaPrincipal').classList.remove('hidden-section');
-      if (DOM.usuarioLogadoNome) DOM.usuarioLogadoNome.innerText = usuarioAtual.nome;
-      if (DOM.usuarioLogadoEmail) DOM.usuarioLogadoEmail.innerText = usuarioAtual.email;
-      carregarDadosSistema();
-      showSection('vendas');
+      document.getElementById('usuarioLogadoNome').innerText = usuarioAtual.nome;
+      document.getElementById('usuarioLogadoEmail').innerText = usuarioAtual.email;
+      renderizarCarrinho();
+      renderizarListaProdutos();
+      renderizarEstoque();
+      carregarSelectProdutos();
+      atualizarRelatorios();
+      renderizarUsuarios();
+      mostrarSecao('vendas');
     }
   }
   
   // ==================== INICIALIZAÇÃO ====================
   function init() {
+    inicializarDados();
     bindEvents();
     verificarSessao();
-    gerarPreviewProduto();
   }
   
   init();
 })();
 </script>
 </body>
-  </html>
+</html>
