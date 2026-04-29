@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>MIX BAZAR - PDV com Ranking de Produtos</title>
+  <title>MIX BAZAR - PDV Profissional com Controle de Usuários</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -57,243 +57,367 @@
     .vencido { background-color: #fee2e2; border-left: 4px solid #dc2626; }
     .proximo-vencer { background-color: #fed7aa; border-left: 4px solid #f59e0b; }
     .valido { background-color: #dcfce7; border-left: 4px solid #10b981; }
-    .barcode-preview {
-      font-family: 'Courier New', monospace;
-      font-size: 20px;
-      letter-spacing: 3px;
-      background: #f3f4f6;
-      padding: 8px 12px;
-      border-radius: 8px;
-      display: inline-block;
+    .login-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-    .produto-ranking {
+    .user-card {
       transition: all 0.3s;
     }
-    .produto-ranking:hover {
-      transform: translateX(5px);
+    .user-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 font-sans">
+<body>
 
-<div class="min-h-screen">
-  
-  <!-- MENU SUPERIOR -->
-  <div class="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-2xl sticky top-0 z-20">
-    <div class="container mx-auto px-4 py-3">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <i class="fas fa-cash-register text-3xl text-yellow-300"></i>
-          <div>
-            <h1 class="text-2xl font-bold tracking-wide">MIX BAZAR & UTILIDADES</h1>
-            <p class="text-blue-200 text-xs">PDV Profissional com Ranking de Produtos </p>
+<!-- TELA DE LOGIN -->
+<div id="telaLogin" class="login-container">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-900 to-blue-800 p-6 text-white text-center">
+        <i class="fas fa-cash-register text-5xl text-yellow-300 mb-3"></i>
+        <h1 class="text-2xl font-bold">MIX BAZAR & UTILIDADES</h1>
+        <p class="text-blue-200 text-sm">Sistema de Vendas com Controle de Acesso</p>
+      </div>
+      
+      <div class="p-8">
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
+          <div class="relative">
+            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" id="loginUsuario" placeholder="Digite seu usuário" 
+                   class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition">
           </div>
         </div>
-        <div class="flex flex-wrap gap-2 justify-center">
-          <button data-nav="vendas" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-            <i class="fas fa-shopping-cart"></i> <span>Vendas</span>
-          </button>
-          <button data-nav="produtos" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-            <i class="fas fa-boxes"></i> <span>Produtos</span>
-          </button>
-          <button data-nav="relatorios" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-            <i class="fas fa-chart-line"></i> <span>Relatórios</span>
-          </button>
-          <button data-nav="validade" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
-            <i class="fas fa-calendar-alt"></i> <span>Controle</span>
-          </button>
+        
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Senha</label>
+          <div class="relative">
+            <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+            <input type="password" id="loginSenha" placeholder="Digite sua senha" 
+                   class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition">
+          </div>
         </div>
-        <div class="text-xs text-blue-200">
-          <i class="fas fa-database mr-1"></i> Dados salvos localmente
+        
+        <button id="btnLogin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition transform hover:scale-105">
+          <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+        </button>
+        
+        <div class="mt-4 text-center">
+          <button id="btnMostrarCadastro" class="text-blue-600 hover:text-blue-800 text-sm">
+            <i class="fas fa-user-plus mr-1"></i> Não tem conta? Cadastre-se
+          </button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <div class="container mx-auto px-4 py-6 max-w-7xl">
-    
-    <!-- SEÇÃO VENDAS -->
-    <div id="vendas" class="section">
-      <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
-          <i class="fas fa-tag text-green-600"></i> Ponto de Venda
-        </h2>
-        <p class="text-gray-500 mt-1">Digite o código de barras ou nome do produto</p>
+<!-- TELA DE CADASTRO DE USUÁRIO -->
+<div id="telaCadastro" class="login-container hidden-section">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div class="bg-gradient-to-r from-green-800 to-green-600 p-6 text-white text-center">
+        <i class="fas fa-user-plus text-5xl text-yellow-300 mb-3"></i>
+        <h1 class="text-2xl font-bold">Cadastro de Usuário</h1>
+        <p class="text-green-200 text-sm">Crie sua conta para acessar o sistema</p>
       </div>
-      <div class="bg-white rounded-2xl shadow-xl p-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div class="md:col-span-2 relative">
-            <i class="fas fa-barcode absolute left-3 top-3 text-gray-400"></i>
-            <input type="text" id="busca" placeholder="🔍 Código de barras ou nome do produto" 
-                   class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition text-lg"
-                   autocomplete="off">
-          </div>
-          <button id="btnAddProduto" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
-            <i class="fas fa-plus-circle"></i> Adicionar
-          </button>
-          <button id="btnFinalizarVenda" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
-            <i class="fas fa-check-double"></i> Finalizar
-          </button>
-          <button id="btnLimparCarrinho" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
-            <i class="fas fa-trash-alt"></i> Limpar Carrinho
-          </button>
-        </div>
-        <div class="overflow-x-auto border rounded-xl">
-          <table class="w-full min-w-[800px]">
-            <thead class="bg-gray-100 text-gray-700">
-              <tr><th class="py-3 px-4 text-left">Código</th><th class="py-3 px-4 text-left">Produto</th><th class="py-3 px-4 text-left">Validade</th><th class="py-3 px-4 text-left">Preço</th><th class="py-3 px-4 text-left">Qtd</th><th class="py-3 px-4 text-left">Subtotal</th><th class="py-3 px-4 text-center">Ações</th></tr>
-            </thead>
-            <tbody id="carrinho" class="divide-y divide-gray-200"></tbody>
-          </table>
-        </div>
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl">
-          <div class="text-xl md:text-2xl font-bold text-gray-800 text-center md:text-left">Total: <span class="text-green-700 text-2xl md:text-3xl" id="total">0.00</span> R$</div>
-          <div class="text-center"><span class="text-sm text-gray-600"><i class="fas fa-box"></i> Itens: <span id="qtdItensCarrinho" class="font-bold">0</span></span></div>
-          <div class="text-center md:text-right"><span class="text-sm text-gray-600"><i class="fas fa-chart-line"></i> Lucro Estimado: R$ <span id="lucroEstimado" class="font-bold text-green-600">0.00</span></span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SEÇÃO PRODUTOS COM GERADOR INTEGRADO -->
-    <div id="produtos" class="section hidden-section">
-      <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <i class="fas fa-cube text-blue-600"></i> Cadastro de Produtos
-        </h2>
-        
-        <!-- Painel do Gerador de Código -->
-        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl mb-6 border-2 border-purple-200">
-          <div class="flex items-center gap-2 mb-3">
-            <i class="fas fa-barcode text-purple-600 text-xl"></i>
-            <h3 class="font-bold text-purple-800">Gerador Sequencial de Código de Barras (1 a 9999)</h3>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Prefixo</label>
-              <input type="text" id="prefixo" placeholder="Ex: 789" maxlength="10" 
-                     class="w-full border-2 border-gray-200 rounded-lg p-2 font-mono text-sm">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Número (1-9999)</label>
-              <input type="number" id="numeroSequencial" min="1" max="9999" value="1" 
-                     class="w-full border-2 border-gray-200 rounded-lg p-2 font-mono text-sm">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Complemento</label>
-              <select id="comprimentoMinimo" class="w-full border-2 border-gray-200 rounded-lg p-2 text-sm">
-                <option value="0">Sem zeros</option>
-                <option value="4">4 dígitos (0001)</option>
-                <option value="5">5 dígitos (00001)</option>
-                <option value="6">6 dígitos (000001)</option>
-              </select>
-            </div>
-            <div class="flex items-end gap-2">
-              <button id="btnGerarCodigoProduto" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-sm transition">
-                <i class="fas fa-magic"></i> Gerar Código
-              </button>
-              <button id="btnVerificarDisponivel" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition">
-                <i class="fas fa-check"></i> Verificar
-              </button>
-            </div>
-          </div>
-          <div class="mt-3 p-2 bg-white rounded-lg text-center">
-            <span class="text-sm text-gray-600">Visualização:</span>
-            <span id="previewCodigoProduto" class="font-mono font-bold text-purple-600 text-lg ml-2">7890001</span>
-          </div>
+      
+      <div class="p-8">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Nome Completo *</label>
+          <input type="text" id="cadNome" placeholder="Ex: João Silva" 
+                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
         </div>
         
-        <!-- Formulário de Produto -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Código de Barras *</label><input type="text" id="codigoBarras" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 font-mono"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto *</label><input type="text" id="nome" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Preço de Venda (R$) *</label><input type="number" id="preco" step="0.01" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Preço de Compra (R$)</label><input type="number" id="compra" step="0.01" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Quantidade em Estoque</label><input type="number" id="estoque" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Data de Validade</label><input type="date" id="validade" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Usuário *</label>
+          <input type="text" id="cadUsuario" placeholder="Escolha um nome de usuário" 
+                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
         </div>
         
-        <div class="flex gap-3 flex-wrap mb-6">
-          <button id="btnSalvarProduto" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-save"></i> Salvar Produto</button>
-          <button id="btnBuscarPorCodigo" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-search"></i> Buscar</button>
-          <button id="btnLimparCampos" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-eraser"></i> Limpar</button>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">E-mail *</label>
+          <input type="email" id="cadEmail" placeholder="seu@email.com" 
+                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
         </div>
         
-        <div id="listaProdutos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
-      </div>
-    </div>
-
-    <!-- SEÇÃO RELATÓRIOS COM RANKING -->
-    <div id="relatorios" class="section hidden-section">
-      <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <i class="fas fa-chart-pie text-purple-600"></i> Relatórios Gerenciais
-        </h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div class="stat-card text-white p-4 rounded-xl">
-            <p class="text-sm opacity-90">Faturamento Total</p>
-            <p class="text-2xl font-bold" id="metricFaturamento">R$ 0,00</p>
-          </div>
-          <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-            <p class="text-sm opacity-90">Lucro Total</p>
-            <p class="text-2xl font-bold" id="metricLucro">R$ 0,00</p>
-          </div>
-          <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-            <p class="text-sm opacity-90">Margem Média</p>
-            <p class="text-2xl font-bold" id="metricMargem">0%</p>
-          </div>
-          <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-            <p class="text-sm opacity-90">Total de Vendas</p>
-            <p class="text-2xl font-bold" id="metricVendas">0</p>
-          </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Senha *</label>
+          <input type="password" id="cadSenha" placeholder="Mínimo 4 caracteres" 
+                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
         </div>
         
-        <!-- Ranking dos 15 Mais Vendidos -->
         <div class="mb-6">
-          <div class="flex items-center gap-2 mb-4">
-            <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
-            <h3 class="text-xl font-bold text-gray-800">🏆 Top 15 Produtos Mais Vendidos</h3>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Confirmar Senha *</label>
+          <input type="password" id="cadConfirmarSenha" placeholder="Digite a senha novamente" 
+                 class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 transition">
+        </div>
+        
+        <button id="btnCadastrarUsuario" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition transform hover:scale-105">
+          <i class="fas fa-check-circle mr-2"></i> Cadastrar
+        </button>
+        
+        <div class="mt-4 text-center">
+          <button id="btnVoltarLogin" class="text-blue-600 hover:text-blue-800 text-sm">
+            <i class="fas fa-arrow-left mr-1"></i> Voltar para o Login
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SISTEMA PRINCIPAL (protegido) -->
+<div id="sistemaPrincipal" class="hidden-section">
+  <div class="min-h-screen">
+    
+    <!-- MENU SUPERIOR COM INFO DO USUÁRIO -->
+    <div class="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-2xl sticky top-0 z-20">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <i class="fas fa-cash-register text-3xl text-yellow-300"></i>
+            <div>
+              <h1 class="text-2xl font-bold tracking-wide">PDV Profissional</h1>
+              <p class="text-blue-200 text-xs">Sistema com código de barras e controle de usuários</p>
+            </div>
           </div>
-          <div id="rankingProdutos" class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto"></div>
+          
+          <div class="flex flex-wrap gap-2 justify-center">
+            <button data-nav="vendas" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+              <i class="fas fa-shopping-cart"></i> <span>Vendas</span>
+            </button>
+            <button data-nav="produtos" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+              <i class="fas fa-boxes"></i> <span>Produtos</span>
+            </button>
+            <button data-nav="relatorios" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+              <i class="fas fa-chart-line"></i> <span>Relatórios</span>
+            </button>
+            <button data-nav="validade" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+              <i class="fas fa-calendar-alt"></i> <span>Controle</span>
+            </button>
+            <button data-nav="usuarios" class="nav-btn flex items-center gap-2 px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-medium">
+              <i class="fas fa-users"></i> <span>Usuários</span>
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <p class="text-sm font-semibold" id="usuarioLogadoNome"></p>
+              <p class="text-xs text-blue-200" id="usuarioLogadoEmail"></p>
+            </div>
+            <button id="btnLogout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+              <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+          </div>
         </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div class="bg-gray-50 p-4 rounded-xl"><canvas id="graficoLucro"></canvas></div>
-          <div class="bg-gray-50 p-4 rounded-xl"><canvas id="graficoFaturamento"></canvas></div>
-        </div>
-        
-        <div id="relatorio" class="bg-gray-50 p-4 rounded-xl max-h-[400px] overflow-y-auto"></div>
       </div>
     </div>
 
-    <!-- SEÇÃO CONTROLE DE VALIDADE -->
-    <div id="validade" class="section hidden-section">
-      <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <i class="fas fa-calendar-alt text-orange-600"></i> Controle de Validade
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div class="bg-red-50 p-4 rounded-xl border border-red-200">
-            <p class="text-red-600 font-bold text-lg">⚠️ Vencidos</p>
-            <p class="text-2xl font-bold" id="totalVencidos">0</p>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+      
+      <!-- SEÇÃO VENDAS -->
+      <div id="vendas" class="section">
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+          <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+            <i class="fas fa-tag text-green-600"></i> Ponto de Venda
+          </h2>
+          <p class="text-gray-500 mt-1">Digite o código de barras ou nome do produto</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="md:col-span-2 relative">
+              <i class="fas fa-barcode absolute left-3 top-3 text-gray-400"></i>
+              <input type="text" id="busca" placeholder="🔍 Código de barras ou nome do produto" 
+                     class="w-full border-2 border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:border-blue-500 transition text-lg"
+                     autocomplete="off">
+            </div>
+            <button id="btnAddProduto" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+              <i class="fas fa-plus-circle"></i> Adicionar
+            </button>
+            <button id="btnFinalizarVenda" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+              <i class="fas fa-check-double"></i> Finalizar
+            </button>
+            <button id="btnLimparCarrinho" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition btn-primary">
+              <i class="fas fa-trash-alt"></i> Limpar Carrinho
+            </button>
           </div>
-          <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
-            <p class="text-yellow-600 font-bold text-lg">⏰ Próximos 30 dias</p>
-            <p class="text-2xl font-bold" id="totalProximos">0</p>
+          <div class="overflow-x-auto border rounded-xl">
+            <table class="w-full min-w-[800px]">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr><th class="py-3 px-4 text-left">Código</th><th class="py-3 px-4 text-left">Produto</th><th class="py-3 px-4 text-left">Validade</th><th class="py-3 px-4 text-left">Preço</th><th class="py-3 px-4 text-left">Qtd</th><th class="py-3 px-4 text-left">Subtotal</th><th class="py-3 px-4 text-center">Ações</th></tr>
+              </thead>
+              <tbody id="carrinho" class="divide-y divide-gray-200"></tbody>
+            </table>
           </div>
-          <div class="bg-green-50 p-4 rounded-xl border border-green-200">
-            <p class="text-green-600 font-bold text-lg">✅ Válidos</p>
-            <p class="text-2xl font-bold" id="totalValidos">0</p>
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl">
+            <div class="text-xl md:text-2xl font-bold text-gray-800 text-center md:text-left">Total: <span class="text-green-700 text-2xl md:text-3xl" id="total">0.00</span> R$</div>
+            <div class="text-center"><span class="text-sm text-gray-600"><i class="fas fa-box"></i> Itens: <span id="qtdItensCarrinho" class="font-bold">0</span></span></div>
+            <div class="text-center md:text-right"><span class="text-sm text-gray-600"><i class="fas fa-chart-line"></i> Lucro Estimado: R$ <span id="lucroEstimado" class="font-bold text-green-600">0.00</span></span></div>
           </div>
         </div>
-        <select id="filtroValidade" class="border-2 border-gray-200 rounded-xl p-2 w-48 mb-4">
-          <option value="todos">Todos os produtos</option>
-          <option value="vencidos">Vencidos</option>
-          <option value="proximos">Próximos 30 dias</option>
-          <option value="validos">Válidos</option>
-        </select>
-        <div id="listaValidade" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
+      </div>
+
+      <!-- SEÇÃO PRODUTOS -->
+      <div id="produtos" class="section hidden-section">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-cube text-blue-600"></i> Cadastro de Produtos
+          </h2>
+          
+          <!-- Painel do Gerador de Código -->
+          <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl mb-6 border-2 border-purple-200">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-barcode text-purple-600 text-xl"></i>
+              <h3 class="font-bold text-purple-800">Gerador Sequencial de Código de Barras (1 a 9999)</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prefixo</label>
+                <input type="text" id="prefixo" placeholder="Ex: 789" maxlength="10" 
+                       class="w-full border-2 border-gray-200 rounded-lg p-2 font-mono text-sm">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Número (1-9999)</label>
+                <input type="number" id="numeroSequencial" min="1" max="9999" value="1" 
+                       class="w-full border-2 border-gray-200 rounded-lg p-2 font-mono text-sm">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Complemento</label>
+                <select id="comprimentoMinimo" class="w-full border-2 border-gray-200 rounded-lg p-2 text-sm">
+                  <option value="0">Sem zeros</option>
+                  <option value="4">4 dígitos (0001)</option>
+                  <option value="5">5 dígitos (00001)</option>
+                  <option value="6">6 dígitos (000001)</option>
+                </select>
+              </div>
+              <div class="flex items-end gap-2">
+                <button id="btnGerarCodigoProduto" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-sm transition">
+                  <i class="fas fa-magic"></i> Gerar
+                </button>
+                <button id="btnVerificarDisponivel" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition">
+                  <i class="fas fa-check"></i> Verificar
+                </button>
+              </div>
+            </div>
+            <div class="mt-3 p-2 bg-white rounded-lg text-center">
+              <span class="text-sm text-gray-600">Visualização:</span>
+              <span id="previewCodigoProduto" class="font-mono font-bold text-purple-600 text-lg ml-2">7890001</span>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Código de Barras *</label><input type="text" id="codigoBarras" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500 font-mono"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto *</label><input type="text" id="nome" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Preço de Venda (R$) *</label><input type="number" id="preco" step="0.01" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Preço de Compra (R$)</label><input type="number" id="compra" step="0.01" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Quantidade em Estoque</label><input type="number" id="estoque" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Data de Validade</label><input type="date" id="validade" class="w-full border-2 border-gray-200 rounded-xl p-3 focus:border-blue-500"></div>
+          </div>
+          
+          <div class="flex gap-3 flex-wrap mb-6">
+            <button id="btnSalvarProduto" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-save"></i> Salvar</button>
+            <button id="btnBuscarPorCodigo" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-search"></i> Buscar</button>
+            <button id="btnLimparCampos" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl shadow-md flex items-center gap-2"><i class="fas fa-eraser"></i> Limpar</button>
+          </div>
+          
+          <div id="listaProdutos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO RELATÓRIOS -->
+      <div id="relatorios" class="section hidden-section">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-chart-pie text-purple-600"></i> Relatórios Gerenciais
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="stat-card text-white p-4 rounded-xl"><p class="text-sm opacity-90">Faturamento Total</p><p class="text-2xl font-bold" id="metricFaturamento">R$ 0,00</p></div>
+            <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"><p class="text-sm opacity-90">Lucro Total</p><p class="text-2xl font-bold" id="metricLucro">R$ 0,00</p></div>
+            <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"><p class="text-sm opacity-90">Margem Média</p><p class="text-2xl font-bold" id="metricMargem">0%</p></div>
+            <div class="stat-card text-white p-4 rounded-xl" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"><p class="text-sm opacity-90">Total de Vendas</p><p class="text-2xl font-bold" id="metricVendas">0</p></div>
+          </div>
+          
+          <div class="mb-6">
+            <div class="flex items-center gap-2 mb-4">
+              <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
+              <h3 class="text-xl font-bold text-gray-800">🏆 Top 15 Produtos Mais Vendidos</h3>
+            </div>
+            <div id="rankingProdutos" class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto"></div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-gray-50 p-4 rounded-xl"><canvas id="graficoLucro"></canvas></div>
+            <div class="bg-gray-50 p-4 rounded-xl"><canvas id="graficoFaturamento"></canvas></div>
+          </div>
+          
+          <div id="relatorio" class="bg-gray-50 p-4 rounded-xl max-h-[400px] overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO CONTROLE DE VALIDADE -->
+      <div id="validade" class="section hidden-section">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-calendar-alt text-orange-600"></i> Controle de Validade
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-600 font-bold text-lg">⚠️ Vencidos</p><p class="text-2xl font-bold" id="totalVencidos">0</p></div>
+            <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200"><p class="text-yellow-600 font-bold text-lg">⏰ Próximos 30 dias</p><p class="text-2xl font-bold" id="totalProximos">0</p></div>
+            <div class="bg-green-50 p-4 rounded-xl border border-green-200"><p class="text-green-600 font-bold text-lg">✅ Válidos</p><p class="text-2xl font-bold" id="totalValidos">0</p></div>
+          </div>
+          <select id="filtroValidade" class="border-2 border-gray-200 rounded-xl p-2 w-48 mb-4">
+            <option value="todos">Todos os produtos</option>
+            <option value="vencidos">Vencidos</option>
+            <option value="proximos">Próximos 30 dias</option>
+            <option value="validos">Válidos</option>
+          </select>
+          <div id="listaValidade" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto p-1"></div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO USUÁRIOS -->
+      <div id="usuarios" class="section hidden-section">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-users text-blue-600"></i> Gerenciamento de Usuários
+          </h2>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Formulário de Cadastro de Usuários -->
+            <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl">
+              <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                <i class="fas fa-user-plus text-green-600"></i> Novo Usuário
+              </h3>
+              <div class="space-y-3">
+                <input type="text" id="adminNome" placeholder="Nome completo" class="w-full border-2 border-gray-200 rounded-lg p-2">
+                <input type="text" id="adminUsuario" placeholder="Usuário" class="w-full border-2 border-gray-200 rounded-lg p-2">
+                <input type="email" id="adminEmail" placeholder="E-mail" class="w-full border-2 border-gray-200 rounded-lg p-2">
+                <input type="password" id="adminSenha" placeholder="Senha" class="w-full border-2 border-gray-200 rounded-lg p-2">
+                <select id="adminTipo" class="w-full border-2 border-gray-200 rounded-lg p-2">
+                  <option value="usuario">Usuário Comum</option>
+                  <option value="admin">Administrador</option>
+                </select>
+                <button id="btnCadastrarAdminUsuario" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition">
+                  <i class="fas fa-save"></i> Cadastrar Usuário
+                </button>
+              </div>
+            </div>
+            
+            <!-- Lista de Usuários -->
+            <div class="lg:col-span-2 bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl">
+              <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                <i class="fas fa-list text-blue-600"></i> Usuários Cadastrados
+              </h3>
+              <div id="listaUsuarios" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -301,13 +425,31 @@
 
 <script>
 (function() {
-  // ==================== ESTADO GLOBAL ====================
+  // ==================== SISTEMA DE AUTENTICAÇÃO ====================
+  let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+  let usuarioAtual = null;
+  
+  // Dados iniciais: criar usuário admin padrão se não existir
+  if (usuarios.length === 0) {
+    usuarios.push({
+      id: Date.now(),
+      nome: "Administrador",
+      usuario: "admin",
+      email: "admin@mixbazar.com",
+      senha: "admin123",
+      tipo: "admin",
+      dataCadastro: new Date().toLocaleString()
+    });
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+  }
+  
+  // ==================== VARIÁVEIS GLOBAIS DO SISTEMA ====================
   let produtos = [];
   let carrinho = [];
   let vendas = [];
   let graficoInstance = null;
   let graficoFaturamento = null;
-
+  
   // DOM Elements
   const DOM = {
     busca: document.getElementById('busca'),
@@ -317,6 +459,7 @@
     lucroEstimadoSpan: document.getElementById('lucroEstimado'),
     listaProdutos: document.getElementById('listaProdutos'),
     listaValidade: document.getElementById('listaValidade'),
+    listaUsuarios: document.getElementById('listaUsuarios'),
     relatorioDiv: document.getElementById('relatorio'),
     rankingProdutos: document.getElementById('rankingProdutos'),
     graficoLucro: document.getElementById('graficoLucro'),
@@ -329,10 +472,221 @@
     totalProximos: document.getElementById('totalProximos'),
     totalValidos: document.getElementById('totalValidos'),
     filtroValidade: document.getElementById('filtroValidade'),
-    previewCodigoProduto: document.getElementById('previewCodigoProduto')
+    previewCodigoProduto: document.getElementById('previewCodigoProduto'),
+    usuarioLogadoNome: document.getElementById('usuarioLogadoNome'),
+    usuarioLogadoEmail: document.getElementById('usuarioLogadoEmail')
   };
-
-  // ==================== UTILITÁRIOS ====================
+  
+  // ==================== FUNÇÕES DE AUTENTICAÇÃO ====================
+  function fazerLogin() {
+    const usuario = document.getElementById('loginUsuario').value.trim();
+    const senha = document.getElementById('loginSenha').value;
+    
+    if (!usuario || !senha) {
+      showToastLogin('Preencha todos os campos', true);
+      return;
+    }
+    
+    const user = usuarios.find(u => u.usuario === usuario && u.senha === senha);
+    
+    if (user) {
+      usuarioAtual = user;
+      localStorage.setItem('usuarioAtual', JSON.stringify(user));
+      showToastLogin(`Bem-vindo, ${user.nome}!`);
+      setTimeout(() => {
+        document.getElementById('telaLogin').classList.add('hidden-section');
+        document.getElementById('sistemaPrincipal').classList.remove('hidden-section');
+        if (DOM.usuarioLogadoNome) DOM.usuarioLogadoNome.innerText = user.nome;
+        if (DOM.usuarioLogadoEmail) DOM.usuarioLogadoEmail.innerText = user.email;
+        carregarDadosSistema();
+        showSection('vendas');
+      }, 500);
+    } else {
+      showToastLogin('Usuário ou senha inválidos', true);
+    }
+  }
+  
+  function fazerLogout() {
+    usuarioAtual = null;
+    localStorage.removeItem('usuarioAtual');
+    document.getElementById('telaLogin').classList.remove('hidden-section');
+    document.getElementById('sistemaPrincipal').classList.add('hidden-section');
+    document.getElementById('loginUsuario').value = '';
+    document.getElementById('loginSenha').value = '';
+  }
+  
+  function cadastrarNovoUsuario() {
+    const nome = document.getElementById('cadNome').value.trim();
+    const usuario = document.getElementById('cadUsuario').value.trim();
+    const email = document.getElementById('cadEmail').value.trim();
+    const senha = document.getElementById('cadSenha').value;
+    const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
+    
+    if (!nome || !usuario || !email || !senha) {
+      showToastLogin('Preencha todos os campos', true);
+      return;
+    }
+    
+    if (senha !== confirmarSenha) {
+      showToastLogin('As senhas não coincidem', true);
+      return;
+    }
+    
+    if (senha.length < 4) {
+      showToastLogin('A senha deve ter pelo menos 4 caracteres', true);
+      return;
+    }
+    
+    if (usuarios.some(u => u.usuario === usuario)) {
+      showToastLogin('Este nome de usuário já existe', true);
+      return;
+    }
+    
+    if (usuarios.some(u => u.email === email)) {
+      showToastLogin('Este e-mail já está cadastrado', true);
+      return;
+    }
+    
+    const novoUsuario = {
+      id: Date.now(),
+      nome: nome,
+      usuario: usuario,
+      email: email,
+      senha: senha,
+      tipo: 'usuario',
+      dataCadastro: new Date().toLocaleString()
+    };
+    
+    usuarios.push(novoUsuario);
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    
+    showToastLogin('Cadastro realizado com sucesso! Faça login.');
+    setTimeout(() => {
+      document.getElementById('telaCadastro').classList.add('hidden-section');
+      document.getElementById('telaLogin').classList.remove('hidden-section');
+      limparCamposCadastro();
+    }, 1500);
+  }
+  
+  function cadastrarUsuarioAdmin() {
+    const nome = document.getElementById('adminNome').value.trim();
+    const usuario = document.getElementById('adminUsuario').value.trim();
+    const email = document.getElementById('adminEmail').value.trim();
+    const senha = document.getElementById('adminSenha').value;
+    const tipo = document.getElementById('adminTipo').value;
+    
+    if (!nome || !usuario || !email || !senha) {
+      showToast('Preencha todos os campos', true);
+      return;
+    }
+    
+    if (senha.length < 4) {
+      showToast('A senha deve ter pelo menos 4 caracteres', true);
+      return;
+    }
+    
+    if (usuarios.some(u => u.usuario === usuario)) {
+      showToast('Este nome de usuário já existe', true);
+      return;
+    }
+    
+    if (usuarios.some(u => u.email === email)) {
+      showToast('Este e-mail já está cadastrado', true);
+      return;
+    }
+    
+    const novoUsuario = {
+      id: Date.now(),
+      nome: nome,
+      usuario: usuario,
+      email: email,
+      senha: senha,
+      tipo: tipo,
+      dataCadastro: new Date().toLocaleString()
+    };
+    
+    usuarios.push(novoUsuario);
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    
+    showToast(`Usuário ${nome} cadastrado com sucesso!`);
+    limparCamposAdminUsuario();
+    renderizarListaUsuarios();
+  }
+  
+  function renderizarListaUsuarios() {
+    if (!DOM.listaUsuarios) return;
+    
+    if (usuarios.length === 0) {
+      DOM.listaUsuarios.innerHTML = '<div class="text-center p-6 bg-gray-100 rounded-xl">Nenhum usuário cadastrado</div>';
+      return;
+    }
+    
+    DOM.listaUsuarios.innerHTML = usuarios.map(user => `
+      <div class="user-card bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <i class="fas ${user.tipo === 'admin' ? 'fa-crown text-yellow-500' : 'fa-user text-blue-500'}"></i>
+              <h3 class="font-bold">${escapeHtml(user.nome)}</h3>
+              ${user.tipo === 'admin' ? '<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Administrador</span>' : '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Usuário</span>'}
+            </div>
+            <p class="text-sm text-gray-600 mt-1"><i class="fas fa-user"></i> @${escapeHtml(user.usuario)}</p>
+            <p class="text-sm text-gray-600"><i class="fas fa-envelope"></i> ${escapeHtml(user.email)}</p>
+            <p class="text-xs text-gray-400 mt-1">Cadastrado em: ${user.dataCadastro}</p>
+          </div>
+          ${usuarioAtual && usuarioAtual.tipo === 'admin' && user.id !== usuarioAtual.id ? `
+            <button onclick="excluirUsuario(${user.id})" class="text-red-500 hover:text-red-700 p-2">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  window.excluirUsuario = function(id) {
+    if (confirm('Tem certeza que deseja excluir este usuário?')) {
+      usuarios = usuarios.filter(u => u.id !== id);
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+      renderizarListaUsuarios();
+      showToast('Usuário excluído com sucesso');
+    }
+  };
+  
+  function limparCamposCadastro() {
+    document.getElementById('cadNome').value = '';
+    document.getElementById('cadUsuario').value = '';
+    document.getElementById('cadEmail').value = '';
+    document.getElementById('cadSenha').value = '';
+    document.getElementById('cadConfirmarSenha').value = '';
+  }
+  
+  function limparCamposAdminUsuario() {
+    document.getElementById('adminNome').value = '';
+    document.getElementById('adminUsuario').value = '';
+    document.getElementById('adminEmail').value = '';
+    document.getElementById('adminSenha').value = '';
+  }
+  
+  function showToastLogin(msg, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.style.backgroundColor = isError ? '#b91c1c' : '#1f2937';
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+  
+  // ==================== FUNÇÕES DO SISTEMA ====================
+  function showToast(msg, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.style.backgroundColor = isError ? '#b91c1c' : '#1f2937';
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+  
   function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -342,22 +696,8 @@
       return m;
     });
   }
-
-  function showToast(msg, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.style.backgroundColor = isError ? '#b91c1c' : '#1f2937';
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i> ${msg}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-
-  function persistData() {
-    localStorage.setItem('produtos', JSON.stringify(produtos));
-    localStorage.setItem('vendas', JSON.stringify(vendas));
-  }
-
-  function loadData() {
+  
+  function carregarDadosSistema() {
     const storedProdutos = localStorage.getItem('produtos');
     const storedVendas = localStorage.getItem('vendas');
     
@@ -371,15 +711,14 @@
         { id: 1, nome: "Coca-Cola 2L", codigoBarras: "7890001", preco: 9.90, compra: 6.50, estoque: 10, validade: new Date(hoje.getFullYear(), hoje.getMonth()+2, hoje.getDate()).toISOString().split('T')[0] },
         { id: 2, nome: "Arroz 5kg", codigoBarras: "7890002", preco: 22.90, compra: 18.00, estoque: 5, validade: daqui30Dias.toISOString().split('T')[0] },
         { id: 3, nome: "Feijão 1kg", codigoBarras: "7890003", preco: 7.50, compra: 5.00, estoque: 8, validade: null },
-        { id: 4, nome: "Macarrão", codigoBarras: "7890004", preco: 4.50, compra: 3.20, estoque: 15, validade: null },
+        { id: 4, nome: "Macarrão 500g", codigoBarras: "7890004", preco: 4.50, compra: 3.20, estoque: 15, validade: null },
         { id: 5, nome: "Óleo de Soja", codigoBarras: "7890005", preco: 6.90, compra: 5.00, estoque: 7, validade: null }
       ];
-      persistData();
+      localStorage.setItem('produtos', JSON.stringify(produtos));
     }
     
     vendas = JSON.parse(localStorage.getItem('vendas')) || [];
     
-    // Criar vendas de exemplo para demonstrar o ranking
     if (vendas.length === 0) {
       for (let i = 0; i < 20; i++) {
         const vendaItens = [];
@@ -406,10 +745,15 @@
           lucro: lucroVenda
         });
       }
-      persistData();
+      localStorage.setItem('vendas', JSON.stringify(vendas));
     }
   }
-
+  
+  function persistData() {
+    localStorage.setItem('produtos', JSON.stringify(produtos));
+    localStorage.setItem('vendas', JSON.stringify(vendas));
+  }
+  
   // ==================== GERADOR DE CÓDIGO ====================
   function formatarCodigo(prefixo, numero, comprimentoMinimo) {
     let numeroStr = numero.toString();
@@ -419,30 +763,16 @@
     }
     return prefixo ? prefixo + numeroStr : numeroStr;
   }
-
+  
   function gerarPreviewProduto() {
     const prefixo = document.getElementById('prefixo').value.trim();
     const numero = parseInt(document.getElementById('numeroSequencial').value) || 1;
     const comprimento = document.getElementById('comprimentoMinimo').value;
-    
-    if (numero < 1 || numero > 9999) {
-      showToast('Número deve estar entre 1 e 9999', true);
-      return;
-    }
+    if (numero < 1 || numero > 9999) return;
     const codigoGerado = formatarCodigo(prefixo, numero, comprimento);
     if (DOM.previewCodigoProduto) DOM.previewCodigoProduto.innerText = codigoGerado;
   }
-
-  function verificarCodigoDisponivel(codigo) {
-    const existe = produtos.some(p => p.codigoBarras === codigo);
-    if (existe) {
-      showToast(`❌ Código ${codigo} já está em uso`, true);
-      return false;
-    }
-    showToast(`✅ Código ${codigo} está disponível`);
-    return true;
-  }
-
+  
   function gerarCodigoProduto() {
     const prefixo = document.getElementById('prefixo').value.trim();
     let numero = parseInt(document.getElementById('numeroSequencial').value) || 1;
@@ -476,16 +806,21 @@
     setTimeout(() => inputCodigo.classList.remove('scanning'), 500);
     showToast(`✅ Código ${codigoGerado} gerado com sucesso!`);
   }
-
+  
   function verificarDisponibilidade() {
     const codigo = document.getElementById('codigoBarras').value.trim();
     if (!codigo) {
       showToast('Digite ou gere um código primeiro', true);
       return;
     }
-    verificarCodigoDisponivel(codigo);
+    const existe = produtos.some(p => p.codigoBarras === codigo);
+    if (existe) {
+      showToast(`❌ Código ${codigo} já está em uso`, true);
+    } else {
+      showToast(`✅ Código ${codigo} está disponível`);
+    }
   }
-
+  
   // ==================== RANKING DE PRODUTOS ====================
   function calcularRankingProdutos() {
     const vendasPorProduto = new Map();
@@ -515,13 +850,11 @@
     
     const ranking = Array.from(vendasPorProduto.values());
     ranking.sort((a, b) => b.quantidadeTotal - a.quantidadeTotal);
-    
     return ranking.slice(0, 15);
   }
-
+  
   function renderizarRanking() {
     const ranking = calcularRankingProdutos();
-    
     if (!DOM.rankingProdutos) return;
     
     if (ranking.length === 0) {
@@ -532,10 +865,9 @@
     DOM.rankingProdutos.innerHTML = ranking.map((prod, index) => {
       const medalha = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}º`;
       const margem = prod.faturamentoTotal > 0 ? (prod.lucroTotal / prod.faturamentoTotal) * 100 : 0;
-      const corMedalha = index === 0 ? 'ranking-1' : index === 1 ? 'ranking-2' : index === 2 ? 'ranking-3' : '';
       
       return `
-        <div class="produto-ranking bg-white rounded-xl p-4 shadow-md border-l-4 ${index === 0 ? 'border-yellow-500' : index === 1 ? 'border-gray-400' : index === 2 ? 'border-orange-500' : 'border-blue-200'} hover:shadow-lg transition">
+        <div class="bg-white rounded-xl p-4 shadow-md border-l-4 ${index === 0 ? 'border-yellow-500' : index === 1 ? 'border-gray-400' : index === 2 ? 'border-orange-500' : 'border-blue-200'} hover:shadow-lg transition">
           <div class="flex items-start gap-3">
             <div class="text-3xl ${index < 3 ? 'font-bold' : ''}">${medalha}</div>
             <div class="flex-1">
@@ -550,34 +882,21 @@
                 </div>
               </div>
               <div class="grid grid-cols-2 gap-2 mt-3 text-sm">
-                <div class="bg-blue-50 p-2 rounded-lg">
-                  <p class="text-gray-600 text-xs">Faturamento</p>
-                  <p class="font-bold text-blue-600">R$ ${prod.faturamentoTotal.toFixed(2)}</p>
-                </div>
-                <div class="bg-green-50 p-2 rounded-lg">
-                  <p class="text-gray-600 text-xs">Lucro gerado</p>
-                  <p class="font-bold text-green-600">R$ ${prod.lucroTotal.toFixed(2)}</p>
-                </div>
-                <div class="bg-purple-50 p-2 rounded-lg">
-                  <p class="text-gray-600 text-xs">Preço médio</p>
-                  <p class="font-bold text-purple-600">R$ ${prod.preco.toFixed(2)}</p>
-                </div>
-                <div class="bg-orange-50 p-2 rounded-lg">
-                  <p class="text-gray-600 text-xs">Margem</p>
-                  <p class="font-bold text-orange-600">${margem.toFixed(1)}%</p>
-                </div>
+                <div class="bg-blue-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Faturamento</p><p class="font-bold text-blue-600">R$ ${prod.faturamentoTotal.toFixed(2)}</p></div>
+                <div class="bg-green-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Lucro gerado</p><p class="font-bold text-green-600">R$ ${prod.lucroTotal.toFixed(2)}</p></div>
+                <div class="bg-purple-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Preço médio</p><p class="font-bold text-purple-600">R$ ${prod.preco.toFixed(2)}</p></div>
+                <div class="bg-orange-50 p-2 rounded-lg"><p class="text-gray-600 text-xs">Margem</p><p class="font-bold text-orange-600">${margem.toFixed(1)}%</p></div>
               </div>
               <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
                 <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all" style="width: ${Math.min(100, (prod.quantidadeTotal / ranking[0].quantidadeTotal) * 100)}%"></div>
               </div>
-              <p class="text-xs text-gray-500 mt-1">Vendido ${prod.vezesVendido} vez(es) em diferentes vendas</p>
             </div>
           </div>
         </div>
       `;
     }).join('');
   }
-
+  
   // ==================== VALIDADE ====================
   function verificarStatusValidade(dataValidade) {
     if (!dataValidade) return 'sem-data';
@@ -585,23 +904,12 @@
     hoje.setHours(0, 0, 0, 0);
     const validade = new Date(dataValidade);
     validade.setHours(0, 0, 0, 0);
-    
     if (validade < hoje) return 'vencido';
     const diffDays = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
     if (diffDays <= 30) return 'proximo';
     return 'valido';
   }
-
-  function getStatusText(status) {
-    const statusMap = {
-      'vencido': { text: 'Vencido', class: 'vencido', icon: 'fa-exclamation-triangle' },
-      'proximo': { text: 'Próximo ao vencimento', class: 'proximo-vencer', icon: 'fa-clock' },
-      'valido': { text: 'Válido', class: 'valido', icon: 'fa-check-circle' },
-      'sem-data': { text: 'Sem data', class: '', icon: 'fa-question-circle' }
-    };
-    return statusMap[status] || statusMap['sem-data'];
-  }
-
+  
   function atualizarDashboardValidade() {
     let vencidos = 0, proximos = 0, validos = 0;
     produtos.forEach(prod => {
@@ -614,7 +922,7 @@
     if (DOM.totalProximos) DOM.totalProximos.innerText = proximos;
     if (DOM.totalValidos) DOM.totalValidos.innerText = validos;
   }
-
+  
   function renderControleValidade() {
     if (!DOM.listaValidade) return;
     const filtro = DOM.filtroValidade ? DOM.filtroValidade.value : 'todos';
@@ -630,10 +938,9 @@
     
     DOM.listaValidade.innerHTML = produtosFiltrados.map(prod => {
       const status = verificarStatusValidade(prod.validade);
-      const statusInfo = getStatusText(status);
       const dataFormatada = prod.validade ? new Date(prod.validade).toLocaleDateString('pt-BR') : 'Não cadastrada';
       return `
-        <div class="border-2 rounded-xl p-4 ${statusInfo.class} shadow-sm">
+        <div class="border-2 rounded-xl p-4 ${status === 'vencido' ? 'vencido' : status === 'proximo' ? 'proximo-vencer' : 'valido'} shadow-sm">
           <div class="flex justify-between items-start">
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-2">
@@ -650,7 +957,7 @@
       `;
     }).join('');
   }
-
+  
   // ==================== PRODUTOS ====================
   function renderProdutos() {
     if (!DOM.listaProdutos) return;
@@ -713,7 +1020,7 @@
       });
     });
   }
-
+  
   function salvarProduto() {
     const codigoBarras = document.getElementById('codigoBarras').value.trim();
     const nome = document.getElementById('nome').value.trim();
@@ -776,7 +1083,7 @@
       showToast('Produto não encontrado', true);
     }
   }
-
+  
   // ==================== CARRINHO ====================
   function addProduto() {
     const busca = DOM.busca.value.trim();
@@ -886,6 +1193,7 @@
     vendas.push({
       id: Date.now(),
       data: new Date().toLocaleString(),
+      usuario: usuarioAtual ? usuarioAtual.nome : 'Sistema',
       itens: JSON.parse(JSON.stringify(carrinho)),
       total: totalVenda,
       lucro: lucroTotal
@@ -898,7 +1206,7 @@
     renderizarRanking();
     showToast(`Venda finalizada! Total: R$ ${totalVenda.toFixed(2)}`);
   }
-
+  
   // ==================== RELATÓRIOS ====================
   function atualizarRelatorios() {
     const totalFaturamento = vendas.reduce((sum, v) => sum + v.total, 0);
@@ -931,17 +1239,17 @@
     
     if (DOM.relatorioDiv) {
       DOM.relatorioDiv.innerHTML = vendas.length === 0 ? 'Nenhuma venda' : 
-        vendas.slice().reverse().slice(0, 10).map(v => `<div class="border p-2 mb-2 rounded"><strong>${v.data}</strong> - Total: R$ ${v.total.toFixed(2)} - Lucro: R$ ${v.lucro.toFixed(2)}<br><small>${v.itens.map(i => `${i.nome} (${i.qtd})`).join(', ')}</small></div>`).join('');
+        vendas.slice().reverse().slice(0, 10).map(v => `<div class="border p-2 mb-2 rounded"><strong>${v.data}</strong> - Usuário: ${v.usuario || 'Sistema'} - Total: R$ ${v.total.toFixed(2)} - Lucro: R$ ${v.lucro.toFixed(2)}<br><small>${v.itens.map(i => `${i.nome} (${i.qtd})`).join(', ')}</small></div>`).join('');
     }
     
     renderizarRanking();
   }
-
+  
   // ==================== NAVEGAÇÃO ====================
   function showSection(sectionId) {
-    document.querySelectorAll('.section').forEach(s => s.classList.add('hidden-section'));
+    document.querySelectorAll('#sistemaPrincipal .section').forEach(s => s.classList.add('hidden-section'));
     document.getElementById(sectionId).classList.remove('hidden-section');
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-btn-active'));
+    document.querySelectorAll('#sistemaPrincipal .nav-btn').forEach(btn => btn.classList.remove('nav-btn-active'));
     const activeBtn = document.querySelector(`[data-nav="${sectionId}"]`);
     if (activeBtn) activeBtn.classList.add('nav-btn-active');
     
@@ -949,11 +1257,26 @@
     if (sectionId === 'validade') { renderControleValidade(); atualizarDashboardValidade(); }
     if (sectionId === 'relatorios') { atualizarRelatorios(); renderizarRanking(); }
     if (sectionId === 'vendas') renderCarrinho();
+    if (sectionId === 'usuarios') renderizarListaUsuarios();
   }
-
+  
   // ==================== EVENTOS ====================
   function bindEvents() {
-    document.querySelectorAll('[data-nav]').forEach(btn => {
+    document.getElementById('btnLogin')?.addEventListener('click', fazerLogin);
+    document.getElementById('btnMostrarCadastro')?.addEventListener('click', () => {
+      document.getElementById('telaLogin').classList.add('hidden-section');
+      document.getElementById('telaCadastro').classList.remove('hidden-section');
+    });
+    document.getElementById('btnVoltarLogin')?.addEventListener('click', () => {
+      document.getElementById('telaCadastro').classList.add('hidden-section');
+      document.getElementById('telaLogin').classList.remove('hidden-section');
+      limparCamposCadastro();
+    });
+    document.getElementById('btnCadastrarUsuario')?.addEventListener('click', cadastrarNovoUsuario);
+    document.getElementById('btnCadastrarAdminUsuario')?.addEventListener('click', cadastrarUsuarioAdmin);
+    document.getElementById('btnLogout')?.addEventListener('click', fazerLogout);
+    
+    document.querySelectorAll('#sistemaPrincipal [data-nav]').forEach(btn => {
       btn.addEventListener('click', () => showSection(btn.getAttribute('data-nav')));
     });
     
@@ -963,7 +1286,6 @@
     document.getElementById('btnSalvarProduto')?.addEventListener('click', salvarProduto);
     document.getElementById('btnBuscarPorCodigo')?.addEventListener('click', buscarProdutoPorCodigo);
     document.getElementById('btnLimparCampos')?.addEventListener('click', limparCamposProduto);
-    
     document.getElementById('btnGerarCodigoProduto')?.addEventListener('click', gerarCodigoProduto);
     document.getElementById('btnVerificarDisponivel')?.addEventListener('click', verificarDisponibilidade);
     document.getElementById('prefixo')?.addEventListener('input', gerarPreviewProduto);
@@ -972,16 +1294,30 @@
     
     DOM.filtroValidade?.addEventListener('change', () => renderControleValidade());
     DOM.busca?.addEventListener('keypress', (e) => { if(e.key === 'Enter') addProduto(); });
+    
+    document.getElementById('loginUsuario')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') fazerLogin(); });
+    document.getElementById('loginSenha')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') fazerLogin(); });
   }
-
+  
+  // Verificar se já existe usuário logado
+  function verificarSessao() {
+    const userSalvo = localStorage.getItem('usuarioAtual');
+    if (userSalvo) {
+      usuarioAtual = JSON.parse(userSalvo);
+      document.getElementById('telaLogin').classList.add('hidden-section');
+      document.getElementById('sistemaPrincipal').classList.remove('hidden-section');
+      if (DOM.usuarioLogadoNome) DOM.usuarioLogadoNome.innerText = usuarioAtual.nome;
+      if (DOM.usuarioLogadoEmail) DOM.usuarioLogadoEmail.innerText = usuarioAtual.email;
+      carregarDadosSistema();
+      showSection('vendas');
+    }
+  }
+  
   // ==================== INICIALIZAÇÃO ====================
   function init() {
-    loadData();
     bindEvents();
-    showSection('vendas');
+    verificarSessao();
     gerarPreviewProduto();
-    atualizarDashboardValidade();
-    renderizarRanking();
   }
   
   init();
