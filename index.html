@@ -1,954 +1,820 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>MIX BAZAR - PDV com Supabase</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    /* ===== ESTILOS COMPLETOS (responsivo) ===== */
-    :root {
-      --bg: #f0f2f5;
-      --fg: #111827;
-      --muted: #6b7280;
-      --accent: #1e40af;
-      --accent-light: #3b82f6;
-      --card: #ffffff;
-      --border: #e5e7eb;
-      --success: #059669;
-      --danger: #dc2626;
-      --warning: #d97706;
-      --gold: #f59e0b;
-    }
-    * { box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding-bottom: env(safe-area-inset-bottom); }
-    .hidden-section { display: none !important; }
-    button { cursor: pointer; border: none; background: none; }
-    button:active { transform: scale(0.96); }
-    input, select { outline: none; }
-    input:focus, select:focus { border-color: var(--accent-light) !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; transition: all 0.2s; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { background: #1e3a8a; }
-    .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: #047857; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: #b91c1c; }
-    .btn-ghost { background: #f3f4f6; color: #374151; }
-    .btn-ghost:hover { background: #e5e7eb; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
-    .btn-xs { padding: 4px 8px; font-size: 11px; border-radius: 6px; }
-    .card { background: var(--card); border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid var(--border); }
-    .card-lg { padding: 24px; }
-    .input { width: 100%; border: 2px solid var(--border); border-radius: 12px; padding: 10px 14px; font-size: 14px; background: white; }
-    .input-lg { padding: 14px 16px; font-size: 16px; border-radius: 14px; }
-    .input-icon { padding-left: 42px; }
-    .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-    .badge-green { background: #d1fae5; color: #065f46; }
-    .badge-red { background: #fee2e2; color: #991b1b; }
-    .badge-yellow { background: #fef3c7; color: #92400e; }
-    .badge-blue { background: #dbeafe; color: #1e40af; }
-    .lote-vencido { border-left: 4px solid var(--danger); background: #fef2f2; }
-    .lote-proximo { border-left: 4px solid var(--warning); background: #fffbeb; }
-    .lote-normal { border-left: 4px solid var(--success); background: #f0fdf4; }
-    .lote-sem-validade { border-left: 4px solid #6366f1; background: #eef2ff; }
-    .nav-item { padding: 8px 16px; border-radius: 10px; color: #bfdbfe; font-size: 13px; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
-    .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
-    .nav-item.active { background: rgba(255,255,255,0.15); color: white; border-bottom: 2px solid var(--gold); }
-    .stat-card { border-radius: 16px; padding: 20px; color: white; position: relative; overflow: hidden; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-box { background: white; border-radius: 20px; max-width: 520px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 24px; }
-    .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 22px; border-radius: 14px; color: white; font-weight: 600; z-index: 9999; animation: fadeInUp 0.3s ease; display: flex; align-items: center; gap: 10px; }
-    .toast-success { background: linear-gradient(135deg, #059669, #10b981); }
-    .toast-error { background: linear-gradient(135deg, #dc2626, #ef4444); }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .top-bar { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%); }
-    .login-bg { min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%); display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .prod-card { border: 1px solid var(--border); border-radius: 14px; padding: 16px; background: white; }
-    .table-modern { width: 100%; border-collapse: collapse; }
-    .table-modern th { background: #f8fafc; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); border-bottom: 2px solid var(--border); }
-    .table-modern td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; }
-    @media (max-width: 768px) {
-      .nav-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .nav-scroll::-webkit-scrollbar { display: none; }
-      .card-lg { padding: 16px; }
-    }
-    @media print {
-      body * { visibility: hidden; }
-      #printArea, #printArea * { visibility: visible; }
-      #printArea { position: absolute; top: 0; left: 0; width: 100%; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEXUS PDV • Professional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); transition: all 0.3s; }
+        .modal-transition { transition: all 0.3s ease; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+        .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+        .mobile-menu.open { transform: translateX(0); }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen">
 
-<!-- TELA DE LOGIN -->
-<div id="telaLogin" class="login-bg">
-  <div style="width:100%;max-width:420px;">
-    <div class="card" style="overflow:hidden;">
-      <div style="background:linear-gradient(135deg,#0f172a,#1e40af);padding:32px 24px;text-align:center;">
-        <div style="width:72px;height:72px;background:rgba(251,191,36,0.2);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
-          <i class="fas fa-store" style="font-size:32px;color:#fbbf24;"></i>
+<div class="flex h-screen overflow-hidden">
+    <!-- SIDEBAR DESKTOP -->
+    <div class="w-72 bg-white border-r border-gray-200 flex flex-col hidden lg:flex">
+        <div class="p-6 border-b">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl">🏪</div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">NEXUS</h1>
+                    <p class="text-xs text-gray-500 -mt-1">PDV PROFESSIONAL</p>
+                </div>
+            </div>
         </div>
-        <h1 style="font-size:24px;font-weight:800;color:white;margin:0;">MIX BAZAR</h1>
-        <p style="color:#93c5fd;font-size:13px;margin-top:4px;">PDV com Supabase</p>
-      </div>
-      <div style="padding:28px;">
-        <div style="margin-bottom:16px;">
-          <label class="text-sm font-semibold text-gray-700">E-mail</label>
-          <div class="relative mt-1">
-            <i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="email" id="loginEmail" class="input input-icon w-full" placeholder="seu@email.com">
-          </div>
+        
+        <nav class="flex-1 p-4 space-y-1">
+            <a onclick="navigate('vendas')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer">
+                <i class="fa-solid fa-cash-register w-5"></i> <span class="font-medium">PDV - Vendas</span>
+            </a>
+            <a onclick="navigate('produtos')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer">
+                <i class="fa-solid fa-box w-5"></i> <span class="font-medium">Produtos</span>
+            </a>
+            <a onclick="navigate('estoque')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer">
+                <i class="fa-solid fa-warehouse w-5"></i> <span class="font-medium">Estoque</span>
+            </a>
+            <a onclick="navigate('historico')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer">
+                <i class="fa-solid fa-clock-rotate-left w-5"></i> <span class="font-medium">Histórico de Vendas</span>
+            </a>
+            <a onclick="navigate('relatorios')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer">
+                <i class="fa-solid fa-chart-pie w-5"></i> <span class="font-medium">Relatórios</span>
+            </a>
+            <a onclick="navigate('topVendidos')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer">
+                <i class="fa-solid fa-trophy w-5"></i> <span class="font-medium">Top 20 Vendidos</span>
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t">
+            <div class="flex items-center gap-3 px-4 py-3">
+                <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold">AD</div>
+                <div>
+                    <p class="font-medium">Admin Nexus</p>
+                    <p class="text-xs text-gray-500">Administrador</p>
+                </div>
+            </div>
         </div>
-        <div style="margin-bottom:20px;">
-          <label class="text-sm font-semibold text-gray-700">Senha</label>
-          <div class="relative mt-1">
-            <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="password" id="loginSenha" class="input input-icon w-full" placeholder="********">
-          </div>
-        </div>
-        <button id="btnLogin" class="btn btn-primary w-full py-3 text-base"><i class="fas fa-sign-in-alt"></i> Entrar</button>
-        <div class="text-center mt-4">
-          <button id="btnMostrarCadastro" class="text-blue-600 text-sm font-semibold underline">Criar nova conta</button>
-        </div>
-      </div>
     </div>
-  </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col">
+        <!-- TOP BAR -->
+        <div class="bg-white border-b px-4 sm:px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleMobileMenu()" class="lg:hidden text-2xl text-gray-600">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2 id="pageTitle" class="text-xl sm:text-2xl font-semibold text-gray-800">PDV - Vendas</h2>
+            </div>
+            
+            <div class="flex items-center gap-3 sm:gap-6">
+                <div class="hidden sm:flex items-center bg-gray-100 rounded-full px-4 py-2 text-sm">
+                    <i class="fa-regular fa-calendar mr-2"></i>
+                    <span id="dataAtual" class="font-medium"></span>
+                </div>
+                <button onclick="novaVenda()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 sm:px-6 py-2.5 rounded-2xl font-medium flex items-center gap-2 transition text-sm sm:text-base">
+                    <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Nova Venda</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTENT AREA -->
+        <div class="flex-1 overflow-auto p-4 sm:p-6" id="mainContent">
+            <!-- Dinâmico -->
+        </div>
+    </div>
+
+    <!-- CARRINHO LATERAL (Desktop) -->
+    <div class="w-96 bg-white border-l hidden xl:flex flex-col" id="carrinhoLateral">
+        <div class="p-6 border-b">
+            <h3 class="font-semibold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-shopping-cart"></i> Carrinho
+                <span id="qtdItens" class="ml-auto bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">0 itens</span>
+            </h3>
+        </div>
+        <div class="flex-1 overflow-auto p-6 space-y-4" id="carrinhoItems"></div>
+        
+        <div class="p-6 border-t mt-auto">
+            <div class="flex justify-between text-lg mb-4">
+                <span class="font-medium">Total</span>
+                <span id="totalCarrinho" class="font-bold text-3xl">R$ 0,00</span>
+            </div>
+            <button onclick="finalizarVenda()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-2xl font-semibold text-lg transition">
+                💰 Finalizar Venda
+            </button>
+            <button onclick="limparCarrinho()" class="w-full mt-3 text-red-600 hover:bg-red-50 py-3 rounded-2xl font-medium transition">
+                🗑️ Limpar Carrinho
+            </button>
+        </div>
+    </div>
 </div>
 
-<!-- TELA DE CADASTRO -->
-<div id="telaCadastro" class="login-bg hidden-section">
-  <div style="width:100%;max-width:420px;">
-    <div class="card" style="overflow:hidden;">
-      <div style="background:linear-gradient(135deg,#065f46,#059669);padding:28px 24px;text-align:center;">
-        <i class="fas fa-user-plus text-4xl text-green-200"></i>
-        <h1 class="text-2xl font-bold text-white mt-2">Novo Cadastro</h1>
-        <p class="text-green-100 text-sm">Preencha seus dados</p>
-      </div>
-      <div style="padding:28px;">
-        <input type="text" id="cadNome" class="input w-full mb-3" placeholder="Nome completo">
-        <input type="email" id="cadEmail" class="input w-full mb-3" placeholder="E-mail">
-        <input type="password" id="cadSenha" class="input w-full mb-3" placeholder="Senha (mín. 6 caracteres)">
-        <input type="password" id="cadConfirmarSenha" class="input w-full mb-4" placeholder="Confirmar senha">
-        <button id="btnCadastrarUsuario" class="btn btn-success w-full py-3"><i class="fas fa-check"></i> Cadastrar</button>
-        <div class="text-center mt-4">
-          <button id="btnVoltarLogin" class="text-blue-600 text-sm font-semibold"><i class="fas fa-arrow-left"></i> Voltar</button>
+<!-- MENU MOBILE -->
+<div id="mobileMenu" class="mobile-menu fixed top-0 left-0 h-full w-80 bg-white z-50 shadow-2xl overflow-y-auto">
+    <div class="p-6 border-b bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold">NEXUS</h2>
+                <p class="text-sm opacity-90">PDV PROFESSIONAL</p>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-2xl">✕</button>
         </div>
-      </div>
     </div>
-  </div>
+    <nav class="p-4 space-y-2">
+        <a onclick="navigate('vendas'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 cursor-pointer">
+            <i class="fa-solid fa-cash-register w-5"></i> <span>PDV - Vendas</span>
+        </a>
+        <a onclick="navigate('produtos'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 cursor-pointer">
+            <i class="fa-solid fa-box w-5"></i> <span>Produtos</span>
+        </a>
+        <a onclick="navigate('estoque'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 cursor-pointer">
+            <i class="fa-solid fa-warehouse w-5"></i> <span>Estoque</span>
+        </a>
+        <a onclick="navigate('historico'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 cursor-pointer">
+            <i class="fa-solid fa-clock-rotate-left w-5"></i> <span>Histórico</span>
+        </a>
+        <a onclick="navigate('relatorios'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 cursor-pointer">
+            <i class="fa-solid fa-chart-pie w-5"></i> <span>Relatórios</span>
+        </a>
+        <a onclick="navigate('topVendidos'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 cursor-pointer">
+            <i class="fa-solid fa-trophy w-5"></i> <span>Top 20 Vendidos</span>
+        </a>
+    </nav>
+</div>
+<div id="mobileOverlay" class="fixed inset-0 bg-black/50 hidden z-40" onclick="toggleMobileMenu()"></div>
+
+<!-- MODAL FINALIZAR VENDA -->
+<div id="modalFinalizar" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md modal-transition">
+        <h3 class="text-2xl font-bold mb-6">Finalizar Venda</h3>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Cliente (opcional)</label>
+                <input id="clienteNome" type="text" class="w-full border rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Cliente à vista" value="Consumidor Final">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-1">Forma de Pagamento</label>
+                <select id="formaPagamento" class="w-full border rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="dinheiro">💵 Dinheiro</option>
+                    <option value="pix">📱 PIX</option>
+                    <option value="cartao">💳 Cartão de Crédito/Débito</option>
+                    <option value="credito">📝 Crediário</option>
+                </select>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-2xl">
+                <div class="flex justify-between mb-2">
+                    <span>Subtotal:</span>
+                    <span id="modalSubtotal">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between font-bold text-lg">
+                    <span>Total:</span>
+                    <span id="modalTotal" class="text-emerald-600">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 flex gap-3">
+            <button onclick="fecharModal()" class="flex-1 py-4 border rounded-2xl font-medium hover:bg-gray-50 transition">Cancelar</button>
+            <button onclick="confirmarFinalizacao()" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-semibold hover:bg-emerald-700 transition">Confirmar Venda</button>
+        </div>
+    </div>
 </div>
 
-<!-- SISTEMA PRINCIPAL -->
-<div id="sistemaPrincipal" class="hidden-section">
-  <header class="top-bar sticky top-0 z-30 shadow-xl">
-    <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <div class="w-10 h-10 bg-yellow-500/20 rounded-xl flex items-center justify-center"><i class="fas fa-store text-yellow-400 text-xl"></i></div>
-        <div><h1 class="text-white font-bold text-lg">MIX BAZAR</h1><p class="text-blue-200 text-[10px]">Supabase Cloud</p></div>
-      </div>
-      <nav class="nav-scroll flex gap-1 overflow-x-auto">
-        <button data-nav="vendas" class="nav-item active"><i class="fas fa-shopping-cart"></i> Vendas</button>
-        <button data-nav="produtos" class="nav-item"><i class="fas fa-boxes"></i> Produtos</button>
-        <button data-nav="estoque" class="nav-item"><i class="fas fa-warehouse"></i> Estoque</button>
-        <button data-nav="relatorios" class="nav-item"><i class="fas fa-chart-pie"></i> Relatórios</button>
-        <button data-nav="caixa" class="nav-item"><i class="fas fa-cash-register"></i> Caixa</button>
-        <button data-nav="usuarios" class="nav-item"><i class="fas fa-users-cog"></i> Usuários</button>
-      </nav>
-      <div class="flex items-center gap-2">
-        <div class="text-right"><p id="usuarioLogadoNome" class="text-white text-sm font-bold"></p><p id="usuarioLogadoTipo" class="text-blue-200 text-[10px]"></p></div>
-        <button id="btnLogout" class="btn btn-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Sair</button>
-      </div>
+<!-- MODAL PRODUTO -->
+<div id="modalProduto" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md">
+        <h3 id="modalProdutoTitle" class="text-2xl font-bold mb-6">Novo Produto</h3>
+        <div class="space-y-4">
+            <input id="prodNome" type="text" placeholder="Nome do produto" class="w-full border rounded-2xl px-4 py-3">
+            <input id="prodSku" type="text" placeholder="SKU (código único)" class="w-full border rounded-2xl px-4 py-3">
+            <input id="prodPreco" type="number" step="0.01" placeholder="Preço de venda" class="w-full border rounded-2xl px-4 py-3">
+            <input id="prodQuantidade" type="number" placeholder="Quantidade em estoque" class="w-full border rounded-2xl px-4 py-3">
+            <input id="prodCusto" type="number" step="0.01" placeholder="Preço de custo" class="w-full border rounded-2xl px-4 py-3">
+        </div>
+        <div class="mt-8 flex gap-3">
+            <button onclick="fecharModalProduto()" class="flex-1 py-4 border rounded-2xl font-medium">Cancelar</button>
+            <button onclick="salvarProduto()" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-semibold">Salvar</button>
+        </div>
     </div>
-  </header>
-
-  <main class="max-w-7xl mx-auto px-4 py-5">
-    <!-- VENDAS -->
-    <section id="sec-vendas" class="page-section">
-      <div class="card card-lg mb-4"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center"><i class="fas fa-tag text-white text-xl"></i></div><div><h2 class="text-2xl font-bold">Ponto de Venda</h2><p class="text-gray-500 text-sm">Código de barras ou nome do produto</p></div></div></div>
-      <div class="card card-lg">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
-          <div class="relative"><i class="fas fa-barcode absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i><input type="text" id="buscaProduto" class="input input-icon w-full" placeholder="Código ou nome"></div>
-          <button id="btnAddCarrinho" class="btn btn-success"><i class="fas fa-plus-circle"></i> Adicionar</button>
-          <button id="btnFinalizarVenda" class="btn btn-primary"><i class="fas fa-check-double"></i> Finalizar</button>
-          <button id="btnLimparCarrinho" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar</button>
-        </div>
-        <div class="overflow-x-auto"><table class="table-modern w-full"><thead><tr><th>#</th><th>Código</th><th>Produto</th><th>Preço</th><th>Qtd</th><th>Subtotal</th><th></th></tr></thead><tbody id="carrinhoBody"></tbody></table></div>
-        <div class="grid grid-cols-3 gap-4 mt-4 p-4 bg-blue-50 rounded-xl"><div><p class="text-gray-500 text-xs">TOTAL</p><p id="carrinhoTotal" class="text-2xl font-bold text-green-700">R$ 0,00</p></div><div class="text-center"><p class="text-gray-500 text-xs">ITENS</p><p id="carrinhoQtd" class="text-2xl font-bold text-blue-800">0</p></div><div class="text-right"><p class="text-gray-500 text-xs">LUCRO EST.</p><p id="carrinhoLucro" class="text-2xl font-bold text-amber-600">R$ 0,00</p></div></div>
-      </div>
-    </section>
-
-    <!-- PRODUTOS -->
-    <section id="sec-produtos" class="page-section hidden-section">
-      <div class="card card-lg">
-        <div class="flex gap-2 border-b pb-2 mb-4"><button data-tab-prod="cadastro" class="tab tab-active">Cadastrar</button><button data-tab-prod="lista" class="tab tab-inactive">Lista</button><button data-tab-prod="lotes" class="tab tab-inactive">Lotes</button></div>
-        <div id="panel-cadastro" class="panel-prod">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"><input type="text" id="pCodigo" class="input" placeholder="Código *"><input type="text" id="pNome" class="input" placeholder="Nome *"><input type="number" id="pPrecoVenda" step="0.01" class="input" placeholder="Preço Venda *"><input type="number" id="pPrecoCompra" step="0.01" class="input" placeholder="Preço Compra"></div>
-          <div class="bg-gray-50 p-4 rounded-xl mb-3"><h3 class="font-bold">Lote 1 (obrigatório)</h3><div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-2"><input id="l1Num" placeholder="Nº Lote"><input id="l1Qtd" type="number" placeholder="Qtd"><input id="l1Preco" type="number" step="0.01" placeholder="Preço compra"><input id="l1Validade" type="date"><input id="l1Forn" placeholder="Fornecedor"></div></div>
-          <button id="btnToggleMaisLotes" class="text-blue-600 text-sm mb-2">+ Adicionar mais lotes</button>
-          <div id="maisLotesContainer" class="hidden"><div class="bg-green-50 p-4 rounded-xl mb-2"><h3>Lote 2</h3><div class="grid grid-cols-2 md:grid-cols-5 gap-2"><input id="l2Num" placeholder="Nº"><input id="l2Qtd" type="number" placeholder="Qtd"><input id="l2Preco" step="0.01" placeholder="Preço"><input id="l2Validade" type="date"><input id="l2Forn" placeholder="Forn"></div></div><div class="bg-purple-50 p-4 rounded-xl"><h3>Lote 3</h3><div class="grid grid-cols-2 md:grid-cols-5 gap-2"><input id="l3Num" placeholder="Nº"><input id="l3Qtd" type="number" placeholder="Qtd"><input id="l3Preco" step="0.01" placeholder="Preço"><input id="l3Validade" type="date"><input id="l3Forn" placeholder="Forn"></div></div></div>
-          <div class="flex gap-2"><button id="btnSalvarProduto" class="btn btn-primary">Salvar</button><button id="btnBuscarPorCodigo" class="btn btn-ghost">Buscar</button><button id="btnLimparFormProduto" class="btn btn-ghost">Limpar</button></div>
-        </div>
-        <div id="panel-lista" class="panel-prod hidden"><input type="text" id="filtroListaProd" class="input mb-2" placeholder="Filtrar..."><div id="gridProdutos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[500px] overflow-auto"></div></div>
-        <div id="panel-lotes" class="panel-prod hidden"><select id="selProdutoLote" class="input mb-2"></select><button id="btnAddLoteExistente" class="btn btn-success mb-2">Novo Lote</button><div id="formNovoLoteInline" class="hidden bg-green-50 p-4 rounded-xl mb-2"><h4>Adicionar Lote</h4><div class="grid grid-cols-2 md:grid-cols-5 gap-2"><input id="nlNum" placeholder="Nº"><input id="nlQtd" type="number" placeholder="Qtd"><input id="nlPreco" step="0.01" placeholder="Preço"><input id="nlValidade" type="date"><input id="nlForn" placeholder="Forn"></div><div class="flex gap-2 mt-2"><button id="btnSalvarLoteExistente" class="btn btn-success btn-sm">Salvar</button><button id="btnCancelarLoteExistente" class="btn btn-ghost btn-sm">Cancelar</button></div></div><div id="listaLotesDoProduto"></div></div>
-      </div>
-    </section>
-
-    <!-- ESTOQUE -->
-    <section id="sec-estoque" class="page-section hidden-section">
-      <div class="card card-lg"><input type="text" id="filtroEstoque" class="input mb-3" placeholder="Filtrar produto..."><div id="listaEstoqueCompleto" class="max-h-[600px] overflow-auto"></div></div>
-    </section>
-
-    <!-- RELATÓRIOS -->
-    <section id="sec-relatorios" class="page-section hidden-section">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"><div class="stat-card bg-blue-800"><p class="text-xs opacity-80">Faturamento</p><p id="mFaturamento" class="text-xl font-bold">R$ 0</p></div><div class="stat-card bg-green-800"><p>Lucro</p><p id="mLucro">R$ 0</p></div><div class="stat-card bg-amber-700"><p>Margem</p><p id="mMargem">0%</p></div><div class="stat-card bg-purple-800"><p>Vendas</p><p id="mVendas">0</p></div></div>
-      <div class="card card-lg mb-4"><canvas id="chartVendas" height="150"></canvas><canvas id="chartLucro" height="150" class="mt-4"></canvas></div>
-      <div class="card card-lg mb-4"><div class="flex justify-between"><h3>Top Produtos</h3><button id="btnExportCSV" class="btn btn-success btn-sm">CSV</button></div><div class="overflow-auto"><table class="table-modern w-full"><thead><tr><th>#</th><th>Produto</th><th>Qtd</th><th>Faturamento</th><th>Lucro</th></tr></thead><tbody id="tbodyRanking"></tbody></table></div></div>
-      <div class="card card-lg"><div class="flex justify-between flex-wrap gap-2 mb-2"><h3>Histórico</h3><div class="flex gap-1"><button data-filtro-v="todas" class="btn btn-primary btn-xs">Todas</button><button data-filtro-v="hoje" class="btn btn-ghost btn-xs">Hoje</button><button data-filtro-v="semana" class="btn btn-ghost btn-xs">7d</button><button data-filtro-v="mes" class="btn btn-ghost btn-xs">30d</button><button id="btnLimparHistorico" class="btn btn-danger btn-xs">Limpar</button></div></div><div id="listaHistorico" class="max-h-[400px] overflow-auto"></div><div class="flex justify-between mt-2"><span id="infoPag"></span><div><button id="btnPagAnt" class="btn btn-ghost btn-sm">◀</button><button id="btnPagProx" class="btn btn-ghost btn-sm">▶</button></div></div></div>
-    </section>
-
-    <!-- CAIXA -->
-    <section id="sec-caixa" class="page-section hidden-section">
-      <div class="card card-lg"><div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"><div class="bg-blue-900 text-white p-4 rounded-xl"><p>Vendas hoje</p><p id="cxTotal" class="text-2xl font-bold">R$ 0</p></div><div class="bg-green-900 text-white p-4 rounded-xl"><p>Lucro hoje</p><p id="cxLucro">R$ 0</p></div><div class="bg-amber-800 text-white p-4 rounded-xl"><p>Nº Vendas</p><p id="cxQtd">0</p></div></div><h3>Formas de Pagamento</h3><table class="table-modern w-full"><thead><tr><th>Forma</th><th>Valor</th><th>%</th></tr></thead><tbody id="tbodyCxPag"></tbody></table><div class="text-right mt-4"><button id="btnFecharCaixa" class="btn btn-danger">Fechar Caixa</button></div></div>
-    </section>
-
-    <!-- USUÁRIOS -->
-    <section id="sec-usuarios" class="page-section hidden-section">
-      <div class="card card-lg"><div class="grid md:grid-cols-2 gap-6"><div><h3>Novo Usuário</h3><input type="text" id="aNome" class="input w-full mb-2" placeholder="Nome"><input type="email" id="aEmail" class="input w-full mb-2" placeholder="E-mail"><input type="password" id="aSenha" class="input w-full mb-2" placeholder="Senha"><select id="aTipo" class="input w-full mb-3"><option value="usuario">Usuário</option><option value="admin">Admin</option></select><button id="btnCadAdmin" class="btn btn-success w-full">Cadastrar</button></div><div><h3>Lista de Usuários</h3><div id="listaUsuariosAdmin" class="max-h-[400px] overflow-auto"></div></div></div></div>
-    </section>
-  </main>
 </div>
-
-<!-- MODAL PAGAMENTO -->
-<div id="modalPagamento" class="hidden-section"><div class="modal-overlay"><div class="modal-box"><div class="flex justify-between"><h3>Finalizar Venda</h3><button id="btnFecharModalPag">✖</button></div><div class="text-center my-4"><p class="text-gray-500">Total</p><p id="modalTotal" class="text-3xl font-bold text-green-700">R$ 0</p></div><div id="linhasPagamento"></div><button id="btnAddLinhaPag" class="btn btn-ghost w-full border-dashed my-2">+ Adicionar pagamento</button><div class="bg-gray-100 p-3 rounded-lg"><div class="flex justify-between"><span>Total pago:</span><span id="modalPago">R$ 0</span></div><div class="flex justify-between"><span>Troco:</span><span id="modalTroco">R$ 0</span></div></div><div class="flex gap-2 mt-4"><button id="btnConfirmarVenda" class="btn btn-success flex-1">Confirmar</button><button id="btnCancelarVenda" class="btn btn-ghost flex-1">Cancelar</button></div></div></div></div>
-
-<!-- MODAL CONFIRMAÇÃO -->
-<div id="modalConfirm" class="hidden-section"><div class="modal-overlay"><div class="modal-box text-center"><i class="fas fa-exclamation-triangle text-5xl text-red-500 mb-3"></i><h3 id="confirmTitulo" class="text-xl font-bold">Confirmar</h3><p id="confirmMsg" class="my-3"></p><div class="flex gap-2"><button id="btnConfirmSim" class="btn btn-danger flex-1">Sim</button><button id="btnConfirmNao" class="btn btn-ghost flex-1">Não</button></div></div></div></div>
-
-<div id="printArea" class="hidden-section"></div>
 
 <script>
-  // ===================== CONFIGURAÇÃO SUPABASE =====================
-  // ⚠️ SUBSTITUA PELAS SUAS CREDENCIAIS OBTIDAS NO SUPABASE (Project Settings > API)
-  const SUPABASE_URL = "https://sb_publishable_pOfx3OvepHxoKu_XH6rgqA_oBasFsCA.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtbGxpeW5lb2hyeWtqY2F5a2txIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4Nzk5MzYsImV4cCI6MjA5NDQ1NTkzNn0.LbD5izw47yeE5fFjwC3eU0MQCizumyP5eOEJgeIntTg";
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ==================== DADOS ====================
+let produtos = JSON.parse(localStorage.getItem('nexus_produtos')) || [
+    { id: 1, nome: "Smartphone Galaxy S24", sku: "SM-G24", preco: 4299.90, quantidade: 12, custo: 2800, lote: "L2401" },
+    { id: 2, nome: "Fone AirPods Pro", sku: "AP-PRO", preco: 1299.90, quantidade: 25, custo: 650, lote: "L2402" },
+    { id: 3, nome: "Notebook Dell Inspiron", sku: "DL-3520", preco: 3599.90, quantidade: 8, custo: 2200, lote: "L2403" },
+    { id: 4, nome: "Capa iPhone 15", sku: "CP-IP15", preco: 89.90, quantidade: 45, custo: 25, lote: "L2404" },
+    { id: 5, nome: "Carregador Turbo 65W", sku: "CH-65W", preco: 129.90, quantidade: 60, custo: 45, lote: "L2405" },
+    { id: 6, nome: "Mouse Gamer RGB", sku: "MS-GAMER", preco: 199.90, quantidade: 30, custo: 80, lote: "L2406" },
+    { id: 7, nome: "Teclado Mecânico", sku: "TK-MEC", preco: 349.90, quantidade: 18, custo: 150, lote: "L2407" },
+    { id: 8, nome: "Monitor 24' LED", sku: "MN-24", preco: 899.90, quantidade: 10, custo: 450, lote: "L2408" }
+];
 
-  // ===================== VARIÁVEIS GLOBAIS =====================
-  let usuarioAtual = null;   // { id, email, nome, tipo }
-  let carrinho = [];
-  let grafVendas = null, grafLucro = null;
-  let pagAtual = 1, itensPag = 10, filtroVendas = 'todas';
-  let confirmCallback = null;
-  let DB = { produtos: [], lotes: [], vendas: [] }; // cache local
+let carrinho = [];
+let vendasHistorico = JSON.parse(localStorage.getItem('nexus_vendas')) || [];
+let produtoEditandoId = null;
 
-  const $ = id => document.getElementById(id);
-  const $$ = sel => document.querySelectorAll(sel);
-  const money = v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
-  const hoje = () => { let d = new Date(); d.setHours(0,0,0,0); return d; };
-  const dataISO = d => d.toISOString().split('T')[0];
-  const dataBR = s => s ? new Date(s+'T12:00:00').toLocaleDateString('pt-BR') : 'N/A';
-  const diasDiff = (a,b) => Math.ceil((new Date(b)-new Date(a))/(1000*60*60*24));
-
-  function toast(msg, tipo = 'success') {
-    const div = document.createElement('div');
-    div.className = `toast toast-${tipo}`;
-    div.innerHTML = `<i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${msg}`;
-    document.body.appendChild(div);
-    setTimeout(() => div.remove(), 3000);
-  }
-
-  function confirmar(titulo, msg, cb) {
-    $('confirmTitulo').textContent = titulo;
-    $('confirmMsg').textContent = msg;
-    confirmCallback = cb;
-    $('modalConfirm').classList.remove('hidden-section');
-  }
-
-  // ===================== FUNÇÕES DE BANCO (Supabase) =====================
-  async function carregarDados() {
-    // Produtos
-    const { data: produtos, error: errProd } = await supabase.from('produtos').select('*');
-    if (!errProd) DB.produtos = produtos;
-    // Lotes
-    const { data: lotes, error: errLot } = await supabase.from('lotes').select('*');
-    if (!errLot) DB.lotes = lotes;
-    // Vendas (ordenadas por data decrescente)
-    const { data: vendas, error: errVen } = await supabase.from('vendas').select('*').order('data', { ascending: false });
-    if (!errVen) DB.vendas = vendas;
+// ==================== NAVEGAÇÃO ====================
+function navigate(pagina) {
+    document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.remove('bg-indigo-50', 'text-indigo-700');
+    });
     
-    // Se não houver produtos e o usuário for admin, cria dados iniciais
-    if (DB.produtos.length === 0 && usuarioAtual && usuarioAtual.tipo === 'admin') {
-      await inicializarDados();
+    const mainContent = document.getElementById('mainContent');
+    
+    switch(pagina) {
+        case 'vendas': renderPDV(); break;
+        case 'produtos': renderProdutos(); break;
+        case 'estoque': renderEstoque(); break;
+        case 'historico': renderHistorico(); break;
+        case 'relatorios': renderRelatorios(); break;
+        case 'topVendidos': renderTopVendidos(); break;
     }
-  }
-
-  async function inicializarDados() {
-    const d30 = new Date(); d30.setDate(d30.getDate()+30);
-    const d60 = new Date(); d60.setDate(d60.getDate()+60);
-    const produtosDemo = [
-      { id: 1, nome: 'Coca-Cola 2L', codigo: '7891000100103', pv: 9.90, pc: 6.50 },
-      { id: 2, nome: 'Arroz 5kg', codigo: '7896001900108', pv: 24.90, pc: 18.00 },
-      { id: 3, nome: 'Feijão 1kg', codigo: '7896002400105', pv: 8.49, pc: 5.80 },
-      { id: 4, nome: 'Açúcar 1kg', codigo: '7891910000109', pv: 5.29, pc: 3.60 },
-      { id: 5, nome: 'Óleo 900ml', codigo: '7896014500101', pv: 7.99, pc: 5.40 }
-    ];
-    const lotesDemo = [
-      { id: 101, pid: 1, qtd: 15, pc: 6.50, val: dataISO(d30), num: 'CC-001', forn: 'Distribuidora ABC', entr: new Date().toISOString() },
-      { id: 102, pid: 2, qtd: 8, pc: 18.00, val: dataISO(d60), num: 'RJ-001', forn: 'Atacadão', entr: new Date().toISOString() },
-      { id: 103, pid: 3, qtd: 20, pc: 5.80, val: dataISO(d30), num: 'FJ-001', forn: 'Atacadão', entr: new Date().toISOString() },
-      { id: 104, pid: 4, qtd: 12, pc: 3.60, val: null, num: 'AC-001', forn: 'Distribuidora XYZ', entr: new Date().toISOString() },
-      { id: 105, pid: 5, qtd: 10, pc: 5.40, val: dataISO(d60), num: 'OL-001', forn: 'Distribuidora ABC', entr: new Date().toISOString() }
-    ];
-    for (const p of produtosDemo) await supabase.from('produtos').upsert(p);
-    for (const l of lotesDemo) await supabase.from('lotes').upsert(l);
-    await carregarDados();
-  }
-
-  async function syncDB() {
-    if (usuarioAtual?.tipo === 'admin') {
-      for (const p of DB.produtos) await supabase.from('produtos').upsert(p);
-      for (const l of DB.lotes) await supabase.from('lotes').upsert(l);
-    }
-    for (const v of DB.vendas) await supabase.from('vendas').upsert(v);
-  }
-
-  // ===================== LÓGICA DE ESTOQUE (PEPS) =====================
-  function estoqueTotal(pid) {
-    return DB.lotes.filter(l => l.pid === pid).reduce((s,l) => s + l.qtd, 0);
-  }
-  function precoMedio(pid) {
-    const lotes = DB.lotes.filter(l => l.pid === pid && l.qtd > 0);
-    if (!lotes.length) return 0;
-    const totalQ = lotes.reduce((s,l) => s + l.qtd, 0);
-    const totalV = lotes.reduce((s,l) => s + (l.pc * l.qtd), 0);
-    return totalV / totalQ;
-  }
-  function lotesPEPS(pid) {
-    return DB.lotes.filter(l => l.pid === pid && l.qtd > 0).sort((a,b) => {
-      if (!a.val && !b.val) return 0;
-      if (!a.val) return 1;
-      if (!b.val) return -1;
-      return new Date(a.val) - new Date(b.val);
-    });
-  }
-  function consumirPEPS(pid, qtd) {
-    const disponiveis = lotesPEPS(pid);
-    let restante = qtd;
-    const consumidos = [];
-    for (const lote of disponiveis) {
-      if (restante <= 0) break;
-      const q = Math.min(lote.qtd, restante);
-      consumidos.push({ lid: lote.id, num: lote.num, qtd: q, pc: lote.pc });
-      lote.qtd -= q;
-      restante -= q;
-    }
-    if (restante > 0) throw new Error(`Estoque insuficiente! Faltam ${restante} unidade(s).`);
-    DB.lotes = DB.lotes.filter(l => l.qtd > 0);
-    syncDB();
-    return consumidos;
-  }
-  function statusLote(lote) {
-    if (!lote.val) return 'sem-validade';
-    const diff = diasDiff(new Date().toISOString().split('T')[0], lote.val);
-    if (diff < 0) return 'vencido';
-    if (diff <= 30) return 'proximo';
-    return 'normal';
-  }
-
-  // ===================== CARRINHO =====================
-  function addCarrinho() {
-    const busca = $('buscaProduto').value.trim();
-    if (!busca) return toast('Digite código ou nome', 'error');
-    const prod = DB.produtos.find(p => p.codigo === busca) ||
-                 DB.produtos.find(p => p.nome.toLowerCase() === busca.toLowerCase()) ||
-                 DB.produtos.find(p => p.nome.toLowerCase().includes(busca.toLowerCase()));
-    if (!prod) return toast('Produto não encontrado', 'error');
-    const est = estoqueTotal(prod.id);
-    if (est <= 0) return toast('Sem estoque', 'error');
-    const existente = carrinho.find(i => i.id === prod.id);
-    if (existente) {
-      if (existente.qtd >= est) return toast('Estoque máximo', 'error');
-      existente.qtd++;
-    } else {
-      carrinho.push({ id: prod.id, nome: prod.nome, codigo: prod.codigo, pv: prod.pv, qtd: 1 });
-    }
-    $('buscaProduto').value = '';
-    renderCarrinho();
-    toast(`${prod.nome} adicionado`);
-  }
-
-  function renderCarrinho() {
-    let total = 0, lucro = 0, qtd = 0;
-    const tbody = $('carrinhoBody');
-    if (!carrinho.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-400">Carrinho vazio</td></tr>';
-    } else {
-      tbody.innerHTML = carrinho.map((item, idx) => {
-        const sub = item.pv * item.qtd;
-        const pm = precoMedio(item.id);
-        const l = (item.pv - pm) * item.qtd;
-        total += sub; lucro += l; qtd += item.qtd;
-        return `<tr>
-          <td>${idx+1}</td>
-          <td><code>${item.codigo}</code></td>
-          <td>${item.nome}</td>
-          <td class="text-right">${money(item.pv)}</td>
-          <td class="text-center"><div class="flex justify-center gap-1"><button class="btn btn-ghost btn-xs" onclick="window.carrinhoDec(${idx})">-</button><span class="w-8 text-center">${item.qtd}</span><button class="btn btn-ghost btn-xs" onclick="window.carrinhoInc(${idx})">+</button></div></td>
-          <td class="text-right font-bold">${money(sub)}</td>
-          <td class="text-center"><button class="btn btn-danger btn-xs" onclick="window.carrinhoRem(${idx})"><i class="fas fa-trash"></i></button></td>
-        </tr>`;
-      }).join('');
-    }
-    $('carrinhoTotal').textContent = money(total);
-    $('carrinhoQtd').textContent = qtd;
-    $('carrinhoLucro').textContent = money(lucro);
-  }
-  window.carrinhoDec = (idx) => { if (carrinho[idx].qtd > 1) { carrinho[idx].qtd--; renderCarrinho(); } };
-  window.carrinhoInc = (idx) => { const est = estoqueTotal(carrinho[idx].id); if (carrinho[idx].qtd < est) { carrinho[idx].qtd++; renderCarrinho(); } else toast('Estoque máximo', 'error'); };
-  window.carrinhoRem = (idx) => { carrinho.splice(idx, 1); renderCarrinho(); };
-  function limparCarrinho() { if (carrinho.length) confirmar('Limpar', 'Remover todos?', () => { carrinho = []; renderCarrinho(); toast('Carrinho limpo'); }); }
-
-  // ===================== PAGAMENTO =====================
-  let pendingTotal = 0;
-  function abrirPagamento() {
-    if (!carrinho.length) return toast('Carrinho vazio', 'error');
-    pendingTotal = carrinho.reduce((s,i) => s + i.pv * i.qtd, 0);
-    $('modalTotal').textContent = money(pendingTotal);
-    $('linhasPagamento').innerHTML = '';
-    addLinhaPag();
-    $('modalPagamento').classList.remove('hidden-section');
-  }
-  function addLinhaPag() {
-    const div = document.createElement('div');
-    div.className = 'flex gap-2 mb-2';
-    div.innerHTML = `<select class="input flex-1"><option>Dinheiro</option><option>Cartão Crédito</option><option>Cartão Débito</option><option>PIX</option></select><input type="number" step="0.01" class="input w-32" placeholder="R$"><button class="btn btn-danger btn-xs btn-rem-linha"><i class="fas fa-times"></i></button>`;
-    div.querySelector('input').addEventListener('input', calcTotaisPag);
-    div.querySelector('.btn-rem-linha').addEventListener('click', () => { div.remove(); calcTotaisPag(); });
-    $('linhasPagamento').appendChild(div);
-    calcTotaisPag();
-  }
-  function calcTotaisPag() {
-    let pago = 0;
-    $$('#linhasPagamento input').forEach(inp => { let v = parseFloat(inp.value); if (!isNaN(v)) pago += v; });
-    $('modalPago').textContent = money(pago);
-    const troco = pago - pendingTotal;
-    $('modalTroco').textContent = money(troco > 0 ? troco : 0);
-    $('modalTroco').style.color = troco >= 0 ? 'green' : 'red';
-  }
-  async function confirmarVenda() {
-    let pago = 0;
-    const pagamentos = [];
-    $$('#linhasPagamento').forEach(div => {
-      const inp = div.querySelector('input');
-      const v = parseFloat(inp.value);
-      if (!isNaN(v) && v > 0) {
-        const forma = div.querySelector('select').value;
-        pago += v;
-        pagamentos.push({ forma, valor: v });
-      }
-    });
-    if (!pagamentos.length) return toast('Nenhum pagamento', 'error');
-    if (pago < pendingTotal) return toast(`Faltam ${money(pendingTotal - pago)}`, 'error');
-    const itensVendidos = [];
-    let lucroTotal = 0;
-    try {
-      for (const item of carrinho) {
-        const consumidos = consumirPEPS(item.id, item.qtd);
-        const pcMedio = consumidos.reduce((s,c) => s + c.pc * c.qtd, 0) / item.qtd;
-        lucroTotal += (item.pv - pcMedio) * item.qtd;
-        itensVendidos.push({ id: item.id, nome: item.nome, codigo: item.codigo, pv: item.pv, qtd: item.qtd, pcMedio });
-      }
-    } catch (e) { return toast(e.message, 'error'); }
-    const venda = {
-      id: Date.now(),
-      data: new Date().toISOString(),
-      usuario: usuarioAtual.nome,
-      itens: itensVendidos,
-      total: pendingTotal,
-      lucro: lucroTotal,
-      pagamentos,
-      troco: pago - pendingTotal
+    
+    const titles = {
+        vendas: 'PDV - Vendas',
+        produtos: 'Gestão de Produtos',
+        estoque: 'Controle de Estoque',
+        historico: 'Histórico de Vendas',
+        relatorios: 'Relatórios Gerenciais',
+        topVendidos: 'Top 20 Produtos Mais Vendidos'
     };
-    DB.vendas.unshift(venda);
-    await syncDB();
-    imprimirCupom(venda);
-    carrinho = [];
-    renderCarrinho();
-    $('modalPagamento').classList.add('hidden-section');
-    toast(`Venda ${money(venda.total)} realizada`);
-    atualizarRelatorios();
-    atualizarCaixa();
-  }
-  function imprimirCupom(v) {
-    const itensHtml = v.itens.map(i => `${i.nome}<br>${i.qtd} x ${money(i.pv)} = ${money(i.pv*i.qtd)}`).join('<br>');
-    const pagsHtml = v.pagamentos.map(p => `${p.forma}: ${money(p.valor)}`).join('<br>');
-    $('printArea').innerHTML = `<div style="font-family:monospace;width:300px;margin:0 auto;padding:10px;"><div style="text-align:center;font-weight:bold;">MIX BAZAR</div><div>${new Date(v.data).toLocaleString()}</div><div>Venda #${v.id}</div><hr>${itensHtml}<hr>Total: ${money(v.total)}<br>${pagsHtml}${v.troco>0?'<br>Troco: '+money(v.troco):''}<hr>Obrigado!</div>`;
-    $('printArea').classList.remove('hidden-section');
-    setTimeout(() => { window.print(); $('printArea').classList.add('hidden-section'); }, 200);
-  }
-
-  // ===================== PRODUTOS (CRUD) =====================
-  async function salvarProduto() {
-    const codigo = $('pCodigo').value.trim();
-    const nome = $('pNome').value.trim();
-    const pv = parseFloat($('pPrecoVenda').value);
-    const pc = parseFloat($('pPrecoCompra').value) || 0;
-    if (!codigo || !nome || isNaN(pv) || pv <= 0) return toast('Preencha todos os campos obrigatórios', 'error');
-    const l1Num = $('l1Num').value.trim();
-    const l1Qtd = parseInt($('l1Qtd').value) || 0;
-    if (!l1Num || l1Qtd <= 0) return toast('Lote 1: número e quantidade >0', 'error');
-    let pid;
-    const existente = DB.produtos.find(p => p.codigo === codigo);
-    if (existente) { pid = existente.id; existente.nome = nome; existente.pv = pv; existente.pc = pc; toast('Produto atualizado'); }
-    else { pid = Date.now(); DB.produtos.push({ id: pid, nome, codigo, pv, pc }); toast('Produto cadastrado'); }
-    for (let i = 1; i <= 3; i++) {
-      const num = $(`l${i}Num`).value.trim();
-      const qtd = parseInt($(`l${i}Qtd`).value) || 0;
-      if (!num || qtd <= 0) continue;
-      const lpc = parseFloat($(`l${i}Preco`).value) || pc;
-      const lval = $(`l${i}Validade`).value || null;
-      const lforn = $(`l${i}Forn`).value.trim() || 'Não informado';
-      const existLote = DB.lotes.find(l => l.pid === pid && l.num === num);
-      if (existLote) { existLote.qtd += qtd; existLote.pc = lpc; existLote.val = lval; existLote.forn = lforn; }
-      else { DB.lotes.push({ id: Date.now() + i + Math.random() * 1000, pid, qtd, pc: lpc, val: lval, num, forn: lforn, entr: new Date().toISOString() }); }
+    document.getElementById('pageTitle').textContent = titles[pagina];
+    
+    if (window.innerWidth < 1024) {
+        document.getElementById('carrinhoLateral').classList.add('hidden');
+    } else {
+        document.getElementById('carrinhoLateral').classList.remove('hidden');
     }
-    await syncDB();
-    limparFormProduto();
-    renderListaProdutos();
-    renderEstoque();
-    popularSelectLotes();
-  }
-  function buscarPorCodigo() {
-    const codigo = $('pCodigo').value.trim();
-    if (!codigo) return toast('Digite código', 'error');
-    const prod = DB.produtos.find(p => p.codigo === codigo);
-    if (!prod) return toast('Produto não encontrado', 'error');
-    $('pNome').value = prod.nome;
-    $('pPrecoVenda').value = prod.pv;
-    $('pPrecoCompra').value = prod.pc || '';
-    const lotes = DB.lotes.filter(l => l.pid === prod.id);
-    for (let i = 0; i < Math.min(lotes.length, 3); i++) {
-      const l = lotes[i];
-      $(`l${i+1}Num`).value = l.num || '';
-      $(`l${i+1}Qtd`).value = l.qtd || 0;
-      $(`l${i+1}Preco`).value = l.pc || '';
-      $(`l${i+1}Validade`).value = l.val || '';
-      $(`l${i+1}Forn`).value = l.forn || '';
-    }
-    if (lotes.length > 1) $('maisLotesContainer').classList.remove('hidden-section');
-    toast('Produto carregado');
-  }
-  function limparFormProduto() {
-    ['pCodigo','pNome','pPrecoVenda','pPrecoCompra'].forEach(id => $(id).value='');
-    for (let i=1;i<=3;i++) { $(`l${i}Num`).value=''; $(`l${i}Qtd`).value='0'; $(`l${i}Preco`).value=''; $(`l${i}Validade`).value=''; $(`l${i}Forn`).value=''; }
-    $('maisLotesContainer').classList.add('hidden-section');
-  }
-  function renderListaProdutos() {
-    const filtro = ($('filtroListaProd').value || '').toLowerCase();
-    const lista = DB.produtos.filter(p => p.nome.toLowerCase().includes(filtro) || p.codigo.includes(filtro));
-    const grid = $('gridProdutos');
-    if (!lista.length) { grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">Nenhum produto</div>'; return; }
-    grid.innerHTML = lista.map(p => {
-      const est = estoqueTotal(p.id);
-      const badge = est > 5 ? 'badge-green' : est > 0 ? 'badge-yellow' : 'badge-red';
-      return `<div class="prod-card"><div class="flex justify-between"><div><h4 class="font-bold">${p.nome}</h4><code>${p.codigo}</code></div><span class="badge ${badge}">${est} un.</span></div><div class="my-2 text-xl font-bold text-green-700">${money(p.pv)}</div><div class="flex gap-2"><button class="btn btn-primary btn-xs" onclick="window.editarProd(${p.id})">Editar</button><button class="btn btn-danger btn-xs" onclick="window.excluirProd(${p.id})">Excluir</button><button class="btn btn-ghost btn-xs" onclick="window.irParaLotes(${p.id})">Lotes</button></div></div>`;
-    }).join('');
-  }
-  window.editarProd = (id) => {
-    const p = DB.produtos.find(x => x.id === id);
-    if (!p) return;
-    $('pCodigo').value = p.codigo;
-    $('pNome').value = p.nome;
-    $('pPrecoVenda').value = p.pv;
-    $('pPrecoCompra').value = p.pc || '';
-    const lotes = DB.lotes.filter(l => l.pid === id);
-    lotes.forEach((l, i) => {
-      if (i < 3) {
-        $(`l${i+1}Num`).value = l.num || '';
-        $(`l${i+1}Qtd`).value = l.qtd || 0;
-        $(`l${i+1}Preco`).value = l.pc || '';
-        $(`l${i+1}Validade`).value = l.val || '';
-        $(`l${i+1}Forn`).value = l.forn || '';
-      }
-    });
-    if (lotes.length > 1) $('maisLotesContainer').classList.remove('hidden-section');
-    ativarTabProd('cadastro');
-    toast('Produto carregado para edição');
-  };
-  window.excluirProd = (id) => {
-    confirmar('Excluir', 'Remover produto e lotes?', async () => {
-      DB.produtos = DB.produtos.filter(x => x.id !== id);
-      DB.lotes = DB.lotes.filter(l => l.pid !== id);
-      await syncDB();
-      syncUI();
-      toast('Produto excluído');
-    });
-  };
-  window.excluirLote = (id) => {
-    confirmar('Excluir Lote', 'Remover este lote?', async () => {
-      DB.lotes = DB.lotes.filter(l => l.id !== id);
-      await syncDB();
-      syncUI();
-      toast('Lote excluído');
-    });
-  };
-  window.irParaLotes = (pid) => { $('selProdutoLote').value = pid; ativarTabProd('lotes'); renderLotesProduto(); };
-  function popularSelectLotes() { $('selProdutoLote').innerHTML = DB.produtos.map(p => `<option value="${p.id}">${p.nome} (${p.codigo}) - Estoque: ${estoqueTotal(p.id)}</option>`).join(''); }
-  function renderLotesProduto() {
-    const pid = parseInt($('selProdutoLote').value);
-    const lotes = DB.lotes.filter(l => l.pid === pid);
-    const prod = DB.produtos.find(p => p.id === pid);
-    const container = $('listaLotesDoProduto');
-    if (!prod) { container.innerHTML = '<div class="text-center p-4">Selecione um produto</div>'; return; }
-    if (!lotes.length) { container.innerHTML = `<div class="text-center p-4">Nenhum lote para ${prod.nome}</div>`; return; }
-    container.innerHTML = lotes.map(l => {
-      const st = statusLote(l);
-      const cls = st==='vencido'?'lote-vencido':st==='proximo'?'lote-proximo':st==='normal'?'lote-normal':'lote-sem-validade';
-      const badge = st==='vencido'?'badge-red':st==='proximo'?'badge-yellow':st==='normal'?'badge-green':'badge-blue';
-      return `<div class="${cls} p-3 rounded-xl mb-2"><div><b>${l.num}</b> <span class="badge ${badge}">${st}</span><div>Qtd: ${l.qtd} | Compra: ${money(l.pc)} | Validade: ${dataBR(l.val)} | Forn: ${l.forn}</div></div><button class="btn btn-danger btn-xs" onclick="window.excluirLote(${l.id})">Excluir</button></div>`;
-    }).join('');
-  }
-  function addLoteExistente() { $('formNovoLoteInline').classList.remove('hidden-section'); }
-  async function salvarLoteExistente() {
-    const pid = parseInt($('selProdutoLote').value);
-    const num = $('nlNum').value.trim();
-    const qtd = parseInt($('nlQtd').value) || 0;
-    const pc = parseFloat($('nlPreco').value) || 0;
-    if (!num || qtd <= 0 || pc <= 0) return toast('Preencha todos', 'error');
-    DB.lotes.push({
-      id: Date.now() + Math.random() * 1000,
-      pid,
-      qtd,
-      pc,
-      val: $('nlValidade').value || null,
-      num,
-      forn: $('nlForn').value.trim() || 'Não informado',
-      entr: new Date().toISOString()
-    });
-    await syncDB();
-    $('formNovoLoteInline').classList.add('hidden-section');
-    ['nlNum','nlQtd','nlPreco','nlValidade','nlForn'].forEach(id => $(id).value = '');
-    $('nlQtd').value = '1';
-    syncUI();
-    toast('Lote adicionado');
-  }
+}
 
-  // ===================== ESTOQUE =====================
-  function renderEstoque() {
-    const filtro = ($('filtroEstoque').value || '').toLowerCase();
-    let lotes = DB.lotes.filter(l => {
-      const p = DB.produtos.find(x => x.id === l.pid);
-      return p && (p.nome.toLowerCase().includes(filtro) || p.codigo.includes(filtro));
-    });
-    lotes.sort((a,b) => (statusLote(a) === 'vencido' ? 0 : statusLote(a)==='proximo' ? 1 : 2) - (statusLote(b)==='vencido'?0:statusLote(b)==='proximo'?1:2));
-    const container = $('listaEstoqueCompleto');
-    if (!lotes.length) { container.innerHTML = '<div class="text-center p-8 text-gray-400">Nenhum lote encontrado</div>'; return; }
-    container.innerHTML = lotes.map(l => {
-      const p = DB.produtos.find(x => x.id === l.pid);
-      const st = statusLote(l);
-      const cls = st==='vencido'?'lote-vencido':st==='proximo'?'lote-proximo':st==='normal'?'lote-normal':'lote-sem-validade';
-      const badge = st==='vencido'?'badge-red':st==='proximo'?'badge-yellow':st==='normal'?'badge-green':'badge-blue';
-      return `<div class="${cls} p-3 rounded-xl mb-2 flex justify-between items-center"><div><b>${p?.nome}</b> <span class="badge ${badge}">${st}</span><br>Lote: ${l.num} | Qtd: ${l.qtd} | Compra: ${money(l.pc)} | Val: ${dataBR(l.val)}</div><button class="btn btn-danger btn-xs" onclick="window.excluirLote(${l.id})">Excluir</button></div>`;
-    }).join('');
-  }
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('mobileOverlay');
+    menu.classList.toggle('open');
+    overlay.classList.toggle('hidden');
+}
 
-  // ===================== RELATÓRIOS =====================
-  function getVendasFiltradas() {
-    if (filtroVendas === 'hoje') return DB.vendas.filter(v => new Date(v.data) >= hoje());
-    if (filtroVendas === 'semana') { const d = new Date(); d.setDate(d.getDate()-7); return DB.vendas.filter(v => new Date(v.data) >= d); }
-    if (filtroVendas === 'mes') { const d = new Date(); d.setDate(d.getDate()-30); return DB.vendas.filter(v => new Date(v.data) >= d); }
-    return DB.vendas;
-  }
-  function atualizarRelatorios() {
-    const vf = getVendasFiltradas();
-    const fat = vf.reduce((s,v) => s + v.total, 0);
-    const luc = vf.reduce((s,v) => s + v.lucro, 0);
-    $('mFaturamento').textContent = money(fat);
-    $('mLucro').textContent = money(luc);
-    $('mMargem').textContent = fat > 0 ? ((luc/fat)*100).toFixed(1)+'%' : '0%';
-    $('mVendas').textContent = vf.length;
-    const mapa = new Map();
-    vf.forEach(v => v.itens.forEach(i => {
-      if (!mapa.has(i.id)) mapa.set(i.id, { nome: i.nome, codigo: i.codigo, qtd: 0, fat: 0, luc: 0 });
-      const p = mapa.get(i.id);
-      p.qtd += i.qtd;
-      p.fat += i.pv * i.qtd;
-      p.luc += (i.pv - i.pcMedio) * i.qtd;
-    }));
-    const ranking = Array.from(mapa.values()).sort((a,b) => b.qtd - a.qtd).slice(0,20);
-    $('tbodyRanking').innerHTML = ranking.length ? ranking.map((p,i) => `
-      <tr><td>${i+1}</td><td>${p.nome}</td><td class="text-center">${p.qtd}</td><td class="text-right">${money(p.fat)}</td><td class="text-right">${money(p.luc)}</td></tr>
-    `).join('') : '<tr><td colspan="5" class="text-center">Nenhuma venda</td></tr>';
-    const total = vf.length;
-    const totalPag = Math.ceil(total / itensPag) || 1;
-    if (pagAtual > totalPag) pagAtual = totalPag;
-    const inicio = (pagAtual-1) * itensPag;
-    const pagina = vf.slice(inicio, inicio+itensPag);
-    $('listaHistorico').innerHTML = pagina.length ? pagina.map(v => `
-      <div class="border-l-4 border-blue-800 bg-white p-3 rounded-xl mb-2">
-        <div><b>Venda #${v.id}</b> - ${new Date(v.data).toLocaleString()} - ${v.usuario}<br>
-        Total: ${money(v.total)} | Lucro: ${money(v.lucro)}<br>
-        Itens: ${v.itens.map(i => `${i.nome} x${i.qtd}`).join(', ')}<br>
-        Pag: ${v.pagamentos.map(p => `${p.forma} ${money(p.valor)}`).join(' | ')}
+// ==================== PDV COMPLETO ====================
+function renderPDV() {
+    document.getElementById('mainContent').innerHTML = `
+        <div class="grid grid-cols-1 gap-6">
+            <div>
+                <div class="mb-4 flex gap-3">
+                    <input id="searchInput" type="text" placeholder="🔍 Buscar produto por nome ou SKU..." 
+                         class="flex-1 border rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                         onkeyup="filtrarProdutos()">
+                    <button onclick="abrirModalProduto()" class="bg-indigo-600 text-white px-6 rounded-2xl hover:bg-indigo-700">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="produtosGrid"></div>
+            </div>
+            
+            <!-- Carrinho Mobile -->
+            <div class="lg:hidden bg-white rounded-3xl p-6 mt-6">
+                <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-shopping-cart"></i> Carrinho
+                    <span id="qtdItensMobile" class="ml-auto bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">0 itens</span>
+                </h3>
+                <div id="carrinhoItemsMobile" class="space-y-3 max-h-96 overflow-auto"></div>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-xl mb-4">
+                        <span class="font-bold">Total</span>
+                        <span id="totalCarrinhoMobile" class="font-bold text-2xl text-emerald-600">R$ 0,00</span>
+                    </div>
+                    <button onclick="finalizarVenda()" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-semibold">
+                        💰 Finalizar Venda
+                    </button>
+                    <button onclick="limparCarrinho()" class="w-full mt-2 text-red-600 py-3 rounded-2xl font-medium">
+                        🗑️ Limpar Carrinho
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    `).join('') : '<div class="text-center p-8">Nenhuma venda</div>';
-    $('infoPag').textContent = total > 0 ? `${inicio+1}-${Math.min(inicio+itensPag,total)} de ${total}` : '';
-    $('btnPagAnt').disabled = pagAtual <= 1;
-    $('btnPagProx').disabled = pagAtual >= totalPag;
-    if (grafVendas) grafVendas.destroy();
-    if (grafLucro) grafLucro.destroy();
-    const ctx1 = $('chartVendas')?.getContext('2d');
-    if (ctx1) {
-      const diasMap = new Map();
-      vf.forEach(v => { const dia = new Date(v.data).toLocaleDateString('pt-BR'); diasMap.set(dia, (diasMap.get(dia)||0) + v.total); });
-      const labels = Array.from(diasMap.keys()).slice(-10);
-      const data = labels.map(l => diasMap.get(l));
-      grafVendas = new Chart(ctx1, { type: 'line', data: { labels, datasets: [{ label: 'Faturamento Diário', data, borderColor: '#1e40af', fill: true }] }, options: { responsive: true, maintainAspectRatio: true } });
-    }
-    const ctx2 = $('chartLucro')?.getContext('2d');
-    if (ctx2) {
-      const ultimas = vf.slice(0,12).reverse();
-      grafLucro = new Chart(ctx2, { type: 'bar', data: { labels: ultimas.map((_,i)=>`V${i+1}`), datasets: [{ label: 'Faturamento', data: ultimas.map(v=>v.total), backgroundColor: '#3b82f6' }, { label: 'Lucro', data: ultimas.map(v=>v.lucro), backgroundColor: '#10b981' }] }, options: { responsive: true } });
-    }
-  }
-  function exportarCSV() {
-    const mapa = new Map();
-    DB.vendas.forEach(v => v.itens.forEach(i => {
-      if (!mapa.has(i.id)) mapa.set(i.id, { nome: i.nome, codigo: i.codigo, qtd: 0, fat: 0, luc: 0 });
-      const p = mapa.get(i.id);
-      p.qtd += i.qtd;
-      p.fat += i.pv * i.qtd;
-      p.luc += (i.pv - i.pcMedio) * i.qtd;
-    }));
-    const ranking = Array.from(mapa.values()).sort((a,b) => b.qtd - a.qtd);
-    const csv = 'Pos,Produto,Codigo,Qtd,Faturamento,Lucro\n' + ranking.map((p,i) => `${i+1},"${p.nome}","${p.codigo}",${p.qtd},${p.fat.toFixed(2)},${p.luc.toFixed(2)}`).join('\n');
-    const blob = new Blob([csv], {type:'text/csv'});
-    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `ranking_${dataISO(new Date())}.csv`; link.click(); toast('CSV exportado');
-  }
+    `;
+    renderProdutosGrid();
+    atualizarCarrinho();
+}
 
-  // ===================== CAIXA =====================
-  function atualizarCaixa() {
-    const h = hoje();
-    const vendasHoje = DB.vendas.filter(v => new Date(v.data) >= h);
-    const totalV = vendasHoje.reduce((s,v) => s + v.total, 0);
-    const totalL = vendasHoje.reduce((s,v) => s + v.lucro, 0);
-    $('cxTotal').textContent = money(totalV);
-    $('cxLucro').textContent = money(totalL);
-    $('cxQtd').textContent = vendasHoje.length;
-    const pagMap = new Map();
-    vendasHoje.forEach(v => v.pagamentos?.forEach(p => pagMap.set(p.forma, (pagMap.get(p.forma)||0) + p.valor)));
-    const tbody = $('tbodyCxPag');
-    if (!pagMap.size) tbody.innerHTML = '<tr><td colspan="3">Nenhuma venda hoje</td></tr>';
-    else tbody.innerHTML = Array.from(pagMap.entries()).map(([f,val]) => `
-      <tr><td>${f}</td><td class="text-right">${money(val)}</td><td class="text-right">${totalV>0?((val/totalV)*100).toFixed(1):0}%</td></tr>
+function renderProdutosGrid(filtered = null) {
+    const container = document.getElementById('produtosGrid');
+    if (!container) return;
+    
+    const prods = filtered || produtos;
+    
+    container.innerHTML = prods.map(p => `
+        <div onclick="adicionarAoCarrinho(${p.id})" class="bg-white rounded-2xl p-4 cursor-pointer card-hover border border-gray-200 hover:border-indigo-300 transition-all">
+            <div class="font-semibold text-base">${p.nome.substring(0, 30)}</div>
+            <div class="text-emerald-600 text-xl font-bold mt-2">R$ ${p.preco.toFixed(2)}</div>
+            <div class="text-xs text-gray-500 mt-1">📦 ${p.quantidade} unid.</div>
+            <div class="text-xs text-gray-400">${p.sku}</div>
+        </div>
     `).join('');
-  }
-  function fecharCaixa() {
-    const h = hoje();
-    const vendasHoje = DB.vendas.filter(v => new Date(v.data) >= h);
-    if (!vendasHoje.length) return toast('Nenhuma venda hoje', 'error');
-    const totalV = vendasHoje.reduce((s,v) => s + v.total, 0);
-    const totalL = vendasHoje.reduce((s,v) => s + v.lucro, 0);
-    const conferido = prompt(`Fechamento de Caixa\nTotal: ${money(totalV)}\nLucro: ${money(totalL)}\nVendas: ${vendasHoje.length}\n\nValor conferido:`, totalV.toFixed(2));
-    if (conferido === null) return;
-    const diff = parseFloat(conferido) - totalV;
-    const msg = `MIX BAZAR - Fechamento\nData: ${new Date().toLocaleString()}\nOperador: ${usuarioAtual.nome}\nVendas: ${vendasHoje.length}\nTotal: ${money(totalV)}\nLucro: ${money(totalL)}\nConferido: ${money(parseFloat(conferido))}\nDiferença: ${money(Math.abs(diff))} ${diff>=0?'(sobrou)':'(faltou)'}`;
-    alert(msg);
-    if (confirm('Imprimir?')) { $('printArea').innerHTML = `<pre>${msg}</pre>`; $('printArea').classList.remove('hidden-section'); setTimeout(()=>{ window.print(); $('printArea').classList.add('hidden-section'); },200); }
-  }
+}
 
-  // ===================== USUÁRIOS (Admin) =====================
-  async function renderUsuariosAdmin() {
-    if (usuarioAtual.tipo !== 'admin') { $('#listaUsuariosAdmin').innerHTML = '<div class="text-center p-4">Apenas administradores</div>'; return; }
-    const { data: usuarios, error } = await supabase.from('usuarios').select('*');
-    if (error) return toast('Erro ao carregar usuários', 'error');
-    $('#listaUsuariosAdmin').innerHTML = usuarios.map(u => `
-      <div class="flex justify-between items-center bg-white p-3 rounded-xl mb-2">
-        <div><b>${u.nome}</b> (${u.email})<br><span class="badge ${u.tipo==='admin'?'badge-blue':'badge-green'}">${u.tipo}</span></div>
-        ${usuarioAtual.id !== u.id ? `<button class="btn btn-danger btn-xs" onclick="window.excluirUser('${u.id}')">Excluir</button>` : ''}
-      </div>
-    `).join('');
-  }
-  window.excluirUser = async (id) => {
-    confirmar('Excluir Usuário', 'Remover este usuário?', async () => {
-      await supabase.from('usuarios').delete().eq('id', id);
-      // Opcional: também remover da autenticação (requer função de admin no Supabase ou chave de serviço)
-      renderUsuariosAdmin();
-      toast('Usuário removido');
-    });
-  };
-  async function cadastrarAdmin() {
-    const nome = $('aNome').value.trim();
-    const email = $('aEmail').value.trim();
-    const senha = $('aSenha').value;
-    const tipo = $('aTipo').value;
-    if (!nome || !email || !senha) return toast('Preencha todos', 'error');
-    if (senha.length < 6) return toast('Senha mín 6 caracteres', 'error');
-    // Cria usuário no Auth (supabase.auth.signUp)
-    const { data: authUser, error: authError } = await supabase.auth.signUp({ email, password: senha });
-    if (authError) return toast(authError.message, 'error');
-    // Insere perfil na tabela usuarios
-    const { error: insertError } = await supabase.from('usuarios').insert([{ id: authUser.user.id, email, nome, tipo }]);
-    if (insertError) return toast('Erro ao criar perfil', 'error');
-    toast('Usuário criado com sucesso');
-    $('aNome').value = ''; $('aEmail').value = ''; $('aSenha').value = '';
-    renderUsuariosAdmin();
-  }
+function filtrarProdutos() {
+    const term = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const filtered = produtos.filter(p => 
+        p.nome.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term)
+    );
+    renderProdutosGrid(filtered);
+}
 
-  // ===================== AUTENTICAÇÃO =====================
-  async function fazerLogin() {
-    const email = $('loginEmail').value.trim();
-    const senha = $('loginSenha').value;
-    if (!email || !senha) return toast('Preencha e-mail e senha', 'error');
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
-    if (error) return toast('Falha no login: ' + error.message, 'error');
-    // Busca perfil na tabela usuarios
-    const { data: perfil, error: perfilError } = await supabase.from('usuarios').select('*').eq('id', data.user.id).single();
-    if (perfilError || !perfil) return toast('Perfil não encontrado. Contate o administrador.', 'error');
-    usuarioAtual = { id: data.user.id, email: data.user.email, nome: perfil.nome, tipo: perfil.tipo };
-    localStorage.setItem('mixbazar_session', JSON.stringify({ id: usuarioAtual.id }));
-    await carregarDados();
-    entrarSistema();
-  }
-  function fazerLogout() {
-    confirmar('Sair', 'Deseja sair do sistema?', async () => {
-      await supabase.auth.signOut();
-      usuarioAtual = null; carrinho = [];
-      localStorage.removeItem('mixbazar_session');
-      $('#sistemaPrincipal').classList.add('hidden-section');
-      $('#telaLogin').classList.remove('hidden-section');
-      $('#loginEmail').value = ''; $('#loginSenha').value = '';
-    });
-  }
-  function entrarSistema() {
-    $('#telaLogin').classList.add('hidden-section');
-    $('#telaCadastro').classList.add('hidden-section');
-    $('#sistemaPrincipal').classList.remove('hidden-section');
-    $('#usuarioLogadoNome').textContent = usuarioAtual.nome;
-    $('#usuarioLogadoTipo').textContent = usuarioAtual.tipo === 'admin' ? 'Administrador' : 'Usuário';
-    syncUI();
-    navigateTo('vendas');
-  }
-  async function cadastrarNovo() {
-    const nome = $('cadNome').value.trim();
-    const email = $('cadEmail').value.trim();
-    const senha = $('cadSenha').value;
-    const conf = $('cadConfirmarSenha').value;
-    if (!nome || !email || !senha) return toast('Preencha todos', 'error');
-    if (senha.length < 6) return toast('Senha mín 6 caracteres', 'error');
-    if (senha !== conf) return toast('Senhas não conferem', 'error');
-    const { data, error } = await supabase.auth.signUp({ email, password: senha });
-    if (error) return toast(error.message, 'error');
-    await supabase.from('usuarios').insert([{ id: data.user.id, email, nome, tipo: 'usuario' }]);
-    toast('Cadastro realizado! Faça login');
-    $('#telaCadastro').classList.add('hidden-section');
-    $('#telaLogin').classList.remove('hidden-section');
-    $('#loginEmail').value = email;
-    $('#loginSenha').value = '';
-    $('#cadNome').value = ''; $('#cadEmail').value = ''; $('#cadSenha').value = ''; $('#cadConfirmarSenha').value = '';
-  }
+function adicionarAoCarrinho(id) {
+    const produto = produtos.find(p => p.id === id);
+    if (!produto || produto.quantidade <= 0) {
+        alert("⚠️ Produto sem estoque!");
+        return;
+    }
 
-  // ===================== NAVEGAÇÃO E UI =====================
-  function navigateTo(section) {
-    $$('.page-section').forEach(s => s.classList.add('hidden-section'));
-    $(`sec-${section}`)?.classList.remove('hidden-section');
-    $$('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelector(`[data-nav="${section}"]`)?.classList.add('active');
-    if (section === 'vendas') renderCarrinho();
-    if (section === 'produtos') { ativarTabProd('lista'); renderListaProdutos(); }
-    if (section === 'estoque') renderEstoque();
-    if (section === 'relatorios') { pagAtual = 1; atualizarRelatorios(); }
-    if (section === 'caixa') atualizarCaixa();
-    if (section === 'usuarios') renderUsuariosAdmin();
-  }
-  function ativarTabProd(tab) {
-    $$('.panel-prod').forEach(p => p.classList.add('hidden-section'));
-    $$('[data-tab-prod]').forEach(t => { t.classList.remove('tab-active'); t.classList.add('tab-inactive'); });
-    $(`panel-${tab}`)?.classList.remove('hidden-section');
-    document.querySelector(`[data-tab-prod="${tab}"]`)?.classList.add('tab-active');
-    if (tab === 'lista') renderListaProdutos();
-    if (tab === 'lotes') { popularSelectLotes(); renderLotesProduto(); }
-  }
-  function syncUI() {
-    renderListaProdutos();
-    renderEstoque();
-    atualizarRelatorios();
-    atualizarCaixa();
-    renderUsuariosAdmin();
-    popularSelectLotes();
-    renderCarrinho();
-  }
-
-  // ===================== EVENTOS =====================
-  function bindAll() {
-    $('#btnLogin').onclick = fazerLogin;
-    $('#btnMostrarCadastro').onclick = () => { $('#telaLogin').classList.add('hidden-section'); $('#telaCadastro').classList.remove('hidden-section'); };
-    $('#btnVoltarLogin').onclick = () => { $('#telaCadastro').classList.add('hidden-section'); $('#telaLogin').classList.remove('hidden-section'); };
-    $('#btnCadastrarUsuario').onclick = cadastrarNovo;
-    $('#btnLogout').onclick = fazerLogout;
-    $$('[data-nav]').forEach(b => b.onclick = () => navigateTo(b.dataset.nav));
-    $('#btnAddCarrinho').onclick = addCarrinho;
-    $('#buscaProduto').onkeypress = e => e.key === 'Enter' && addCarrinho();
-    $('#btnFinalizarVenda').onclick = abrirPagamento;
-    $('#btnLimparCarrinho').onclick = limparCarrinho;
-    $('#btnAddLinhaPag').onclick = addLinhaPag;
-    $('#btnConfirmarVenda').onclick = confirmarVenda;
-    $('#btnCancelarVenda').onclick = () => $('#modalPagamento').classList.add('hidden-section');
-    $('#btnFecharModalPag').onclick = () => $('#modalPagamento').classList.add('hidden-section');
-    $('#btnConfirmSim').onclick = () => { $('#modalConfirm').classList.add('hidden-section'); if (confirmCallback) confirmCallback(); confirmCallback = null; };
-    $('#btnConfirmNao').onclick = () => { $('#modalConfirm').classList.add('hidden-section'); confirmCallback = null; };
-    $$('[data-tab-prod]').forEach(b => b.onclick = () => ativarTabProd(b.dataset.tabProd));
-    $('#btnSalvarProduto').onclick = salvarProduto;
-    $('#btnBuscarPorCodigo').onclick = buscarPorCodigo;
-    $('#btnLimparFormProduto').onclick = limparFormProduto;
-    $('#btnToggleMaisLotes').onclick = () => { const c = $('#maisLotesContainer'); c.classList.toggle('hidden-section'); $('#btnToggleMaisLotes').innerHTML = c.classList.contains('hidden-section') ? '+ Adicionar mais lotes' : '- Ocultar'; };
-    $('#btnFiltrarLista').onclick = renderListaProdutos;
-    $('#selProdutoLote').onchange = renderLotesProduto;
-    $('#btnAddLoteExistente').onclick = addLoteExistente;
-    $('#btnSalvarLoteExistente').onclick = salvarLoteExistente;
-    $('#btnCancelarLoteExistente').onclick = () => $('#formNovoLoteInline').classList.add('hidden-section');
-    $('#btnFiltrarEstoque').onclick = renderEstoque;
-    $$('[data-filtro-v]').forEach(b => b.onclick = () => { filtroVendas = b.dataset.filtroV; pagAtual = 1; $$('[data-filtro-v]').forEach(btn => { btn.classList.remove('btn-primary'); btn.classList.add('btn-ghost'); }); b.classList.remove('btn-ghost'); b.classList.add('btn-primary'); atualizarRelatorios(); });
-    $('#btnExportCSV').onclick = exportarCSV;
-    $('#btnLimparHistorico').onclick = () => confirmar('Limpar Histórico', 'Excluir todas as vendas?', async () => { DB.vendas = []; await syncDB(); pagAtual = 1; atualizarRelatorios(); toast('Histórico limpo'); });
-    $('#btnPagAnt').onclick = () => { if (pagAtual > 1) { pagAtual--; atualizarRelatorios(); } };
-    $('#btnPagProx').onclick = () => { pagAtual++; atualizarRelatorios(); };
-    $('#btnFecharCaixa').onclick = fecharCaixa;
-    $('#btnCadAdmin').onclick = cadastrarAdmin;
-    document.onkeydown = e => { if (e.key === 'Escape') { $('#modalPagamento').classList.add('hidden-section'); $('#modalConfirm').classList.add('hidden-section'); } };
-  }
-
-  function ajustarLayout() { const grid = $('#buscaGrid'); if (window.innerWidth < 768 && grid) grid.style.gridTemplateColumns = '1fr 1fr'; else if (grid) grid.style.gridTemplateColumns = '1fr auto auto auto'; }
-  window.addEventListener('resize', ajustarLayout);
-
-  // INICIALIZAÇÃO
-  (async function init() {
-    const sess = localStorage.getItem('mixbazar_session');
-    if (sess) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: perfil } = await supabase.from('usuarios').select('*').eq('id', user.id).single();
-        if (perfil) {
-          usuarioAtual = { id: user.id, email: user.email, nome: perfil.nome, tipo: perfil.tipo };
-          await carregarDados();
-          entrarSistema();
-          bindAll();
-          ajustarLayout();
-          return;
+    const item = carrinho.find(i => i.id === id);
+    if (item) {
+        if (item.quantidade + 1 > produto.quantidade) {
+            alert("⚠️ Quantidade indisponível em estoque!");
+            return;
         }
-      }
+        item.quantidade++;
+    } else {
+        carrinho.push({...produto, quantidade: 1});
     }
-    $('#telaLogin').classList.remove('hidden-section');
-    bindAll();
-    ajustarLayout();
-  })();
+
+    atualizarCarrinho();
+}
+
+function atualizarCarrinho() {
+    const total = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+    const qtd = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+    
+    // Desktop
+    const desktopItems = document.getElementById('carrinhoItems');
+    if (desktopItems) {
+        desktopItems.innerHTML = carrinho.map((item, index) => `
+            <div class="flex justify-between items-start bg-gray-50 p-4 rounded-2xl">
+                <div class="flex-1">
+                    <div class="font-medium">${item.nome}</div>
+                    <div class="text-sm text-gray-500">R$ ${item.preco.toFixed(2)} × ${item.quantidade}</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold text-emerald-600">R$ ${(item.preco * item.quantidade).toFixed(2)}</div>
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="alterarQuantidade(${index}, -1)" class="text-indigo-600 px-2">-</button>
+                        <span>${item.quantidade}</span>
+                        <button onclick="alterarQuantidade(${index}, 1)" class="text-indigo-600 px-2">+</button>
+                        <button onclick="removerItem(${index})" class="text-red-500 ml-2">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('qtdItens').textContent = `${qtd} itens`;
+        document.getElementById('totalCarrinho').textContent = `R$ ${total.toFixed(2)}`;
+    }
+    
+    // Mobile
+    const mobileItems = document.getElementById('carrinhoItemsMobile');
+    if (mobileItems) {
+        mobileItems.innerHTML = carrinho.map((item, index) => `
+            <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl">
+                <div>
+                    <div class="font-medium text-sm">${item.nome}</div>
+                    <div class="text-xs text-gray-500">R$ ${item.preco.toFixed(2)} × ${item.quantidade}</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold">R$ ${(item.preco * item.quantidade).toFixed(2)}</div>
+                    <button onclick="removerItem(${index})" class="text-red-500 text-xs">Remover</button>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('qtdItensMobile').textContent = `${qtd} itens`;
+        document.getElementById('totalCarrinhoMobile').textContent = `R$ ${total.toFixed(2)}`;
+    }
+    
+    if (carrinho.length === 0) {
+        if (desktopItems) desktopItems.innerHTML = '<p class="text-center text-gray-400">Carrinho vazio</p>';
+        if (mobileItems) mobileItems.innerHTML = '<p class="text-center text-gray-400">Carrinho vazio</p>';
+    }
+}
+
+function alterarQuantidade(index, delta) {
+    const item = carrinho[index];
+    const produto = produtos.find(p => p.id === item.id);
+    
+    const novaQuantidade = item.quantidade + delta;
+    if (novaQuantidade < 1) {
+        removerItem(index);
+    } else if (novaQuantidade > produto.quantidade) {
+        alert("⚠️ Estoque insuficiente!");
+    } else {
+        item.quantidade = novaQuantidade;
+        atualizarCarrinho();
+    }
+}
+
+function removerItem(index) {
+    carrinho.splice(index, 1);
+    atualizarCarrinho();
+}
+
+function limparCarrinho() {
+    if (confirm("Limpar todo o carrinho?")) {
+        carrinho = [];
+        atualizarCarrinho();
+    }
+}
+
+// ==================== FINALIZAR VENDA ====================
+function finalizarVenda() {
+    if (carrinho.length === 0) {
+        alert("❌ Carrinho vazio!");
+        return;
+    }
+    const total = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+    document.getElementById('modalSubtotal').textContent = `R$ ${total.toFixed(2)}`;
+    document.getElementById('modalTotal').textContent = `R$ ${total.toFixed(2)}`;
+    document.getElementById('modalFinalizar').classList.remove('hidden');
+}
+
+function fecharModal() {
+    document.getElementById('modalFinalizar').classList.add('hidden');
+}
+
+function confirmarFinalizacao() {
+    const total = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+    
+    // Atualizar estoque
+    carrinho.forEach(item => {
+        const prod = produtos.find(p => p.id === item.id);
+        if (prod) prod.quantidade -= item.quantidade;
+    });
+
+    const venda = {
+        id: Date.now(),
+        data: new Date().toISOString(),
+        cliente: document.getElementById('clienteNome').value,
+        pagamento: document.getElementById('formaPagamento').value,
+        itens: carrinho.map(i => ({...i})),
+        total: total,
+        lucro: carrinho.reduce((acc, item) => acc + ((item.preco - (item.custo || item.preco * 0.5)) * item.quantidade), 0)
+    };
+
+    vendasHistorico.unshift(venda);
+    localStorage.setItem('nexus_vendas', JSON.stringify(vendasHistorico));
+    localStorage.setItem('nexus_produtos', JSON.stringify(produtos));
+
+    alert(`✅ Venda finalizada!\nCliente: ${venda.cliente}\nTotal: R$ ${total.toFixed(2)}`);
+    
+    carrinho = [];
+    fecharModal();
+    atualizarCarrinho();
+    renderProdutosGrid();
+}
+
+// ==================== PRODUTOS CRUD ====================
+function renderProdutos() {
+    document.getElementById('mainContent').innerHTML = `
+        <div class="bg-white rounded-3xl p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">📦 Produtos</h2>
+                <button onclick="abrirModalProduto()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-indigo-700">
+                    <i class="fa-solid fa-plus"></i> Novo Produto
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left p-4">Produto</th>
+                            <th class="text-left p-4">SKU</th>
+                            <th class="text-left p-4">Preço</th>
+                            <th class="text-left p-4">Custo</th>
+                            <th class="text-center p-4">Estoque</th>
+                            <th class="text-center p-4">Lote</th>
+                            <th class="text-center p-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${produtos.map(p => `
+                            <tr class="border-t hover:bg-gray-50">
+                                <td class="p-4 font-medium">${p.nome}</td>
+                                <td class="p-4 text-gray-600">${p.sku}</td>
+                                <td class="p-4 text-emerald-600 font-bold">R$ ${p.preco.toFixed(2)}</td>
+                                <td class="p-4 text-gray-600">R$ ${(p.custo || p.preco * 0.5).toFixed(2)}</td>
+                                <td class="p-4 text-center ${p.quantidade < 10 ? 'text-red-600 font-bold' : ''}">${p.quantidade}</td>
+                                <td class="p-4 text-center">${p.lote || '-'}</td>
+                                <td class="p-4 text-center">
+                                    <button onclick="editarProduto(${p.id})" class="text-indigo-600 mr-3">
+                                        <i class="fa-solid fa-edit"></i>
+                                    </button>
+                                    <button onclick="excluirProduto(${p.id})" class="text-red-600">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function abrirModalProduto(produto = null) {
+    produtoEditandoId = produto?.id || null;
+    document.getElementById('modalProdutoTitle').textContent = produto ? 'Editar Produto' : 'Novo Produto';
+    document.getElementById('prodNome').value = produto?.nome || '';
+    document.getElementById('prodSku').value = produto?.sku || '';
+    document.getElementById('prodPreco').value = produto?.preco || '';
+    document.getElementById('prodQuantidade').value = produto?.quantidade || '';
+    document.getElementById('prodCusto').value = produto?.custo || '';
+    document.getElementById('modalProduto').classList.remove('hidden');
+}
+
+function editarProduto(id) {
+    const produto = produtos.find(p => p.id === id);
+    if (produto) abrirModalProduto(produto);
+}
+
+function fecharModalProduto() {
+    document.getElementById('modalProduto').classList.add('hidden');
+    produtoEditandoId = null;
+}
+
+function salvarProduto() {
+    const nome = document.getElementById('prodNome').value;
+    const sku = document.getElementById('prodSku').value;
+    const preco = parseFloat(document.getElementById('prodPreco').value);
+    const quantidade = parseInt(document.getElementById('prodQuantidade').value);
+    const custo = parseFloat(document.getElementById('prodCusto').value);
+    
+    if (!nome || !sku || isNaN(preco)) {
+        alert("Preencha todos os campos obrigatórios!");
+        return;
+    }
+    
+    if (produtoEditandoId) {
+        const index = produtos.findIndex(p => p.id === produtoEditandoId);
+        produtos[index] = { ...produtos[index], nome, sku, preco, quantidade, custo };
+    } else {
+        const newId = Math.max(...produtos.map(p => p.id), 0) + 1;
+        produtos.push({ id: newId, nome, sku, preco, quantidade, custo, lote: `L${new Date().getFullYear()}${newId}` });
+    }
+    
+    localStorage.setItem('nexus_produtos', JSON.stringify(produtos));
+    fecharModalProduto();
+    renderProdutos();
+    alert("✅ Produto salvo com sucesso!");
+}
+
+function excluirProduto(id) {
+    if (confirm("Excluir este produto permanentemente?")) {
+        produtos = produtos.filter(p => p.id !== id);
+        localStorage.setItem('nexus_produtos', JSON.stringify(produtos));
+        renderProdutos();
+        alert("✅ Produto excluído!");
+    }
+}
+
+// ==================== ESTOQUE ====================
+function renderEstoque() {
+    const baixoEstoque = produtos.filter(p => p.quantidade < 10);
+    document.getElementById('mainContent').innerHTML = `
+        <div class="space-y-6">
+            ${baixoEstoque.length > 0 ? `
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl">
+                    <div class="font-bold text-amber-800">⚠️ Alerta de Estoque Baixo</div>
+                    <div class="text-amber-700">${baixoEstoque.length} produtos com menos de 10 unidades</div>
+                </div>
+            ` : ''}
+            
+            <div class="bg-white rounded-3xl overflow-hidden">
+                <div class="p-6 border-b">
+                    <h2 class="text-2xl font-bold">📊 Controle de Estoque</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left p-6">Produto</th>
+                                <th class="text-left p-6">SKU</th>
+                                <th class="text-center p-6">Quantidade</th>
+                                <th class="text-center p-6">Lote</th>
+                                <th class="text-right p-6">Valor Estoque</th>
+                                <th class="text-center p-6">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${produtos.map(p => {
+                                const valorEstoque = (p.custo || p.preco * 0.5) * p.quantidade;
+                                return `
+                                    <tr class="border-t hover:bg-gray-50">
+                                        <td class="p-6 font-medium">${p.nome}</td>
+                                        <td class="p-6 text-gray-500">${p.sku}</td>
+                                        <td class="p-6 text-center ${p.quantidade < 10 ? 'text-red-600 font-bold text-lg' : ''}">${p.quantidade}</td>
+                                        <td class="p-6 text-center">${p.lote || '-'}</td>
+                                        <td class="p-6 text-right font-semibold">R$ ${valorEstoque.toFixed(2)}</td>
+                                        <td class="p-6 text-center">
+                                            ${p.quantidade === 0 ? '<span class="text-red-600">🔴 Esgotado</span>' : 
+                                              p.quantidade < 10 ? '<span class="text-amber-600">🟡 Baixo</span>' : 
+                                              '<span class="text-emerald-600">🟢 Normal</span>'}
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ==================== HISTÓRICO ====================
+function renderHistorico() {
+    document.getElementById('mainContent').innerHTML = `
+        <div class="bg-white rounded-3xl p-6">
+            <h2 class="text-2xl font-bold mb-6">📜 Histórico de Vendas</h2>
+            <div class="space-y-4">
+                ${vendasHistorico.length === 0 ? 
+                    '<p class="text-gray-500 text-center py-12">Nenhuma venda registrada ainda.</p>' : 
+                    vendasHistorico.map(v => `
+                        <div class="border rounded-2xl p-5 hover:shadow-lg transition">
+                            <div class="flex justify-between items-start flex-wrap gap-3">
+                                <div>
+                                    <div class="font-bold text-lg">${v.cliente}</div>
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fa-regular fa-calendar"></i> ${new Date(v.data).toLocaleString('pt-BR')}
+                                    </div>
+                                    <div class="text-sm mt-2">
+                                        <span class="bg-gray-100 px-3 py-1 rounded-full text-xs">${v.pagamento}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-2xl text-emerald-600">R$ ${v.total.toFixed(2)}</div>
+                                    <div class="text-sm text-gray-500">${v.itens.length} itens</div>
+                                </div>
+                            </div>
+                            <details class="mt-3">
+                                <summary class="text-sm text-indigo-600 cursor-pointer">Ver itens</summary>
+                                <div class="mt-3 space-y-2">
+                                    ${v.itens.map(item => `
+                                        <div class="flex justify-between text-sm border-t pt-2">
+                                            <span>${item.nome} x ${item.quantidade}</span>
+                                            <span class="font-semibold">R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </details>
+                        </div>
+                    `).join('')
+                }
+            </div>
+        </div>
+    `;
+}
+
+// ==================== RELATÓRIOS ====================
+function renderRelatorios() {
+    const totalVendas = vendasHistorico.reduce((acc, v) => acc + v.total, 0);
+    const totalLucro = vendasHistorico.reduce((acc, v) => acc + (v.lucro || 0), 0);
+    const vendasHoje = vendasHistorico.filter(v => new Date(v.data).toDateString() === new Date().toDateString()).length;
+    const vendasMes = vendasHistorico.filter(v => new Date(v.data).getMonth() === new Date().getMonth()).length;
+    const ticketMedio = vendasHistorico.length > 0 ? totalVendas / vendasHistorico.length : 0;
+    
+    document.getElementById('mainContent').innerHTML = `
+        <div class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-6 rounded-3xl">
+                    <div class="text-sm opacity-90">Faturamento Total</div>
+                    <div class="text-4xl font-bold mt-2">R$ ${totalVendas.toFixed(2)}</div>
+                    <div class="text-sm mt-4">💰 ${vendasHistorico.length} vendas realizadas</div>
+                </div>
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-6 rounded-3xl">
+                    <div class="text-sm opacity-90">Lucro Total</div>
+                    <div class="text-4xl font-bold mt-2">R$ ${totalLucro.toFixed(2)}</div>
+                    <div class="text-sm mt-4">📈 Margem: ${totalVendas > 0 ? ((totalLucro / totalVendas) * 100).toFixed(1) : 0}%</div>
+                </div>
+                <div class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-6 rounded-3xl">
+                    <div class="text-sm opacity-90">Ticket Médio</div>
+                    <div class="text-4xl font-bold mt-2">R$ ${ticketMedio.toFixed(2)}</div>
+                    <div class="text-sm mt-4">🎫 Por venda</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-3xl p-6">
+                    <h3 class="font-bold text-lg mb-4">📅 Vendas Hoje</h3>
+                    <div class="text-3xl font-bold text-indigo-600">${vendasHoje}</div>
+                    <div class="text-gray-500 mt-2">vendas realizadas</div>
+                </div>
+                <div class="bg-white rounded-3xl p-6">
+                    <h3 class="font-bold text-lg mb-4">📆 Vendas no Mês</h3>
+                    <div class="text-3xl font-bold text-indigo-600">${vendasMes}</div>
+                    <div class="text-gray-500 mt-2">vendas este mês</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ==================== TOP 20 MAIS VENDIDOS ====================
+function renderTopVendidos() {
+    const vendasPorProduto = {};
+    
+    vendasHistorico.forEach(venda => {
+        venda.itens.forEach(item => {
+            if (!vendasPorProduto[item.id]) {
+                vendasPorProduto[item.id] = {
+                    nome: item.nome,
+                    sku: item.sku,
+                    quantidade: 0,
+                    faturamento: 0
+                };
+            }
+            vendasPorProduto[item.id].quantidade += item.quantidade;
+            vendasPorProduto[item.id].faturamento += item.preco * item.quantidade;
+        });
+    });
+    
+    const topVendidos = Object.values(vendasPorProduto)
+        .sort((a, b) => b.quantidade - a.quantidade)
+        .slice(0, 20);
+    
+    document.getElementById('mainContent').innerHTML = `
+        <div class="bg-white rounded-3xl p-6">
+            <h2 class="text-2xl font-bold mb-2">🏆 Top 20 Mais Vendidos</h2>
+            <p class="text-gray-500 mb-6">Produtos com maior volume de vendas</p>
+            
+            ${topVendidos.length === 0 ? 
+                '<p class="text-gray-500 text-center py-12">Ainda não há vendas registradas para gerar o ranking.</p>' :
+                `<div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-amber-100 to-amber-200">
+                            <tr>
+                                <th class="text-left p-4">#</th>
+                                <th class="text-left p-4">Produto</th>
+                                <th class="text-left p-4">SKU</th>
+                                <th class="text-center p-4">Quantidade Vendida</th>
+                                <th class="text-right p-4">Faturamento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${topVendidos.map((item, idx) => `
+                                <tr class="border-t hover:bg-gray-50">
+                                    <td class="p-4 font-bold text-${idx < 3 ? 'amber' : 'gray'}-600 text-xl">
+                                        ${idx + 1}${idx === 0 ? ' 🥇' : idx === 1 ? ' 🥈' : idx === 2 ? ' 🥉' : ''}
+                                    </td>
+                                    <td class="p-4 font-medium">${item.nome}</td>
+                                    <td class="p-4 text-gray-500">${item.sku}</td>
+                                    <td class="p-4 text-center font-bold text-emerald-600 text-lg">${item.quantidade}</td>
+                                    <td class="p-4 text-right font-semibold">R$ ${item.faturamento.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`
+            }
+        </div>
+    `;
+}
+
+// ==================== UTILITÁRIOS ====================
+function novaVenda() {
+    navigate('vendas');
+}
+
+// Inicialização
+document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR', { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long' 
+});
+
+navigate('vendas');
+
+// Atualizar data a cada minuto
+setInterval(() => {
+    document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long' 
+    });
+}, 60000);
 </script>
+
 </body>
-                                                                                                                                                                                                                    </html>
+          </html>
